@@ -1,0 +1,53 @@
+// 00_hello.gk — "Hello, Gecko!": the basics of a .gk file.
+//
+// Covers: the builtin print/println/input functions (no fmt import
+// needed), the `=` declare-or-assign rule, explicit `: type`
+// annotations, string concatenation and the null literal. Subsequent
+// examples go one feature deeper each.
+//
+// Run from src/ with the simd-enabled toolchain:
+//   bin/go run examples/00_hello.gk
+
+package main
+
+func main() {
+	// print writes to stdout without a trailing newline; println appends
+	// one. Gecko provides both as builtins, so there is no need (or
+	// reason) to import fmt.
+	print("Hello")
+	print(", ")
+	print("Gecko")
+	println("!")
+	println() // println() with no arguments writes just a newline
+
+	// println joins its arguments with a space and appends a newline.
+	println("Hello", "Gecko")
+	println(1, 2, 3)
+	println(true, 2.5, 'c')
+
+	// String concatenation with + works exactly like in Go.
+	println("one" + " " + "two" + " " + "three")
+
+	// The = operator declares a fresh variable when the name is not yet
+	// visible and assigns to it otherwise (gecko has no :=).
+	greeting = "hi"
+	println(greeting)
+	greeting = greeting + " there"
+	println(greeting)
+
+	// An explicit type is written with a colon after the name.
+	var typed: string = "typed var"
+	var count: int = 42
+	var ratio: float64 = 3.14
+	var on: bool = true
+	println(typed, count, ratio, on)
+
+	// null is the gecko literal for Go's nil (see 06_null.gk).
+	var maybe: *int = null
+	println("null pointer:", maybe)
+
+	// input(prompt) writes the prompt to stdout and reads one line from
+	// stdin; EOF returns the empty string.
+	name = input("What is your name? (press Enter) ")
+	println("Nice to meet you,", name, "!")
+}

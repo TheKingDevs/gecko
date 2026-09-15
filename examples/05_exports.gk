@@ -1,0 +1,49 @@
+// 05_exports.gk — the gecko export keyword.
+//
+// In .gk files, visibility is controlled by `export` instead of Go's
+// "first letter uppercase = exported" rule, so a lowercase name can be
+// exported and a capital name can stay private. Every form is shown
+// against the exportlib library package (examples/exportlib/lib.gk):
+//
+//   - `export` before func/var/const/class,
+//   - the shorthand form `export name`,
+//   - the list form `export {a, b}`,
+//   - classes whose fields and methods are reachable across packages
+//     (constructed with the qualified `new pkg.Class(args)` expression).
+//
+// Uncommenting the private references at the bottom shows that names
+// without (or not covered by) an export stay private even with a
+// capital letter.
+//
+// Run from examples/:
+//   ../bin/go run 05_exports.gk
+
+package main
+
+import "gecko.example/exportlib"
+
+func main() {
+	// Exported lowercase func and var.
+	println(exportlib.greet("Ana"))
+	println(exportlib.greeting)
+
+	// Exported const.
+	println("version", exportlib.version)
+
+	// Shortcut `export upper` re-exports the `upper` declaration.
+	println(exportlib.upper("wow"))
+
+	// List form `export {myMax, version}` exports both names.
+	println("myMax", exportlib.myMax)
+
+	// Classes: the class itself is exported; its fields and methods are
+	// reachable regardless of capitalization. Qualified `new` works.
+	p = new exportlib.Person("Bia")
+	println(p.name)
+	println(p.Loud())
+
+	// These do NOT compile: the names exist but are private.
+	// println(exportlib.PrivateGreeting("x")) // undefined: exportlib.PrivateGreeting
+	// println(exportlib.SecretGreeting)       // undefined: exportlib.SecretGreeting
+	// _ = new exportlib.Secret()              // undefined: exportlib.Secret
+}

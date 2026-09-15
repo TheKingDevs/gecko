@@ -1,0 +1,18 @@
+! go mod init .
+stderr '^gecko: malformed module path ".": is a local import path$'
+
+cd x
+go mod init example.com/x
+
+cd ../y
+go mod init m
+
+-- x/main.go --
+package main
+
+func main() {}
+
+-- y/main.go --
+package main
+
+func main() {}

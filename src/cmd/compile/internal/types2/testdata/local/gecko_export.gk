@@ -1,0 +1,54 @@
+// Copyright 2026 The Gecko Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// The `export` keyword marks package-level declarations as visible to
+// importers regardless of capitalization; declarations without it are
+// private even when they start with an uppercase letter.
+
+package p
+
+// export before a declaration.
+export func pub(): string { return "pub" }
+func hidden(): string     { return "hidden" }
+
+export var pubvar = 1
+var hiddenvar = 2
+
+export const pubconst = 3
+const hiddenconst = 4
+
+// export shorthand: applies to the declaration with the same name.
+export pubvar2
+var pubvar2 = 5
+
+// export of a const declared later.
+export PUB_C
+const PUB_C = 6
+
+// export list form.
+export { pubvar2, PUB_C, pubconst, pub }
+
+// Within the package, gecko export is not required to refer to a name.
+var usesInt = pubvar + pubvar2 + pubconst + PUB_C       // ok
+var usesString = pub() + hidden()                       // ok
+var usesMixed = hiddenvar + hiddenconst + len(usesString) // ok
+
+// export class: fields and methods are visible to importers.
+export class Person() {
+	constructor(name: string) { this.name = name }
+	greet(): string { return "hi " + this.name }
+}
+
+class Secret() {
+	constructor() {}
+}
+
+// Referencing the class constructor and a field within the package.
+func mkPerson(name: string): *Person { return new Person(name) }
+
+// export names that cannot be resolved in any file.
+export nope /* ERROR "cannot export undefined name nope" */
+
+// Mixed list with an undefined name.
+export { pub, nope2 /* ERROR "cannot export undefined name nope2" */ }

@@ -1,0 +1,84 @@
+# Test that 'gecko fmt' reformats a gecko project (no go.mod) by walking
+# the project tree from the gecko.json manifest.
+
+# Outside a gecko project, 'gecko fmt' without arguments falls back to
+# formatting the current package (upstream behavior).
+cd .
+rm -rf $WORK/gecko
+mkdir $WORK/gecko/src/util
+mkdir $WORK/gecko/vendor/third
+mkdir $WORK/gecko/examples/.hidden
+cp $WORK/gecko.json $WORK/gecko/gecko.json
+cp $WORK/app.gk $WORK/gecko/src/app.gk
+cp $WORK/utils.gk $WORK/gecko/src/util/x.gk
+cp $WORK/vendor.gk $WORK/gecko/vendor/third/v.gk
+cp $WORK/hidden.gk $WORK/gecko/examples/.hidden/h.gk
+cp $WORK/notes.txt $WORK/gecko/src/util/notes.txt
+
+cd $WORK/gecko
+go fmt
+stdout 'src[/\\]app\.gk'
+stdout 'src[/\\]util[/\\]x\.gk'
+! stdout 'vendor|\.hidden'
+
+cmp $WORK/expected-app.gk src/app.gk
+cmp $WORK/expected-utils.gk src/util/x.gk
+cmp $WORK/vendor.gk vendor/third/v.gk
+cmp $WORK/hidden.gk examples/.hidden/h.gk
+
+# A second run is a no-op.
+go fmt
+! stdout 'app\.gk'
+
+# An explicit file that is already formatted correctly is skipped.
+cd $WORK/gecko
+go fmt src/util/x.gk
+! stdout 'x\.gk'
+
+# Formatting an explicit file outside the project works too.
+go fmt $WORK/messy.gk
+cmp $WORK/expected-messy.gk $WORK/messy.gk
+
+-- $WORK/gecko.json --
+{}
+
+-- $WORK/app.gk --
+package main
+
+func main() {
+	print(   1+2 )
+}
+-- $WORK/expected-app.gk --
+package main
+
+func main() {
+	print(1 + 2)
+}
+-- $WORK/utils.gk --
+package util
+
+func help( ) : num {
+	return 5
+}
+-- $WORK/expected-utils.gk --
+package util
+
+func help(): num {
+	return 5
+}
+-- $WORK/vendor.gk --
+package v
+func v( ){}
+-- $WORK/hidden.gk --
+package h
+func h( ){}
+-- $WORK/notes.txt --
+not a source file
+-- $WORK/messy.gk --
+package main
+
+var x:   num = 3
+-- $WORK/expected-messy.gk --
+package main
+
+var x: num = 3

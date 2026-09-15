@@ -1,0 +1,7 @@
+env GO111MODULE=off
+
+# Regression test for golang.org/issue/21309: accept relative -pkgdir argument.
+
+mkdir $WORK/gocache
+env GOCACHE=$WORK/gocache
+go build -pkgdir=. runtime

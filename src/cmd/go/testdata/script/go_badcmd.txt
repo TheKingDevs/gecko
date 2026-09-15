@@ -1,0 +1,2 @@
+! go asdf
+stderr '^gecko asdf: unknown command'

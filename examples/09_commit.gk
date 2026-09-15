@@ -1,0 +1,93 @@
+// 09_commit.gk — validating a commit message with the input builtin.
+//
+// input(prompt) writes prompt to stdout and reads one line from stdin
+// (EOF returns ""). This example turns it into an interactive, pre-commit
+// style validator: the user types a conventional-commit subject
+// ("type: description") and a CommitValidator checks it against a
+// whitelist of types, a max subject length, the mandatory ":" separator
+// and the space after it. A rejected subject is explained and the prompt
+// repeats; an empty line or EOF ends the session.
+//
+// Covers: input, class with methods, index/range for loops, string
+// indexing and slicing, templates with ${...}, and the classic
+// declare/assign `=` forms with no fmt import.
+//
+// Run from src/:
+//   bin/go run examples/09_commit.gk
+// and type a subject, e.g. "fix: make input docs clearer". Or pipe one:
+//   printf 'fix: add the example\n\n' | bin/go run examples/09_commit.gk
+
+package main
+
+// CommitValidator accepts conventional-commit subjects: a whitelisted
+// type, a colon, a space, and a description no longer than maxLen.
+class CommitValidator() {
+	constructor(types: []string, maxLen: int) {
+		this.types = types
+		this.maxLen = maxLen
+	}
+
+	// validType reports whether typeName is one of the whitelisted types.
+	validType(typeName: string): bool {
+		for (i = 0; i < len(this.types); i = i + 1) {
+			if (this.types[i] == typeName) {
+				return true
+			}
+		}
+		return false
+	}
+
+	// reason returns "" when msg is a valid subject, otherwise a short
+	// description of the first problem found.
+	reason(msg: string): string {
+		n = len(msg)
+		if (n == 0) {
+			return "empty message"
+		}
+		if (n > this.maxLen) {
+			return "subject too long"
+		}
+		colon = -1
+		for (i = 0; i < n; i = i + 1) {
+			if (msg[i] == ':') {
+				colon = i
+				break
+			}
+		}
+		if (colon < 0) {
+			return "missing \"type: description\" prefix"
+		}
+		if (!this.validType(msg[0:colon])) {
+			return "unknown commit type"
+		}
+		if (colon == n - 1 || msg[colon + 1] != ' ') {
+			return "expected a space after the colon"
+		}
+		return ""
+	}
+}
+
+func main() {
+	validator = new CommitValidator([]string{"feat", "fix", "docs",
+		"refactor", "test", "chore", "perf"}, 72)
+
+	println("Commit message validation (empty line or EOF quits)")
+	println("conventional subject: \"type: description\"")
+	println("allowed types: feat fix docs refactor test chore perf")
+
+	for (;;) {
+		println()
+		msg = input("commit subject> ")
+		if (msg == "") {
+			break
+		}
+		problem = validator.reason(msg)
+		if (problem == "") {
+			println(`accepted: ${msg}`)
+		} else {
+			println(`rejected: ${msg}`)
+			println("  reason:", problem)
+		}
+	}
+	println("bye")
+}

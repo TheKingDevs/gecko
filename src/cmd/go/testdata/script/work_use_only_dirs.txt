@@ -1,0 +1,17 @@
+! go work use foo bar baz
+
+stderr '^gecko: foo is not a directory'
+stderr '^gecko: directory baz does not exist'
+cmp go.work go.work_want
+
+! go work use -r qux
+stderr '^gecko: qux is not a directory'
+
+-- go.work --
+go 1.18
+-- go.work_want --
+go 1.18
+-- foo --
+-- qux --
+-- bar/go.mod --
+module bar

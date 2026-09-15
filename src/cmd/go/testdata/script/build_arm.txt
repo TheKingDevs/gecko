@@ -1,0 +1,11 @@
+env GOARCH=arm
+env GOOS=linux
+env GOARM=5
+
+go build hello.go
+! stderr 'unable to find math.a'
+
+-- hello.go --
+package main
+
+func main() {}

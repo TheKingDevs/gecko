@@ -1,0 +1,56 @@
+// 06_null.gk — the null literal in gecko.
+//
+// Gecko spells Go's nil as null. null works everywhere nil does:
+// comparisons, assignments to any nilable type (pointers, slices, maps,
+// channels, functions, interfaces) and function arguments/results.
+// Writing nil in a .gk file is a compile error (the compiler suggests
+// using null instead).
+//
+// Run from src/:
+//   bin/go run examples/06_null.gk
+
+package main
+
+func describePtr(p: *int): string {
+	if (p == null) {
+		return "null pointer"
+	}
+	return "points at " + string(*p)
+}
+
+func main() {
+	// Comparing against null.
+	var p: *int = null
+	println("p == null:", p == null)
+	println("p != null:", p != null)
+
+	// Assigning null to every nilable type.
+	var sl: []int = null
+	var m: map[string]int = null
+	var ch: chan int = null
+	var fn: func() = null
+	var itf: any = null
+	println(sl, m, ch, fn, itf)
+
+	// Resetting an existing variable to null.
+	x = 123
+	ptr = &x
+	println("before:", describePtr(ptr))
+	ptr = null
+	println("after:", describePtr(ptr))
+
+	// null as a function argument and result.
+	println(describePtr(null))
+	println(empty() == null)
+}
+
+class Box() {
+	constructor(value: string) {
+		this.value = value
+	}
+}
+
+// Returning null.
+func empty(): *Box {
+	return null
+}

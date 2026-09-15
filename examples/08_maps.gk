@@ -1,0 +1,94 @@
+// 08_maps.gk — maps in gecko.
+//
+// Gecko spells Go's maps with a lighter syntax: the dynamic literal
+// {"name": "gecko"} infers map[string]any when the value types differ and
+// the concrete value type when they agree. Typed literals like
+// map[string]int{...} are also available, and map keys can be any
+// comparable type (string, int, bool, ...). Covers: literals, len,
+// index read/write, delete, iteration, maps whose values are slices or
+// maps, heterogeneous map[string]any, nil/empty maps, and maps as
+// function arguments and results. The builtin print/println print maps
+// as {key:value, key:value}.
+//
+// Run from src/:
+//   bin/go run examples/08_maps.gk
+
+package main
+
+// Maps as function arguments.
+func totalAge(people: map[string]int): int {
+	t = 0
+	for (_, age = range people) {
+		t = t + age
+	}
+	return t
+}
+
+// Maps as function results.
+func buildMap(): map[string]int {
+	m = {"a": 1}
+	m["b"] = 2
+	return m
+}
+
+func main() {
+	// Dynamic literal: inference produces the concrete element type when
+	// every value agrees (map[string]int) ...
+	ages = {"alice": 30, "bob": 40}
+	println("int values:         ", ages)
+
+	// ... and map[string]any when the value types differ.
+	hetero = {"name": "gecko", "active": true, "version": 1.0}
+	println("mixed values:       ", hetero)
+
+	// Typed literal.
+	var stringMap: map[string]string = {"a": "x", "b": "y"}
+	println("string map:         ", stringMap)
+
+	// Keys can be any comparable type.
+	var byId: map[int]string = {1: "one", 2: "two"}
+	var byFlag: map[bool]string = {true: "yes", false: "no"}
+	println("int keys:           ", byId)
+	println("bool keys:          ", byFlag)
+
+	// Values can be slices or other maps.
+	var groups: map[string][]int = {"team": [1, 2, 3], "bench": [4]}
+	var tree: map[string]map[string]int = {"outer": {"inner": 1}}
+	println("of slices:          ", groups)
+	println("2D nested map:      ", tree)
+
+	// An empty typed literal and a null map both print as {} with length 0.
+	var empty: map[string]int = {}
+	var nilMap: map[string]int = null
+	println("empty literal:      ", empty, "len:", len(empty))
+	println("null map:           ", nilMap, "len:", len(nilMap))
+
+	// len, index reads (missing keys give the zero value).
+	println("len:", len(ages))
+	println("ages[alice]:        ", ages["alice"])
+	println("ages[missing]:      ", ages["missing"])
+
+	// Index writes add or update a key.
+	ages["carol"] = 50
+	ages["alice"] = 31
+	println("after writes:       ", ages)
+
+	// delete removes a key.
+	del = {"a": 1, "b": 2, "c": 3}
+	delete(del, "b")
+	println("after delete:       ", del)
+
+	// Iteration yields keys, or keys and values in an unspecified order.
+	for (k = range ages) {
+		print(k, " ")
+	}
+	println()
+	for (k, v = range ages) {
+		print(k, "=", v, " ")
+	}
+	println()
+
+	// Maps flowing through functions.
+	println("totalAge(ages):     ", totalAge(ages))
+	println("buildMap():         ", buildMap())
+}

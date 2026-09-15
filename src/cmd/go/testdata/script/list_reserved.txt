@@ -1,0 +1,7 @@
+# https://golang.org/issue/37641: the paths "example" and "test" are reserved
+# for end users, and must never exist in the standard library.
+
+go list example/... test/...
+stderr 'gecko: warning: "example/..." matched no packages$'
+stderr 'gecko: warning: "test/..." matched no packages$'
+! stdout .
