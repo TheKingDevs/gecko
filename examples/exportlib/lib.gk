@@ -1,0 +1,60 @@
+// lib.gk — the library behind the export example. Demonstrates the gecko
+// `export` keyword, which replaces Go's "first letter uppercase =
+// exported" rule in .gk files:
+//
+//   - A declaration without `export` is private to its package even if its
+//     name starts with an uppercase letter.
+//   - `export` makes a name visible to importing packages regardless of
+//     capitalization.
+//   - Fields and methods of gecko classes are visible to importing
+//     packages regardless of capitalization.
+//
+// The companion example 05_exports.gk (package main) imports this package
+// and uses every exported name; it also shows the private ones below do
+// not compile.
+package exportlib
+
+// exported despite its lowercase name
+export func greet(name: string): string {
+	return "hi " + name
+}
+
+// caught only by export: a capital name is still private
+func PrivateGreeting(name: string): string {
+	return "secret " + name
+}
+
+export var greeting = "hello"
+
+// private despite the capital name
+var SecretGreeting = "shhh"
+
+export const version = 7
+
+// shorthand form: exports the declaration named `upper`
+export upper
+func upper(msg: string): string {
+	return msg + "!!"
+}
+
+// list form exports both names (regardless of case)
+var myMax = 100
+export { myMax, version }
+
+export class Person() {
+	constructor(name: string) {
+		this.name = name
+	}
+	greet(): string {
+		return "hi " + this.name
+	}
+	// a capital method is still reachable cross-package
+	Loud(): string {
+		return this.greet() + "!"
+	}
+}
+
+// private class
+class Secret() {
+	constructor() {}
+}

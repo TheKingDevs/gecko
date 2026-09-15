@@ -1,0 +1,87 @@
+// 02_loops.gk — loops in gecko.
+//
+// Classic for, for used as a while loop, the while keyword itself,
+// infinite loops (while () and for (;;)), break/continue, and range
+// over slices and strings, with and without the index.
+//
+// Run from src/:
+//   bin/go run examples/02_loops.gk
+
+package main
+
+func main() {
+	// Classic for with init, condition and post.
+	print("classic: ")
+	for (i = 0; i < 3; i = i + 1) {
+		print(i, " ")
+	}
+	println()
+
+	// for with only a condition (the body runs while it holds).
+	print("for-cond: ")
+	j = 0
+	for (j < 3) {
+		print(j, " ")
+		j = j + 1
+	}
+	println()
+
+	// while (cond) is sugar for for (cond).
+	print("while: ")
+	k = 0
+	while (k < 3) {
+		print(k, " ")
+		k = k + 1
+	}
+	println()
+
+	// while () is an infinite loop; break exits it.
+	print("while(): ")
+	m = 0
+	while () {
+		if (m >= 3) {
+			break
+		}
+		print(m, " ")
+		m = m + 1
+	}
+	println()
+
+	// for (;;) is also an infinite loop; continue skips to the next round.
+	print("for(;;): ")
+	sum = 0
+	for (;;) {
+		sum = sum + 1
+		if (sum == 1) {
+			continue // skip printing the first round
+		}
+		print(sum, " ")
+		if (sum >= 4) {
+			break
+		}
+	}
+	println()
+
+	// for (i = range items): the index only.
+	print("range idx: ")
+	items = []int{10, 20, 30}
+	for (i = range items) {
+		print(i, " ")
+	}
+	println()
+
+	// for (i, value = range items): the index and the value.
+	print("range idx,val: ")
+	for (i, value = range items) {
+		print(i, ":", value, " ")
+	}
+	println()
+
+	// Range over a string yields byte offsets and rune values.
+	print("range str: ")
+	word = "abc"
+	for (idx, r = range word) {
+		print(idx, ":", string(r), " ")
+	}
+	println()
+}

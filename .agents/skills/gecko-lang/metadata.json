@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "organization": "thekingdevs",
+  "date": "September 2026",
+  "abstract": "Language reference for Gecko (.gk) — a Go-based systems language compiled from the go1.28 dev cycle with the simd experiment. Covers native print/println/input, null (not nil), declare-or-assign with = (no :=), colon type annotations, mandatory parentheses, while, classes + new, the export keyword (not capitalization), TypeScript-style imports, template strings, dynamic arrays/maps, null-safe printing, gpm package management, and the simd-enabled toolchain.",
+  "references": [
+    "/home/runner/workspace/gecko/CHANGELOG.md",
+    "/home/runner/workspace/gecko/README.md",
+    "/home/runner/workspace/gecko/AGENTS.md",
+    "/home/runner/workspace/gecko/prompt.md",
+    "/home/runner/workspace/gecko/examples/00_hello.gk",
+    "/home/runner/workspace/gecko/examples/01_conditions.gk",
+    "/home/runner/workspace/gecko/examples/02_loops.gk",
+    "/home/runner/workspace/gecko/examples/03_templates.gk",
+    "/home/runner/workspace/gecko/examples/04_classes.gk",
+    "/home/runner/workspace/gecko/examples/05_exports.gk",
+    "/home/runner/workspace/gecko/examples/06_null.gk",
+    "/home/runner/workspace/gecko/examples/07_arrays.gk",
+    "/home/runner/workspace/gecko/examples/08_maps.gk",
+    "/home/runner/workspace/gecko/examples/09_commit.gk",
+    "/home/runner/workspace/gecko/examples/exportlib/lib.gk"
+  ]
+}

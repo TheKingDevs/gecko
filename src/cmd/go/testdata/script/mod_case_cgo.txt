@@ -1,0 +1,9 @@
+[!cgo] skip
+
+go get rsc.io/CGO
+[short] stop
+
+go build rsc.io/CGO
+
+-- go.mod --
+module x

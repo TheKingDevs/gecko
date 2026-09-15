@@ -1,0 +1,51 @@
+// Copyright 2026 The Gecko Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// gecko class field inference for conditions: literal bools and numbers
+// (including signed literals), class instances (self and nested) and the
+// null-then-value pattern must all typecheck so that `if (t.done)` style
+// dot conditions are usable.
+
+package geckodotcond
+
+class Task() {
+	constructor() {
+		this.done = true
+		this.ready = false
+		this.count = 3
+		this.neg = -3
+		this.other = new Task()
+		this.inner = null
+		this.inner = new Task()
+	}
+}
+
+class Home() {
+	constructor() {
+		this.task = new Task()
+	}
+}
+
+func main() {
+	h = new Home()
+	first = h.task.done
+	second = h.task.other.ready
+	third = h.task.other.done
+	negated = !h.task.ready
+	compare = h.task.count > 1
+	signed = h.task.neg == -3
+	if (h.task.done) {
+		first = true
+	}
+	if (!h.task.ready && h.task.count == 3) {
+		second = true
+	}
+	switch (h.task.other.done) {
+	case true:
+		third = true
+	case false:
+		third = false
+	}
+	println(first, second, third, negated, compare, signed)
+}

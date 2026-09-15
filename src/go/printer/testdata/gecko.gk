@@ -1,0 +1,48 @@
+package main
+
+func add(x: int, y: int): int {
+	return x + y
+}
+
+func main() {
+	x = 0
+	var n: int = 5
+	if (x != 0) {
+		println("if")
+	} else {
+		println("else")
+	}
+	for (i = 0; i < 3; i++) {
+		println("for")
+	}
+	items = []int{1}
+	for (i = range items) {
+		println("range", i)
+	}
+	for (i, v = range items) {
+		println("two", i, v)
+	}
+	for (x < 3) {
+		x++
+	}
+	for (;;) {
+	}
+	while (x < 3) {
+		x++
+	}
+	while () {
+	}
+	switch (x) {
+	case 0:
+		println("tag")
+	}
+	switch (i = 0; i) {
+	case 0:
+		println("init")
+	}
+	var v: any
+	switch (t = v.(type)) {
+	case int:
+		println("type", t)
+	}
+}

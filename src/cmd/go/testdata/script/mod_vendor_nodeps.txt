@@ -1,0 +1,7 @@
+go mod vendor
+stderr '^gecko: no dependencies to vendor'
+
+-- go.mod --
+module x
+-- x.go --
+package x

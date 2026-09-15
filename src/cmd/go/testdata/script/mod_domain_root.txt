@@ -1,0 +1,11 @@
+# Module paths that are domain roots should resolve.
+# (example.com not example.com/something)
+
+go get
+
+-- go.mod --
+module x
+
+-- x.go --
+package x
+import _ "example.com"

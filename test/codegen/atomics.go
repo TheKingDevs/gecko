@@ -1,0 +1,157 @@
+// asmcheck
+
+// Copyright 2024 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// These tests check that atomic instructions without dynamic checks are
+// generated for architectures that support them
+
+package codegen
+
+import "sync/atomic"
+
+type Counter struct {
+	count int32
+}
+
+func (c *Counter) Increment() {
+	// Check that ARm64 v8.0 has both atomic instruction (LDADDALW) and a dynamic check
+	// (for arm64HasATOMICS), while ARM64 v8.1 has only atomic and no dynamic check.
+	// arm64/v8.0:"LDADDALW"
+	// arm64/v8.1:"LDADDALW"
+	// arm64/v8.0:".*arm64HasATOMICS"
+	// arm64/v8.1:-".*arm64HasATOMICS"
+	// amd64:"LOCK" -"CMPXCHG"
+	// loong64:"AMADDDBW"
+	// riscv64:"AMOADDW" -"JAL"
+	atomic.AddInt32(&c.count, 1)
+}
+
+func atomicLogical64(x *atomic.Uint64) uint64 {
+	var r uint64
+
+	// arm64/v8.0:"LDCLRALD"
+	// arm64/v8.1:"LDCLRALD"
+	// arm64/v8.0:".*arm64HasATOMICS"
+	// arm64/v8.1:-".*arm64HasATOMICS"
+	// On amd64, make sure we use LOCK+AND instead of CMPXCHG when we don't use the result.
+	// amd64:"LOCK" -"CMPXCHGQ"
+	// loong64:"AMANDDBV"
+	// riscv64:"AMOANDD" -"JAL"
+	x.And(11)
+	// arm64/v8.0:"LDCLRALD"
+	// arm64/v8.1:"LDCLRALD"
+	// arm64/v8.0:".*arm64HasATOMICS"
+	// arm64/v8.1:-".*arm64HasATOMICS"
+	// amd64:"LOCK" "CMPXCHGQ"
+	// loong64:"AMANDDBV"
+	// riscv64:"AMOANDD" -"JAL"
+	r += x.And(22)
+
+	// arm64/v8.0:"LDORALD"
+	// arm64/v8.1:"LDORALD"
+	// arm64/v8.0:".*arm64HasATOMICS"
+	// arm64/v8.1:-".*arm64HasATOMICS"
+	// On amd64, make sure we use LOCK+OR instead of CMPXCHG when we don't use the result.
+	// amd64:"LOCK" -"CMPXCHGQ"
+	// loong64:"AMORDBV"
+	// riscv64:"AMOORD" -"JAL"
+	x.Or(33)
+	// arm64/v8.0:"LDORALD"
+	// arm64/v8.1:"LDORALD"
+	// arm64/v8.0:".*arm64HasATOMICS"
+	// arm64/v8.1:-".*arm64HasATOMICS"
+	// amd64:"LOCK" "CMPXCHGQ"
+	// loong64:"AMORDBV"
+	// riscv64:"AMOORD" -"JAL"
+	r += x.Or(44)
+
+	return r
+}
+
+func atomicLogical32(x *atomic.Uint32) uint32 {
+	var r uint32
+
+	// arm64/v8.0:"LDCLRALW"
+	// arm64/v8.1:"LDCLRALW"
+	// arm64/v8.0:".*arm64HasATOMICS"
+	// arm64/v8.1:-".*arm64HasATOMICS"
+	// On amd64, make sure we use LOCK+AND instead of CMPXCHG when we don't use the result.
+	// amd64:"LOCK" -"CMPXCHGL"
+	// loong64:"AMANDDBW"
+	// riscv64:"AMOANDW" -"JAL"
+	x.And(11)
+	// arm64/v8.0:"LDCLRALW"
+	// arm64/v8.1:"LDCLRALW"
+	// arm64/v8.0:".*arm64HasATOMICS"
+	// arm64/v8.1:-".*arm64HasATOMICS"
+	// amd64:"LOCK" "CMPXCHGL"
+	// loong64:"AMANDDBW"
+	// riscv64:"AMOANDW" -"JAL"
+	r += x.And(22)
+
+	// arm64/v8.0:"LDORALW"
+	// arm64/v8.1:"LDORALW"
+	// arm64/v8.0:".*arm64HasATOMICS"
+	// arm64/v8.1:-".*arm64HasATOMICS"
+	// On amd64, make sure we use LOCK+OR instead of CMPXCHG when we don't use the result.
+	// amd64:"LOCK" -"CMPXCHGL"
+	// loong64:"AMORDBW"
+	// riscv64:"AMOORW" -"JAL"
+	x.Or(33)
+	// arm64/v8.0:"LDORALW"
+	// arm64/v8.1:"LDORALW"
+	// arm64/v8.0:".*arm64HasATOMICS"
+	// arm64/v8.1:-".*arm64HasATOMICS"
+	// amd64:"LOCK" "CMPXCHGL"
+	// loong64:"AMORDBW"
+	// riscv64:"AMOORW" -"JAL"
+	r += x.Or(44)
+
+	return r
+}
+
+func atomicAddWithoutExchange32(x *atomic.Uint32, y uint32) {
+	// amd64:"LOCK" -"XADDL" "ADDL"
+	// loong64:"AMADDDBW"
+	x.Add(y)
+}
+func atomicAddWithoutExchange64(x *atomic.Uint64, y uint64) {
+	// amd64:"LOCK" -"XADDQ" "ADDQ"
+	// loong64:"AMADDDBV"
+	x.Add(y)
+}
+
+func atomicSubWithoutExchange32(x *atomic.Uint32, y uint32) {
+	// amd64:"LOCK" -"XADDL" -"ADDL" "SUBL"
+	// loong64:"AMADDDBW"
+	x.Add(-y)
+}
+func atomicSubWithoutExchange64(x *atomic.Uint64, y uint64) {
+	// amd64:"LOCK" -"XADDQ" -"ADDQ" "SUBQ"
+	// loong64:"AMADDDBV"
+	x.Add(-y)
+}
+
+func atomicIncWithoutExchange32(x *atomic.Uint32) {
+	// amd64:"LOCK" -"XADDL" -"ADDL" "INCL"
+	// loong64:"AMADDDBW"
+	x.Add(1)
+}
+func atomicIncWithoutExchange64(x *atomic.Uint64) {
+	// amd64:"LOCK" -"XADDQ" -"ADDQ" "INCQ"
+	// loong64:"AMADDDBV"
+	x.Add(1)
+}
+
+func atomicDecWithoutExchange32(x *atomic.Int32) {
+	// amd64:"LOCK" -"XADDL" -"ADDL" "DECL"
+	// loong64:"AMADDDBW"
+	x.Add(-1)
+}
+func atomicDecWithoutExchange64(x *atomic.Int64) {
+	// amd64:"LOCK" -"XADDQ" -"ADDQ" "DECQ"
+	// loong64:"AMADDDBV"
+	x.Add(-1)
+}

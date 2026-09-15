@@ -1,0 +1,73 @@
+// 04_classes.gk — classes and new expressions in gecko.
+//
+// A class body declares methods. Fields are created implicitly by
+// this.<name> = ... assignments; their types are inferred from the
+// constructor (a literal RHS fixes the type, a typed constructor
+// parameter propagates its type, and anything else becomes `any`).
+// new Class(args) allocates a *Class and calls the constructor with the
+// arguments; a class without a constructor can still be allocated.
+//
+// Run from src/:
+//   bin/go run examples/04_classes.gk
+
+package main
+
+class Greeter() {
+	constructor(name: string) {
+		this.name = name
+	}
+	greet(): string {
+		return "hi " + this.name
+	}
+	// Methods without a result type return nothing.
+	loud() {
+		println(this.greet() + "!")
+	}
+	// Fields can be set from any method, not just the constructor.
+	setName(newName: string) {
+		this.name = newName
+	}
+}
+
+class Counter() {
+	constructor() {
+		this.count = 0
+	}
+	inc() {
+		this.count = this.count + 1
+	}
+	value(): int {
+		return this.count
+	}
+}
+
+// A class without a constructor can still be allocated with new.
+class Tag() {
+	describe(): string {
+		return "just a tag"
+	}
+}
+
+func main() {
+	// new calls the constructor with the given arguments.
+	g = new Greeter("Ana")
+	g.loud()
+
+	// Instance methods can mutate the implicitly-created fields.
+	g.setName("Bia")
+	g.loud()
+
+	// Classes with state: every new creates a fresh instance.
+	c = new Counter()
+	c.inc()
+	c.inc()
+	c.inc()
+	println("counter:", c.value())
+
+	d = new Counter()
+	println("fresh counter:", d.value())
+
+	// Constructing a class without a constructor.
+	t = new Tag()
+	println(t.describe())
+}

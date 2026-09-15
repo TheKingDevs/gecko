@@ -1,0 +1,44 @@
+// 03_templates.gk — gecko template strings.
+//
+// A backtick string literal containing ${...} is a template string, but
+// only when it is used directly as an argument of print or println. The
+// whole template types as string, and each ${expr} interpolates its
+// value exactly like a print argument would. A backtick literal without
+// ${...} is a plain string.
+//
+// Run from src/:
+//   bin/go run examples/03_templates.gk
+
+package main
+
+func sq(x: int): int {
+	return x * x
+}
+
+func main() {
+	name = "Ana"
+	age = 30
+
+	// Simple interpolation inside println.
+	println(`hello ${name}!`)
+
+	// Multiple interpolations mixed with literal text.
+	println(`name: ${name}, age: ${age}`)
+
+	// Any expression is allowed inside ${...}: arithmetic...
+	println(`5 squared is ${5 * 5}`)
+	println(`sq(4) is ${sq(4)}`) // ...and calls.
+
+	// ${...} works just as well with print (no trailing newline).
+	print(`who: ${name} `)
+	println(`age: ${age}`)
+
+	// A template may share the argument list with other values.
+	println("stats:", `${name}`, age)
+
+	// Bools, floats and comparisons interpolate too.
+	println(`${true} and ${2.5} and ${name == "Ana"}`)
+
+	// A backtick literal without ${...} is a plain string, not a template.
+	println(`plain backticks, no template`)
+}

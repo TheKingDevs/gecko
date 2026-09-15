@@ -1,0 +1,71 @@
+// 01_conditions.gk — conditionals in gecko.
+//
+// Every if/switch clause is parenthesized: if (cond), switch (expr),
+// switch (). Covers if/else, else-if chains, switch with grouped cases,
+// switch with no expression, and type switches.
+//
+// Run from src/:
+//   bin/go run examples/01_conditions.gk
+
+package main
+
+// if / else-if / else chains.
+func sign(x: int): string {
+	if (x > 0) {
+		return "positive"
+	} else if (x < 0) {
+		return "negative"
+	} else {
+		return "zero"
+	}
+}
+
+func main() {
+	println(sign(4), sign(-3), sign(0))
+
+	// if without an else.
+	x = 10
+	if (x > 5) {
+		println("x is big")
+	}
+
+	// switch on a value with grouped cases (multiple case labels).
+	day = "sat"
+	switch (day) {
+	case "sat", "sun":
+		println(day, "is a weekend day")
+	case "mon", "tue", "wed", "thu", "fri":
+		println(day, "is a weekday")
+	default:
+		println("unknown day:", day)
+	}
+
+	// switch with no expression switches on true, so each case is a
+	// boolean condition checked in order.
+	n = 7
+	switch () {
+	case n < 0:
+		println(n, "is negative")
+	case n == 0:
+		println(n, "is zero")
+	default:
+		println(n, "is positive")
+	}
+
+	// A type switch: t is declared by `t = value.(type)` and, inside each
+	// case, is a value of the matched type. Note there is no keyword case
+	// fallthrough; use commas, or fallthrough if really needed (it is
+	// plain Go behavior otherwise).
+	var v: any
+	v = "a gecko string"
+	switch (t = v.(type)) {
+	case string:
+		println("a string of length", len(t))
+	case int:
+		println("an int:", t)
+	case float64:
+		println("a float:", t)
+	default:
+		println("unknown type", t)
+	}
+}
