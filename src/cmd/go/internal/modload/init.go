@@ -817,7 +817,7 @@ func (e noMainModulesError) Error() string {
 	if e.inWorkspaceMode {
 		return "no modules were found in the current workspace; see 'gecko help work'"
 	}
-	return "go.mod file not found in current directory or any parent directory; see 'gecko help modules'"
+	return "no gecko.json found in current directory or any parent directory; run 'gpm init' to create a gecko project"
 }
 
 func (e noMainModulesError) Unwrap() error {

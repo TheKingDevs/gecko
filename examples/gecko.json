@@ -1,0 +1,7 @@
+{
+  "name": "examples",
+  "version": "1.0.0",
+  "description": "gecko language examples",
+  "type": "dynamic",
+  "license": "BSD-3-Clause"
+}

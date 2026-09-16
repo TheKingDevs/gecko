@@ -20,7 +20,7 @@
 
 package main
 
-import "gecko.example/exportlib"
+import "exportlib"
 
 func main() {
 	// Exported lowercase func and var.

@@ -167,7 +167,7 @@ var filemap = map[string]action{
 	"named.go": func(f *ast.File) { fixTokenPos(f); renameSelectors(f, "Trace->_Trace") },
 	"object.go": func(f *ast.File) {
 		fixTokenPos(f)
-		renameIdents(f, "NewTypeNameLazy->_NewTypeNameLazy", "SetGeckoExported->_SetGeckoExported", "GeckoExported->_GeckoExported")
+		renameIdents(f, "NewTypeNameLazy->_NewTypeNameLazy", "SetGeckoExported->_SetGeckoExported", "GeckoExported->_GeckoExported", "IsGecko->_IsGecko")
 	},
 	// TODO(gri) needs adjustments for TestObjectString - disabled for now
 	// "object_test.go": func(f *ast.File) { renameImportPath(f, `"cmd/compile/internal/types2"->"go/types"`) },

@@ -5,6 +5,23 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: cross-package class members, gecko.json projects, and gecko.json-first errors
+
+**Título / Title:** struct fields and methods of gecko classes are now reachable from importing packages regardless of capitalization (e.g. `p.name` / `p.greet()` on a value returned by `new pkg.Class(...)`), `examples/` is now a `gecko.json` project instead of a Go module, and the "no main module" error asks for a `gecko.json` (`gpm init`) rather than a `go.mod`.
+
+**Descrição / Description:**
+
+- Visibility (`cmd/compile/internal/types2/object.go`): `Exported()` reports a struct field or method of a gecko package as exported regardless of capitalization. Fields and methods are the only objects without a parent scope; package-level declarations keep the explicit `export` override set by the resolver (so `export func greet` is public while a bare `func PrivateGreeting` stays private). This is what makes a qualified `new pkg.Class(args)` usable across packages. The `go/types` mirror is regenerated, and the generator (`go/types/generate_test.go`) now rewrites `IsGecko` to `_IsGecko` for `object.go`.
+- Examples layout: new `examples/gecko.json` turns the examples directory into a gecko project, so `bin/go` stays in GOPATH-style project mode and never asks for a `go.mod`. `examples/05_exports.gk` imports `"exportlib"` (resolved from `<root>/exportlib` by `geckoLookupProjectPackage`) instead of the former module path `gecko.example/exportlib`.
+- go command (`cmd/go/internal/modload/init.go`): `noMainModulesError` now reads "no gecko.json found in current directory or any parent directory; run 'gpm init' to create a gecko project" instead of pointing at `go.mod`, so building gecko sources gives a gecko-oriented fix.
+
+**Hash do commit / Commit hash:** `TBD`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: expose class members across packages and use gecko.json projects
+```
+
 ### Entry: try/catch/finally and throw
 
 **Título / Title:** `.gk` files gain JavaScript-style error handling: `throw expr` raises an error and `try { ... } catch (e) { ... } finally { ... }` handles it. The catch may bind a variable (`catch (e)`, of type `any`) or omit it (`catch { ... }`), and either clause is optional as long as one is present (`try`/`finally` without `catch` is allowed). `return`, `goto`, and any `break`/`continue` that would leave the try/catch/finally body are rejected with a clear compile error.

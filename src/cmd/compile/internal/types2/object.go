@@ -141,6 +141,13 @@ func (obj *object) Exported() bool {
 	if gecko := obj.geckoExported; gecko != nil {
 		return *gecko
 	}
+	if obj.pkg != nil && obj.pkg.IsGecko() {
+		// Struct fields and methods are the only objects without a parent
+		// scope. In a gecko package they are visible to importers
+		// regardless of capitalization; package-level declarations instead
+		// carry an explicit `export` override (handled above).
+		return obj.parent == nil
+	}
 	return isExported(obj.name)
 }
 
