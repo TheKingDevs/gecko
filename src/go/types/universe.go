@@ -201,7 +201,7 @@ var predeclaredFuncs = [...]struct {
 	_Panic:   {"panic", 1, false, statement},
 	_Print:   {"print", 0, true, statement},
 	_Println: {"println", 0, true, statement},
-	_Input:   {"input", 1, false, expression},
+	_Input:   {"input", 0, true, expression},
 	_Real:    {"real", 1, false, expression},
 	_Recover: {"recover", 0, false, statement},
 

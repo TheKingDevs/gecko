@@ -725,19 +725,22 @@ func (check *Checker) builtin(x *operand, call *ast.CallExpr, id builtinId) (_ b
 		}
 
 	case _Input:
-		// input(prompt) string
-		check.assignment(x, nil, "argument to input")
-		if !x.isValid() {
-			return
-		}
-		if !isString(x.typ()) {
-			check.errorf(x, UnassignableOperand, invalidArg+"argument to input must be a string, have %s", x.typ())
-			return
+		// input(x, y, ...) string
+		var params []Type
+		if nargs > 0 {
+			params = make([]Type, nargs)
+			for i, a := range args {
+				check.assignment(a, nil, "argument to built-in input")
+				if !a.isValid() {
+					return
+				}
+				params[i] = a.typ()
+			}
 		}
 		x.mode_ = value
 		x.typ_ = Typ[String]
 		if check.recordTypes() {
-			check.recordBuiltinType(call.Fun, makeSig(x.typ(), x.typ()))
+			check.recordBuiltinType(call.Fun, makeSig(x.typ(), params...))
 		}
 
 	case _Recover:

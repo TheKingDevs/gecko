@@ -249,6 +249,7 @@ func (check *Checker) lhsVar(lhs ast.Expr) Type {
 // If x != nil, it must be the evaluation of rhs (and rhs will be ignored).
 // If the assignment check fails and x != nil, x.mode is set to invalid.
 func (check *Checker) assignVar(lhs, rhs ast.Expr, x *operand, context string) {
+	check.geckoConstFieldGuard(lhs, rhs)
 	T := check.lhsVar(lhs) // nil if lhs is _
 	if !isValid(T) {
 		if x != nil {

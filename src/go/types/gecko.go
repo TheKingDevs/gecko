@@ -129,3 +129,9 @@ func (check *Checker) geckoLitType(e ast.Expr) Type {
 	}
 	return universeAny.Type()
 }
+
+// geckoConstFieldGuard rejects assignments to read-only (const) class
+// fields. It is a no-op in go/types: gecko class declarations (and therefore
+// const class fields) are modelled only by the compiler's types2 front end,
+// so there is nothing here for this mirror to enforce.
+func (check *Checker) geckoConstFieldGuard(lhs, rhs ast.Expr) {}
