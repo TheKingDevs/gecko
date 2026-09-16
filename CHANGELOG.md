@@ -15,7 +15,7 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 - Examples layout: new `examples/gecko.json` turns the examples directory into a gecko project, so `bin/go` stays in GOPATH-style project mode and never asks for a `go.mod`. `examples/05_exports.gk` imports `"exportlib"` (resolved from `<root>/exportlib` by `geckoLookupProjectPackage`) instead of the former module path `gecko.example/exportlib`.
 - go command (`cmd/go/internal/modload/init.go`): `noMainModulesError` now reads "no gecko.json found in current directory or any parent directory; run 'gpm init' to create a gecko project" instead of pointing at `go.mod`, so building gecko sources gives a gecko-oriented fix.
 
-**Hash do commit / Commit hash:** `TBD`
+**Hash do commit / Commit hash:** `1a478992aa`
 
 **Mensagem do commit / Commit message:**
 ```
