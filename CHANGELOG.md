@@ -27,7 +27,7 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 - Formatter mirror (`go/token`, `go/scanner`, `go/ast`, `go/parser`, `go/printer`): new `TRY`/`CATCH`/`FINALLY`/`THROW` tokens, `ast.TryStmt`/`ast.CatchClause`/`ast.ThrowStmt` nodes (with `Walk` support), parser support, and canonical printing (`try { ... } catch (e) { ... } finally { ... }`). Unlike the compiler parser, the mirror keeps the explicit AST so formatting round-trips faithfully. `go/types` (partial gecko mirror) registers the catch variable with type `any` and typechecks `throw` like `panic`.
 - Tests/examples: `testdata/local/gecko_trycatch.gk` covers recovery, try/finally without catch, bare catch, the `any` catch-variable type, and the parse-time `return` rejection; `go/parser` `TestGeckoDecls` and the `go/printer` `gecko.gk` golden cover parsing/formatting; new `examples/10_trycatch.gk` demonstrates the feature.
 
-**Hash do commit / Commit hash:** `TBD`
+**Hash do commit / Commit hash:** `0ecfcc7a7e`
 
 **Mensagem do commit / Commit message:**
 ```
@@ -45,7 +45,7 @@ gecko: add try/catch/finally and throw
 - Desugaring (`cmd/compile/internal/syntax/parser.go`): `super(...)`, `super.m(...)` and `super.f` are rewritten to `this.<Base>.constructor(...)`, `this.<Base>.m(...)` and `this.<Base>.f` before the class is lowered, so no changes were needed in the noder (unified IR).
 - Tests/examples: `testdata/local/gecko_inherit.gk` covers promotion, `super`, undefined/non-class/cyclic bases; `go/parser` `TestGeckoDecls` and the `go/printer` `gecko.gk` golden cover parsing/formatting; `examples/04_classes.gk` gained Animal/Dog/Puppy.
 
-**Hash do commit / Commit hash:** `TBD`
+**Hash do commit / Commit hash:** `0ecfcc7a7e`
 
 **Mensagem do commit / Commit message:**
 ```
@@ -62,7 +62,7 @@ gecko: add class inheritance via extends and super
 - It shows that `input` returns the line *including* its trailing `\n` (CRLF normalized to LF) and returns `""` at EOF, so it pairs a small `chomp` helper with a `for` loop that reads until a blank line or EOF.
 - `examples/09_commit.gk` was deleted; no test references the old name.
 
-**Hash do commit / Commit hash:** `TBD`
+**Hash do commit / Commit hash:** `0ecfcc7a7e`
 
 **Mensagem do commit / Commit message:**
 ```
