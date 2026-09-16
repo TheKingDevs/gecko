@@ -46,3 +46,50 @@ func main() {
 		println("type", t)
 	}
 }
+
+class Animal {
+	constructor(name: string) {
+		this.name = name
+	}
+	speak(): string {
+		return "animal " + this.name
+	}
+}
+
+// The formatter drops the optional parentheses on the class and prints the
+// extends clause; super is left untouched (no rewriting in go/parser).
+class Dog extends Animal {
+	constructor(name: string, breed: string) {
+		super(name)
+		this.breed = breed
+	}
+	speak(): string {
+		return "woof " + this.name
+	}
+}
+
+class NoParens {
+	constructor() {
+	}
+}
+
+// gecko try/catch/finally and throw.
+func guard() {
+	try {
+		throw "boom"
+	} catch (e) {
+		println(e)
+	} finally {
+		println("done")
+	}
+	try {
+		risky()
+	} finally {
+		cleanup()
+	}
+	try {
+		risky()
+	} catch {
+		println("bare")
+	}
+}

@@ -2641,6 +2641,61 @@ func (p *parser) parseWhileStmt() *ast.WhileStmt {
 	return &ast.WhileStmt{While: pos, Cond: cond, Body: body}
 }
 
+// parseThrowStmt parses a gecko throw statement, throw X. It is only reached
+// for source files with the .gk extension (the scanner maps "throw" to
+// token.THROW only in that case).
+func (p *parser) parseThrowStmt() *ast.ThrowStmt {
+	if p.trace {
+		defer un(trace(p, "ThrowStmt"))
+	}
+
+	pos := p.expect(token.THROW)
+	x := p.parseRhs()
+	p.expectSemi()
+
+	return &ast.ThrowStmt{Throw: pos, X: x}
+}
+
+// parseTryStmt parses a gecko try/catch/finally statement. It is only reached
+// for source files with the .gk extension (the scanner maps "try", "catch"
+// and "finally" to their tokens only in that case).
+func (p *parser) parseTryStmt() *ast.TryStmt {
+	if p.trace {
+		defer un(trace(p, "TryStmt"))
+	}
+
+	pos := p.expect(token.TRY)
+	body := p.parseBlockStmt()
+
+	var catch *ast.CatchClause
+	if p.tok == token.CATCH {
+		cpos := p.expect(token.CATCH)
+		var v ast.Expr
+		if p.tok == token.LPAREN {
+			p.next()
+			if p.tok != token.RPAREN {
+				v = p.parseIdent()
+			}
+			p.expect(token.RPAREN)
+		}
+		cbody := p.parseBlockStmt()
+		catch = &ast.CatchClause{Catch: cpos, Var: v, Body: cbody}
+	}
+
+	var finally *ast.BlockStmt
+	if p.tok == token.FINALLY {
+		p.expect(token.FINALLY)
+		finally = p.parseBlockStmt()
+	}
+
+	if catch == nil && finally == nil {
+		p.errorExpected(p.pos, "catch or finally")
+	}
+	p.expectSemi()
+
+	return &ast.TryStmt{Try: pos, Body: body, Catch: catch, Finally: finally}
+}
+
 func (p *parser) parseStmt() (s ast.Stmt) {
 	defer decNestLev(incNestLev(p))
 
@@ -2684,6 +2739,10 @@ func (p *parser) parseStmt() (s ast.Stmt) {
 		s = p.parseForStmt()
 	case token.WHILE:
 		s = p.parseWhileStmt()
+	case token.TRY:
+		s = p.parseTryStmt()
+	case token.THROW:
+		s = p.parseThrowStmt()
 	case token.SEMICOLON:
 		// Is it ever possible to have an implicit semicolon
 		// producing an empty statement in a valid program?
@@ -3164,10 +3223,23 @@ func (p *parser) parseClassDecl(export bool) ast.Decl {
 
 	pos := p.expect(token.CLASS)
 	name := p.parseIdent()
-	p.expect(token.LPAREN)
-	p.expect(token.RPAREN)
 
-	decl := &ast.ClassDecl{Class: pos, Export: export, Name: name}
+	// Optional inheritance: `class Dog extends Base { ... }`. The base is
+	// a qualified identifier, possibly referring to another package.
+	var base ast.Expr
+	if p.tok == token.IDENT && p.lit == "extends" {
+		p.next()
+		id := p.parseIdent()
+		base = p.parseQualifiedIdent(id)
+	}
+
+	// Gecko classes may omit the parentheses: `class Name { ... }`.
+	if p.tok == token.LPAREN {
+		p.expect(token.LPAREN)
+		p.expect(token.RPAREN)
+	}
+
+	decl := &ast.ClassDecl{Class: pos, Export: export, Name: name, Base: base}
 	if p.tok == token.LBRACE {
 		decl.Lbrace = p.pos
 		p.next()

@@ -507,7 +507,12 @@ func (p *printer) printRawNode(n Node) {
 		p.print(_Rbrace)
 
 	case *ClassType:
-		p.print(_Class, blank, _Lparen, _Rparen)
+		p.print(_Class, blank)
+		if n.Base != nil {
+			p.print(_Name, "extends", blank)
+			p.printNode(n.Base)
+			p.print(blank)
+		}
 		p.print(_Lbrace)
 		members := make([]Node, 0, len(n.Fields)+len(n.Consts)+len(n.Methods))
 		for _, f := range n.Fields {

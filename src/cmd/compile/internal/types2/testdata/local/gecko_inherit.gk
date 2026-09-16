@@ -1,0 +1,83 @@
+// Copyright 2026 The Gecko Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// gecko class inheritance: `class Dog extends Animal` embeds the base
+// class by value in the derived struct, promoting the base's fields and
+// methods, and rewrites constructor/member `super` references to
+// selections on the embedded base field.
+
+package geckoinherit
+
+class Animal {
+	constructor(name: string) {
+		this.name = name
+	}
+	speak(): string {
+		return "animal " + this.name
+	}
+	loud(): string {
+		return this.speak() + "!"
+	}
+	rename(n: string) {
+		this.name = n
+	}
+}
+
+// Dog overrides speak and promotes loud, rename, speak and name from
+// Animal. Its constructor calls super(name) and assigns the promoted base
+// field directly by name without redeclaring it.
+class Dog extends Animal {
+	constructor(name: string, breed: string) {
+		super(name)
+		this.name = name + "!"
+		this.breed = breed
+	}
+	speak(): string {
+		return "woof " + this.name
+	}
+	parentSpeak(): string {
+		return super.speak()
+	}
+	nameUp(): string {
+		return super.name
+	}
+}
+
+// A derived class may declare field initializers for its own (new) fields.
+class Puppy extends Dog {
+	constructor(name: string, breed: string, tag: string) {
+		super(name, breed)
+		this.tag = tag
+	}
+}
+
+func main() {
+	d = new Dog("Rex", "poodle")
+	_ = d.speak()
+	_ = d.loud()          // base method promoted
+	d.rename("Fido")     // base method with body referencing base fields
+	_ = d.nameUp()       // super.field read
+	_ = d.parentSpeak()  // super.method()
+	_ = d.breed          // derived field
+	_ = d.Animal.name    // the embedded base field itself
+	p = new Puppy("Pip", "beagle", "T1")
+	_ = p.loud()
+	_ = p.tag
+	_ = p.name
+	println(d.speak(), d.nameUp(), d.parentSpeak())
+}
+
+// Extending an undefined name is an error.
+class Missing extends Nope /* ERROR "undefined base class" */ {
+	constructor() {}
+}
+
+// Recursive inheritance is rejected: R1's declaration is still being
+// checked when it extends R2, which is a declaration cycle.
+class R1 extends R2 {
+	constructor() {}
+}
+class R2 extends R1 /* ERROR "cyclic inheritance" */ {
+	constructor() {}
+}

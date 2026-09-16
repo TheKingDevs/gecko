@@ -413,6 +413,26 @@ func (s *scanner) ident() {
 				s.lit = string(lit)
 				s.tok = _Export
 				return
+			case "try":
+				s.nlsemi = false
+				s.lit = string(lit)
+				s.tok = _Try
+				return
+			case "catch":
+				s.nlsemi = false
+				s.lit = string(lit)
+				s.tok = _Catch
+				return
+			case "finally":
+				s.nlsemi = false
+				s.lit = string(lit)
+				s.tok = _Finally
+				return
+			case "throw":
+				s.nlsemi = true
+				s.lit = string(lit)
+				s.tok = _Throw
+				return
 			}
 		}
 	}

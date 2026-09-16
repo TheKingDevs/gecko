@@ -1,0 +1,85 @@
+// 10_trycatch.gk — error handling with try/catch/finally and throw in gecko.
+//
+// A panic-style error is raised with `throw expr`, which is shorthand for
+// panic(expr). It is caught with a JavaScript-style try statement:
+//
+//	try {
+//		...
+//	} catch (e) {
+//		...
+//	} finally {
+//		...
+//	}
+//
+// The catch variable (the value passed to recover) has type any, so it is
+// usually narrowed with a type assertion, e.g. e.(string). The catch can
+// omit its binding (`catch { ... }`), and either clause is optional as long
+// as one is present (`try`/`finally` without a `catch` is allowed).
+//
+// The finally body runs on every path: when the try body finishes normally,
+// when it throws, and also when the catch body itself throws.
+//
+// Because the try body is wrapped in a closure internally, `return` and any
+// `break`/`continue`/`goto` that would leave the body are compile errors.
+//
+// Run from examples/:
+//   ../bin/go run 10_trycatch.gk
+
+package main
+
+func divide(a: int, b: int): int {
+	if (b == 0) {
+		throw "division by zero"
+	}
+	return a / b
+}
+
+func describe(x: any): string {
+	// Recover-typed errors can be narrowed with a type assertion.
+	return x.(string)
+}
+
+func main() {
+	// A throw is caught and turned into a normal message.
+	try {
+		println("10 / 2 =", divide(10, 2))
+		println("1 / 0 =", divide(1, 0))
+		println("unreachable")
+	} catch (e) {
+		println("caught:", describe(e))
+	} finally {
+		println("finally: done with the first division")
+	}
+
+	// finally runs before the error continues to propagate.
+	try {
+		try {
+			throw "inner failure"
+		} finally {
+			println("inner finally runs while unwinding")
+		}
+	} catch (e) {
+		println("outer caught:", describe(e))
+	}
+
+	// A throw from the catch body still runs the finally body first.
+	try {
+		try {
+			throw "first"
+		} catch (e) {
+			println("catch:", describe(e))
+			throw "second"
+		} finally {
+			println("cleanup before rethrow")
+		}
+	} catch (e) {
+		println("outermost caught:", describe(e))
+	}
+
+	// A bare catch recovers and discards the value.
+	try {
+		throw "no binding needed"
+	} catch {
+		println("bare catch recovered")
+	}
+}

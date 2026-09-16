@@ -349,6 +349,7 @@ type (
 	// the class body; Inits are the synthesized `this.x = v` statements
 	// that initialize them before the constructor body runs.
 	ClassType struct {
+		Base    Expr // gecko: the base class of `class D extends B`, or nil
 		Methods []*FuncDecl
 		Fields  []*VarDecl
 		Consts  []*ConstDecl

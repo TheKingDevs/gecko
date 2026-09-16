@@ -271,6 +271,24 @@ func Walk(v Visitor, node Node) {
 		}
 		Walk(v, n.Body)
 
+	case *TryStmt:
+		Walk(v, n.Body)
+		if n.Catch != nil {
+			Walk(v, n.Catch)
+		}
+		if n.Finally != nil {
+			Walk(v, n.Finally)
+		}
+
+	case *CatchClause:
+		if n.Var != nil {
+			Walk(v, n.Var)
+		}
+		Walk(v, n.Body)
+
+	case *ThrowStmt:
+		Walk(v, n.X)
+
 	case *RangeStmt:
 		if n.Key != nil {
 			Walk(v, n.Key)

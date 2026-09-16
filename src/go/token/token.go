@@ -127,6 +127,10 @@ const (
 	CLASS
 	NEW
 	EXPORT
+	TRY
+	CATCH
+	FINALLY
+	THROW
 	keyword_end
 
 	additional_beg
@@ -236,7 +240,11 @@ var tokens = [...]string{
 	WHILE:  "while",
 	CLASS:  "class",
 	NEW:    "new",
-	EXPORT: "export",
+	EXPORT:  "export",
+	TRY:     "try",
+	CATCH:   "catch",
+	FINALLY: "finally",
+	THROW:   "throw",
 
 	TILDE: "~",
 }

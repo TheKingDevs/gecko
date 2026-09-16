@@ -71,6 +71,10 @@ const (
 	_Class       // class
 	_New         // new
 	_Export      // export
+	_Try         // try
+	_Catch       // catch
+	_Finally     // finally
+	_Throw       // throw
 
 	// empty line comment to exclude it from .String
 	tokenCount //

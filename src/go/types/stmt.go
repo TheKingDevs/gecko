@@ -888,6 +888,33 @@ func (check *Checker) stmt(ctxt stmtContext, s ast.Stmt) {
 		}
 		check.stmt(inner, s.Body)
 
+	case *ast.TryStmt:
+		// gecko try/catch/finally; the catch variable has type any (the
+		// value returned by recover in the compiler's desugaring).
+		check.stmt(inner, s.Body)
+		if s.Catch != nil {
+			if id, _ := s.Catch.Var.(*ast.Ident); id != nil {
+				check.openScope(s.Catch, "catch")
+				check.declare(check.scope, id, NewVar(id.Pos(), check.pkg, id.Name, universeAny.Type()), id.Pos())
+				check.stmt(inner, s.Catch.Body)
+				check.closeScope()
+			} else {
+				check.stmt(inner, s.Catch.Body)
+			}
+		}
+		if s.Finally != nil {
+			check.stmt(inner, s.Finally)
+		}
+
+	case *ast.ThrowStmt:
+		// gecko throw x; the argument is assigned to any, like panic.
+		var x operand
+		check.expr(nil, &x, s.X)
+		if x.mode() == invalid {
+			return
+		}
+		check.assignment(&x, &emptyInterface, "argument to throw")
+
 	default:
 		check.error(s, InvalidSyntaxTree, "invalid statement")
 	}

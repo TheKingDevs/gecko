@@ -869,12 +869,17 @@ func (p *parser) typeDecl(group *Group, export bool) Decl {
 	return d
 }
 
-// ClassDecl (gecko) = "class" Name "(" ")" "{" { ClassMethod ";" } "}" .
-// ClassMethod      = Name Parameters [ ":" Result ] "{" Body "}" .
+// ClassDecl (gecko) = "class" Name [ "extends" TypeName ] "(" ")"? "{" { ClassMember ";" } "}" .
+// ClassMember      = Name Parameters [ ":" Result ] "{" Body "}" | FieldDecl .
 //
 // classDecl parses a gecko class and desugars it into the corresponding
 // type declaration together with one FuncDecl per class method. Each
-// method gets an implicit receiver named `this` of type *Name.
+// method gets an implicit receiver named `this` of type *Name. A class
+// written `class D extends B` (the parenthesized `()` after the name is
+// optional and kept for backwards compatibility) embeds the base class
+// B; `super` references in the class members are rewritten to
+// `this.B.<...>` selections so the rest of the toolchain only deals with
+// regular receiver selections.
 func (p *parser) classDecl(export bool) []Decl {
 	if trace {
 		defer p.trace("classDecl")()
@@ -883,16 +888,19 @@ func (p *parser) classDecl(export bool) []Decl {
 	pos := p.pos()
 	name := p.name()
 
-	if !p.got(_Lparen) {
-		p.syntaxError("expected ( after class name")
-	} else if !p.got(_Rparen) {
+	cls := new(ClassType)
+	cls.pos = pos
+
+	if p.tok == _Name && p.lit == "extends" {
+		p.next()
+		cls.Base = p.qualifiedName(nil)
+	}
+
+	if p.got(_Lparen) && !p.got(_Rparen) {
 		p.errorAt(p.pos(), "type parameters in class declarations are not supported yet")
 		p.advance(_Lparen, _Rparen)
 		p.got(_Rparen)
 	}
-
-	cls := new(ClassType)
-	cls.pos = pos
 
 	p.want(_Lbrace)
 	methods := cls.Methods
@@ -973,6 +981,17 @@ func (p *parser) classDecl(export bool) []Decl {
 			if m.Name.Value == "constructor" {
 				cls.Methods[0], cls.Methods[i+1] = m, cls.Methods[0]
 				break
+			}
+		}
+	}
+
+	// Rewrite gecko `super` references to selections on the embedded base
+	// class so the type checker and the noder only deal with regular
+	// receiver selections.
+	if cls.Base != nil {
+		if base := p.geckoBaseName(cls.Base); base != "" {
+			for _, m := range cls.Methods {
+				geckoRewriteSuper(m.Body, base)
 			}
 		}
 	}
@@ -1076,6 +1095,61 @@ func (p *parser) fieldInitStmts(names []*Name, values Expr) []Stmt {
 		stmts = append(stmts, as)
 	}
 	return stmts
+}
+
+// geckoBaseName returns the simple type name of a class base expression:
+// "Animal" for both `Animal` and `pkg.Animal`. It is the name of the
+// embedded base field in the derived class's underlying struct, so gecko
+// `super` selections can be rewritten to `this.<base>.<member>`.
+func (p *parser) geckoBaseName(e Expr) string {
+	switch r := Unparen(e).(type) {
+	case *Name:
+		return r.Value
+	case *SelectorExpr:
+		if n, ok := Unparen(r.Sel).(*Name); ok {
+			return n.Value
+		}
+	}
+	return ""
+}
+
+// geckoRewriteSuper rewrites gecko `super` references inside a derived
+// class method body into selections on the embedded base class:
+//
+//		super(args)     -> this.<base>.constructor(args)
+//		super.m(args)   -> this.<base>.m(args)
+//		super.field     -> this.<base>.field
+//
+// A bare `super` used in any other position stays as an unresolved name
+// and is rejected by the type checker.
+func geckoRewriteSuper(body *BlockStmt, base string) {
+	if body == nil {
+		return
+	}
+	thisSel := func(pos Pos) *SelectorExpr {
+		sel := new(SelectorExpr)
+		sel.SetPos(pos)
+		sel.X = NewName(pos, "this")
+		sel.Sel = NewName(pos, base)
+		return sel
+	}
+	Inspect(body, func(n Node) bool {
+		switch n := n.(type) {
+		case *CallExpr:
+			if f, ok := n.Fun.(*Name); ok && f.Value == "super" {
+				sel := new(SelectorExpr)
+				sel.SetPos(f.Pos())
+				sel.X = thisSel(f.Pos())
+				sel.Sel = NewName(f.Pos(), "constructor")
+				n.Fun = sel
+			}
+		case *SelectorExpr:
+			if x, ok := n.X.(*Name); ok && x.Value == "super" {
+				n.X = thisSel(x.Pos())
+			}
+		}
+		return true
+	})
 }
 
 // NewExpr (gecko) = "new" Type "(" [ ExpressionList [ "," ] ] ")" .
@@ -3015,6 +3089,237 @@ func (p *parser) whileStmt() Stmt {
 	return s
 }
 
+// throwStmt parses a gecko throw statement, throw expr, and desugars it to
+// the equivalent panic(expr) call.
+func (p *parser) throwStmt() Stmt {
+	if trace {
+		defer p.trace("throwStmt")()
+	}
+
+	pos := p.pos()
+	p.next() // consume _Throw
+
+	var x Expr
+	if p.tok != _Semi && p.tok != _Rbrace {
+		x = p.expr()
+	} else {
+		p.syntaxError("missing value after throw")
+	}
+
+	call := new(CallExpr)
+	call.pos = pos
+	call.Fun = NewName(pos, "panic")
+	if x != nil {
+		call.ArgList = []Expr{x}
+	}
+
+	s := new(ExprStmt)
+	s.pos = pos
+	s.X = call
+	return s
+}
+
+// tryStmt parses a gecko try/catch/finally statement,
+//
+//	try { ... } catch (e) { ... } [finally { ... }]
+//
+// Because a panic unwinds the stack and recover only has effect inside a
+// deferred function, the construct is desugared at parse time into an
+// immediately-invoked function literal so that the try body runs in its own
+// frame:
+//
+//	func() {
+//		defer func() { <finally body> }()   // only if finally is present
+//		defer func() {
+//			e = recover()
+//			if (e != null) { <catch body> }
+//		}()
+//		<try body>
+//	}()
+//
+// The deferred calls run in LIFO order, so the catch runs first (recovering
+// a panic, if any) and the finally body runs afterwards on every path,
+// including when the catch body itself throws. The catch body executes only
+// when recover() returns a non-nil value.
+//
+// A return or an out-of-body break/continue/goto cannot cross the closure
+// boundary and is rejected with a clear error (see checkGeckoTryControl).
+func (p *parser) tryStmt() Stmt {
+	if trace {
+		defer p.trace("tryStmt")()
+	}
+
+	pos := p.pos()
+	p.next() // consume _Try
+
+	tryBody := p.blockStmt("try clause")
+
+	var catchVar *Name
+	var catchBody *BlockStmt
+	if p.got(_Catch) {
+		if p.got(_Lparen) {
+			catchVar = p.name()
+			p.want(_Rparen)
+		}
+		catchBody = p.blockStmt("catch clause")
+	}
+
+	var finallyBody *BlockStmt
+	if p.got(_Finally) {
+		finallyBody = p.blockStmt("finally clause")
+	}
+
+	if catchBody == nil && finallyBody == nil {
+		p.syntaxError("expected catch or finally after try block")
+		return tryBody
+	}
+
+	// A return or a branch that would leave the try/catch/finally body
+	// cannot be expressed once the body is wrapped in a closure.
+	p.checkGeckoTryControl(tryBody)
+	if catchBody != nil {
+		p.checkGeckoTryControl(catchBody)
+	}
+	if finallyBody != nil {
+		p.checkGeckoTryControl(finallyBody)
+	}
+
+	tryList := tryBody.List
+
+	if catchBody != nil {
+		// The catch variable (or an internal name when the binding is
+		// omitted or blank) is declared by the e = recover() assignment
+		// inside the deferred closure; references to it in the catch
+		// body bind to it.
+		name := catchVar
+		if name == nil || name.Value == "_" {
+			name = NewName(pos, "geckoTryErr")
+		}
+
+		// e = recover()
+		recov := new(CallExpr)
+		recov.pos = pos
+		recov.Fun = NewName(pos, "recover")
+		assign := new(AssignStmt)
+		assign.pos = pos
+		assign.Lhs = name
+		assign.Rhs = recov
+
+		// if (e != null) { <catch body> }
+		cond := new(Operation)
+		cond.pos = pos
+		cond.Op = Neq
+		cond.X = name
+		cond.Y = NewName(pos, "null")
+		ifStmt := new(IfStmt)
+		ifStmt.pos = pos
+		ifStmt.Cond = cond
+		ifStmt.Then = catchBody
+
+		tryList = prepend(p.geckoDefer(pos, []Stmt{assign, ifStmt}), tryList)
+	}
+
+	if finallyBody != nil {
+		// Defers run in LIFO order, so the finally is registered after the
+		// catch to run once the catch has recovered a panic.
+		tryList = prepend(p.geckoDefer(pos, finallyBody.List), tryList)
+	}
+
+	body := p.geckoClosure(pos, tryList)
+	call := new(CallExpr)
+	call.pos = pos
+	call.Fun = body
+	stmt := new(ExprStmt)
+	stmt.pos = pos
+	stmt.X = call
+	return stmt
+}
+
+// geckoDefer builds `defer <fn>()` where fn is func(){ body }.
+func (p *parser) geckoDefer(pos Pos, body []Stmt) *CallStmt {
+	call := new(CallExpr)
+	call.pos = pos
+	call.Fun = p.geckoClosure(pos, body)
+	s := new(CallStmt)
+	s.pos = pos
+	s.Tok = _Defer
+	s.Call = call
+	return s
+}
+
+// geckoClosure builds the func literal func(){ body }.
+func (p *parser) geckoClosure(pos Pos, body []Stmt) *FuncLit {
+	ft := new(FuncType)
+	ft.pos = pos
+	blk := new(BlockStmt)
+	blk.pos = pos
+	blk.List = body
+	fl := new(FuncLit)
+	fl.pos = pos
+	fl.Type = ft
+	fl.Body = blk
+	return fl
+}
+
+func prepend(s Stmt, list []Stmt) []Stmt {
+	return append([]Stmt{s}, list...)
+}
+
+// checkGeckoTryControl reports statements that cannot cross the closure
+// boundary introduced when desugaring try/catch/finally: a return, a goto,
+// or a break/continue that is not enclosed by a loop/switch inside the body.
+// Nested function literals have their own control flow and are not inspected.
+// loop counts enclosing for statements; brk counts enclosing statements that
+// break targets (for, switch, select).
+func (p *parser) checkGeckoTryControl(s Stmt) {
+	p.checkGeckoTryControl1(s, 0, 0)
+}
+
+func (p *parser) checkGeckoTryControl1(s Stmt, loop, brk int) {
+	switch s := s.(type) {
+	case nil:
+		return
+	case *BlockStmt:
+		for _, st := range s.List {
+			p.checkGeckoTryControl1(st, loop, brk)
+		}
+	case *LabeledStmt:
+		p.checkGeckoTryControl1(s.Stmt, loop, brk)
+	case *ReturnStmt:
+		p.errorAt(s.Pos(), "return is not allowed inside try/catch/finally in gecko")
+	case *BranchStmt:
+		switch s.Tok {
+		case _Break:
+			if brk == 0 {
+				p.errorAt(s.Pos(), "break is not allowed to leave a try/catch/finally body in gecko")
+			}
+		case _Continue:
+			if loop == 0 {
+				p.errorAt(s.Pos(), "continue is not allowed to leave a try/catch/finally body in gecko")
+			}
+		case _Goto:
+			p.errorAt(s.Pos(), "goto is not allowed inside try/catch/finally in gecko")
+		}
+	case *IfStmt:
+		p.checkGeckoTryControl1(s.Then, loop, brk)
+		p.checkGeckoTryControl1(s.Else, loop, brk)
+	case *ForStmt:
+		p.checkGeckoTryControl1(s.Body, loop+1, brk+1)
+	case *SwitchStmt:
+		for _, c := range s.Body {
+			for _, st := range c.Body {
+				p.checkGeckoTryControl1(st, loop, brk+1)
+			}
+		}
+	case *SelectStmt:
+		for _, c := range s.Body {
+			for _, st := range c.Body {
+				p.checkGeckoTryControl1(st, loop, brk+1)
+			}
+		}
+	}
+}
+
 func (p *parser) header(keyword token) (init SimpleStmt, cond Expr, post SimpleStmt) {
 	p.want(keyword)
 
@@ -3343,6 +3648,12 @@ func (p *parser) stmtOrNil() Stmt {
 
 	case _While:
 		return p.whileStmt()
+
+	case _Try:
+		return p.tryStmt()
+
+	case _Throw:
+		return p.throwStmt()
 
 	case _Switch:
 		return p.switchStmt()

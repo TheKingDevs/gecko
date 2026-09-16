@@ -5,6 +5,70 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: try/catch/finally and throw
+
+**Título / Title:** `.gk` files gain JavaScript-style error handling: `throw expr` raises an error and `try { ... } catch (e) { ... } finally { ... }` handles it. The catch may bind a variable (`catch (e)`, of type `any`) or omit it (`catch { ... }`), and either clause is optional as long as one is present (`try`/`finally` without `catch` is allowed). `return`, `goto`, and any `break`/`continue` that would leave the try/catch/finally body are rejected with a clear compile error.
+
+**Descrição / Description:**
+
+- Syntax (`cmd/compile/internal/syntax`): `tokens.go` gains `_Try`/`_Catch`/`_Finally`/`_Throw` and `token_string.go` is regenerated; `scanner.go` recognizes the four keywords only for `.gk` files (they stay identifiers in `.go`). `parser.go` parses the statement and **desugars it at parse time** into an immediately-invoked function literal, because a panic unwinds the stack and `recover` only has effect inside a deferred function:
+  ```go
+  func() {
+      defer func() { <finally body> }()
+      defer func() {
+          e = recover()
+          if (e != null) { <catch body> }
+      }()
+      <try body>
+  }()
+  ```
+  Defers run LIFO, so the catch runs first (recovering the panic) and the finally runs afterwards on every path, including when the catch itself throws. `throw x` becomes `panic(x)`. The catch variable is declared by the `e = recover()` assignment inside the deferred closure, so no identifier renaming is needed; an omitted or `_` binding uses the internal name `geckoTryErr`. `checkGeckoTryControl` walks the bodies (stopping at nested function literals) and rejects a `return`/`goto` or a `break`/`continue` that is not enclosed by a loop/switch/select inside the body.
+- No IR changes: the desugared AST is ordinary Go, so noder/typecheck/walk are untouched on the compiler path.
+- Formatter mirror (`go/token`, `go/scanner`, `go/ast`, `go/parser`, `go/printer`): new `TRY`/`CATCH`/`FINALLY`/`THROW` tokens, `ast.TryStmt`/`ast.CatchClause`/`ast.ThrowStmt` nodes (with `Walk` support), parser support, and canonical printing (`try { ... } catch (e) { ... } finally { ... }`). Unlike the compiler parser, the mirror keeps the explicit AST so formatting round-trips faithfully. `go/types` (partial gecko mirror) registers the catch variable with type `any` and typechecks `throw` like `panic`.
+- Tests/examples: `testdata/local/gecko_trycatch.gk` covers recovery, try/finally without catch, bare catch, the `any` catch-variable type, and the parse-time `return` rejection; `go/parser` `TestGeckoDecls` and the `go/printer` `gecko.gk` golden cover parsing/formatting; new `examples/10_trycatch.gk` demonstrates the feature.
+
+**Hash do commit / Commit hash:** `TBD`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: add try/catch/finally and throw
+```
+
+### Entry: class inheritance with extends and super
+
+**Título / Title:** classes can now inherit from another class with `class Dog extends Animal { ... }`, and inside a derived class `super` refers to the embedded base: `super(args)` calls the base constructor, `super.metodo(args)` calls a base method, and `super.campo` reads a base field. The base is embedded by value, so its fields and methods are promoted onto the derived class; like Go embedding there is no virtual override, and promoted base methods stay bound to the base implementation.
+
+**Descrição / Description:**
+
+- Syntax (`cmd/compile/internal/syntax`, `go/ast`, `go/parser`): `ClassType`/`ClassDecl` gained a `Base Expr` field; `extends <TypeName>` is parsed after the class name, and the class/extends parentheses are now optional (the old `class Greeter()` form still parses). The formatter (`cmd/compile/internal/syntax/printer.go`, `go/printer/nodes.go`) prints the canonical parenthesis-less `class Name extends Base` and round-trips `super` unchanged in `go/parser`.
+- Semantics (`cmd/compile/internal/types2/class.go`): a derived class is a struct with an embedded base field (named after the base class, `Embedded: true`) followed by its own fields; base fields (direct and promoted) and the base type name are filtered from the derived field walk, and the embedded field carries the gecko export flag so qualified bases remain visible across packages. A qualified `extends pkg.Class` marks the import as used.
+- Desugaring (`cmd/compile/internal/syntax/parser.go`): `super(...)`, `super.m(...)` and `super.f` are rewritten to `this.<Base>.constructor(...)`, `this.<Base>.m(...)` and `this.<Base>.f` before the class is lowered, so no changes were needed in the noder (unified IR).
+- Tests/examples: `testdata/local/gecko_inherit.gk` covers promotion, `super`, undefined/non-class/cyclic bases; `go/parser` `TestGeckoDecls` and the `go/printer` `gecko.gk` golden cover parsing/formatting; `examples/04_classes.gk` gained Animal/Dog/Puppy.
+
+**Hash do commit / Commit hash:** `TBD`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: add class inheritance via extends and super
+```
+
+### Entry: input example rewritten and renamed to 09_input.gk
+
+**Título / Title:** `examples/09_commit.gk` was replaced by `examples/09_input.gk`, a focused tour of the `input` builtin instead of a commit-message validator.
+
+**Descrição / Description:**
+
+- The new example demonstrates the different ways to read a line: a prompt-less `input()`, a plain string prompt, a multi-argument prompt (joined with spaces like `println`), and a `${...}` template prompt.
+- It shows that `input` returns the line *including* its trailing `\n` (CRLF normalized to LF) and returns `""` at EOF, so it pairs a small `chomp` helper with a `for` loop that reads until a blank line or EOF.
+- `examples/09_commit.gk` was deleted; no test references the old name.
+
+**Hash do commit / Commit hash:** `TBD`
+
+**Mensagem do commit / Commit message:**
+```
+docs(examples): replace 09_commit with an input tour (09_input.gk)
+```
+
 ### Entry: user-facing messages no longer mention the go command
 
 **Título / Title:** every message shown to the user now refers to gecko commands and the `gecko:` error prefix, never to `go`: help and usage texts, error prefixes, and suggested commands (`gecko mod tidy`, `gecko mod init`, `gecko mod download`, `gecko mod vendor`, `gecko get`, `gecko work use`, `gecko env -w`, `gecko install`, and so on).

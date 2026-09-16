@@ -1,4 +1,4 @@
-// 04_classes.gk — classes and new expressions in gecko.
+// 04_classes.gk — classes, new expressions, and inheritance in gecko.
 //
 // A class body declares methods. Fields are created implicitly by
 // this.<name> = ... assignments; their types are inferred from the
@@ -7,8 +7,25 @@
 // new Class(args) allocates a *Class and calls the constructor with the
 // arguments; a class without a constructor can still be allocated.
 //
-// Run from src/:
-//   bin/go run examples/04_classes.gk
+// A class may extend another class with `extends`:
+//
+//	class Dog extends Animal { ... }
+//
+// The base class is embedded by value, so its fields and methods are
+// promoted onto the derived class. Inside a derived class, `super` refers
+// to the embedded base:
+//
+//	super(args)         calls the base constructor,
+//	super.method(args)  calls a base method,
+//	super.field         reads a base field.
+//
+// Promoted base methods stay bound to the base implementation (like Go
+// embedding, there is no virtual override): the base's own method calls
+// resolve to the base, even when invoked on a derived instance. Only
+// `super.method()` reaches the immediate base explicitly.
+//
+// Run from examples/:
+//   ../bin/go run 04_classes.gk
 
 package main
 
@@ -48,6 +65,50 @@ class Tag() {
 	}
 }
 
+// Animal is the base class used by the inheritance examples below.
+class Animal {
+	constructor(name: string) {
+		this.name = name
+	}
+	speak(): string {
+		return "animal " + this.name
+	}
+	loud(): string {
+		return this.speak() + "!"
+	}
+	rename(newName: string) {
+		this.name = newName
+	}
+}
+
+// Dog extends Animal: it adds its own `breed` field, overrides speak(),
+// and can still reuse the promoted loud()/rename() methods.
+class Dog extends Animal {
+	constructor(name: string, breed: string) {
+		super(name)
+		this.breed = breed
+	}
+	speak(): string {
+		return "woof " + this.name
+	}
+	// super.loud() calls the base method; super.name reads the base field.
+	parentLoud(): string {
+		return super.loud() + " (from " + super.name + ")"
+	}
+}
+
+// Three levels: Puppy extends Dog extends Animal. super takes a method
+// from the immediate base.
+class Puppy extends Dog {
+	constructor(name: string, breed: string, tag: string) {
+		super(name, breed)
+		this.tag = tag
+	}
+	speak(): string {
+		return super.speak() + " (puppy " + this.tag + ")"
+	}
+}
+
 func main() {
 	// new calls the constructor with the given arguments.
 	g = new Greeter("Ana")
@@ -70,4 +131,22 @@ func main() {
 	// Constructing a class without a constructor.
 	t = new Tag()
 	println(t.describe())
+
+	// Inheritance: base fields and methods are promoted.
+	a = new Animal("generic")
+	println(a.speak())
+
+	dog = new Dog("Rex", "poodle")
+	println(dog.speak())
+	println(dog.loud())
+	println(dog.parentLoud())
+
+	// Promoted base methods mutate the promoted base field.
+	dog.rename("Fido")
+	println(dog.speak())
+
+	p = new Puppy("Pip", "beagle", "T1")
+	println(p.speak())
+	println(p.parentLoud())
+	println(p.breed, p.tag)
 }

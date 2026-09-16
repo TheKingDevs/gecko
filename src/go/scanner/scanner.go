@@ -851,15 +851,17 @@ scanAgain:
 			// keywords are longer than one letter - avoid lookup otherwise
 			tok = token.Lookup(lit)
 			if !s.Gecko {
-				// "while", "class", "new" and "export" are keywords only
-				// for gecko (.gk) source files.
+				// "while", "class", "new", "export", "try", "catch",
+				// "finally" and "throw" are keywords only for gecko (.gk)
+				// source files.
 				switch tok {
-				case token.WHILE, token.CLASS, token.NEW, token.EXPORT:
+				case token.WHILE, token.CLASS, token.NEW, token.EXPORT,
+					token.TRY, token.CATCH, token.FINALLY, token.THROW:
 					tok = token.IDENT
 				}
 			}
 			switch tok {
-			case token.IDENT, token.BREAK, token.CONTINUE, token.FALLTHROUGH, token.RETURN:
+			case token.IDENT, token.BREAK, token.CONTINUE, token.FALLTHROUGH, token.RETURN, token.THROW:
 				insertSemi = true
 			}
 		} else {

@@ -794,6 +794,32 @@ type (
 		Body  *BlockStmt
 	}
 
+	// A TryStmt represents a gecko try/catch/finally statement,
+	//
+	//	try body catch (e) body finally body
+	//
+	// It is produced only for source files with the .gk extension.
+	TryStmt struct {
+		Try     token.Pos    // position of "try" keyword
+		Body    *BlockStmt   // try body
+		Catch   *CatchClause // catch clause; or nil if there is none
+		Finally *BlockStmt   // finally body; or nil if there is none
+	}
+
+	// A CatchClause represents the catch clause of a gecko TryStmt.
+	CatchClause struct {
+		Catch token.Pos   // position of "catch" keyword
+		Var   Expr        // catch variable; or nil if the binding is omitted
+		Body  *BlockStmt
+	}
+
+	// A ThrowStmt represents a gecko throw statement, throw X. It is
+	// produced only for source files with the .gk extension.
+	ThrowStmt struct {
+		Throw token.Pos // position of "throw" keyword
+		X     Expr
+	}
+
 	// A RangeStmt represents a for statement with a range clause.
 	RangeStmt struct {
 		For        token.Pos   // position of "for" keyword
@@ -829,6 +855,9 @@ func (s *CommClause) Pos() token.Pos     { return s.Case }
 func (s *SelectStmt) Pos() token.Pos     { return s.Select }
 func (s *ForStmt) Pos() token.Pos        { return s.For }
 func (s *WhileStmt) Pos() token.Pos      { return s.While }
+func (s *TryStmt) Pos() token.Pos        { return s.Try }
+func (s *CatchClause) Pos() token.Pos    { return s.Catch }
+func (s *ThrowStmt) Pos() token.Pos      { return s.Throw }
 func (s *RangeStmt) Pos() token.Pos      { return s.For }
 
 func (s *BadStmt) End() token.Pos  { return s.To }
@@ -892,7 +921,18 @@ func (s *CommClause) End() token.Pos {
 func (s *SelectStmt) End() token.Pos { return s.Body.End() }
 func (s *ForStmt) End() token.Pos    { return s.Body.End() }
 func (s *WhileStmt) End() token.Pos  { return s.Body.End() }
-func (s *RangeStmt) End() token.Pos  { return s.Body.End() }
+func (s *TryStmt) End() token.Pos {
+	if s.Finally != nil {
+		return s.Finally.End()
+	}
+	if s.Catch != nil {
+		return s.Catch.End()
+	}
+	return s.Body.End()
+}
+func (s *CatchClause) End() token.Pos { return s.Body.End() }
+func (s *ThrowStmt) End() token.Pos   { return s.X.End() }
+func (s *RangeStmt) End() token.Pos   { return s.Body.End() }
 
 // stmtNode() ensures that only statement nodes can be
 // assigned to a Stmt.
@@ -917,6 +957,8 @@ func (*CommClause) stmtNode()     {}
 func (*SelectStmt) stmtNode()     {}
 func (*ForStmt) stmtNode()        {}
 func (*WhileStmt) stmtNode()      {}
+func (*TryStmt) stmtNode()        {}
+func (*ThrowStmt) stmtNode()      {}
 func (*RangeStmt) stmtNode()      {}
 
 // ----------------------------------------------------------------------------
@@ -1032,9 +1074,11 @@ type (
 	}
 
 	// A ClassDecl node represents a gecko class declaration,
-	// "class Name() { classMethod₁; classMethod₂; ... }". The method
-	// list is significant only when the file was parsed with gecko
-	// syntax enabled (.gk source files).
+	// "class Name() { classMethod₁; classMethod₂; ... }" or, with
+	// inheritance, "class Name extends Base() { ... }" (the parentheses
+	// after Name and Base are optional). The method list is significant
+	// only when the file was parsed with gecko syntax enabled (.gk source
+	// files).
 	//
 	// Gecko classes have no implicit field declarations: fields are created
 	// by assignments to "this.<name>" in the class's methods, or declared
@@ -1049,6 +1093,10 @@ type (
 		Class   token.Pos      // position of "class" keyword
 		Export  bool           // exported via the gecko export keyword
 		Name    *Ident         // class name
+		// Base is the base class expression of an `extends` clause
+		// ("class Dog extends Animal { ... }"), or nil for a standalone
+		// class.
+		Base    Expr           // base class (extends clause); or nil
 		Lbrace  token.Pos      // position of "{", if any
 		Fields  []*ValueSpec   // field declarations (var) in class body
 		Consts  []*ValueSpec   // read-only field declarations (const) in class body
@@ -1115,6 +1163,9 @@ func (d *ClassDecl) End() token.Pos {
 	}
 	if len(d.Methods) > 0 {
 		return d.Methods[len(d.Methods)-1].End()
+	}
+	if d.Base != nil {
+		return d.Base.End()
 	}
 	return d.Name.End()
 }

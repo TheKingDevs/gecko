@@ -218,6 +218,9 @@ func (w walker) node(n Node) {
 		w.node(n.Type)
 
 	case *ClassType:
+		if n.Base != nil {
+			w.node(n.Base)
+		}
 		for _, m := range n.Methods {
 			w.node(m)
 		}

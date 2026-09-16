@@ -1632,6 +1632,29 @@ func (p *printer) stmt(stmt ast.Stmt, nextIsRBrace bool) {
 		p.print(token.RPAREN, blank)
 		p.block(s.Body, 1)
 
+	case *ast.TryStmt:
+		// gecko try/catch/finally statement.
+		p.print(token.TRY, blank)
+		p.block(s.Body, 1)
+		if s.Catch != nil {
+			p.print(blank, token.CATCH)
+			if s.Catch.Var != nil {
+				p.print(blank, token.LPAREN)
+				p.expr(s.Catch.Var)
+				p.print(token.RPAREN)
+			}
+			p.print(blank)
+			p.block(s.Catch.Body, 1)
+		}
+		if s.Finally != nil {
+			p.print(blank, token.FINALLY, blank)
+			p.block(s.Finally, 1)
+		}
+
+	case *ast.ThrowStmt:
+		p.print(token.THROW, blank)
+		p.expr(s.X)
+
 	case *ast.RangeStmt:
 		p.print(token.FOR, blank)
 		paren := p.Config.Mode&GeckoParens != 0
@@ -2145,7 +2168,10 @@ func (p *printer) classDecl(d *ast.ClassDecl) {
 	}
 	p.print(token.CLASS, blank)
 	p.expr(d.Name)
-	p.print(token.LPAREN, token.RPAREN)
+	if d.Base != nil {
+		p.print(blank, "extends", blank)
+		p.expr(d.Base)
+	}
 
 	if d.Rbrace.IsValid() {
 		p.print(blank)

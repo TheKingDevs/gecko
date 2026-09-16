@@ -33,6 +33,31 @@ func (check *Checker) geckoClassType(cls *syntax.ClassType) *Struct {
 		return s
 	}
 
+	// Resolve the base class, if any. The derived class's underlying
+	// struct embeds the base by value as its first field, so the base's
+	// fields and methods are promoted and `new Derived(...)` allocates
+	// both halves. The parser already rewrote `super` references to
+	// `this.<base>.<...>` selections on the embedded field.
+	var baseType *Named
+	var baseFields map[string]bool
+	if cls.Base != nil {
+		baseType = check.geckoBaseClass(cls.Base)
+		if baseType != nil {
+			baseFields = make(map[string]bool)
+			// The embedded base field itself (`this.<base>`) plus every
+			// field reachable through it (direct and promoted) is not
+			// redeclared on the derived struct.
+			baseFields[baseType.Obj().Name()] = true
+			check.geckoCollectFieldNames(baseType, baseFields)
+		}
+	}
+	baseField := func(name string) bool {
+		if baseFields == nil {
+			return false
+		}
+		return baseFields[name]
+	}
+
 	// Process the constructor first so field types are determined before
 	// any other method body references them.
 	methods := cls.Methods
@@ -64,6 +89,11 @@ func (check *Checker) geckoClassType(cls *syntax.ClassType) *Struct {
 	fieldIndex := make(map[string]int)
 
 	addField := func(sel *syntax.Name, rhs syntax.Expr) {
+		if baseField(sel.Value) {
+			// A promoted (base-class) field; it lives on the embedded
+			// base, not on this struct.
+			return
+		}
 		i, ok := fieldIndex[sel.Value]
 		if !ok {
 			fieldIndex[sel.Value] = len(infos)
@@ -133,6 +163,9 @@ func (check *Checker) geckoClassType(cls *syntax.ClassType) *Struct {
 	// annotation, or without an initializer, is seeded here so the field
 	// exists even when no `this.<name>` selector appears elsewhere.
 	addFieldInfo := func(nm *syntax.Name, rhs syntax.Expr) {
+		if baseField(nm.Value) {
+			return
+		}
 		i, ok := fieldIndex[nm.Value]
 		if !ok {
 			fieldIndex[nm.Value] = len(infos)
@@ -179,19 +212,33 @@ func (check *Checker) geckoClassType(cls *syntax.ClassType) *Struct {
 	}
 
 	strct := new(Struct)
-	strct.fields = make([]*Var, len(infos))
+	embedded := 0
+	if baseType != nil {
+		embedded = 1
+	}
+	strct.fields = make([]*Var, embedded+len(infos))
+	if baseType != nil {
+		// Embed the base class by value so its fields and methods are
+		// promoted. The derived struct allocates the base instance
+		// inline; the base constructor runs through the rewritten
+		// `this.<base>.constructor(...)` super call.
+		f := NewField(cls.Base.Pos(), baseType.Obj().Pkg(), baseType.Obj().Name(), baseType, true)
+		f.SetGeckoExported(true)
+		strct.fields[0] = f
+	}
 	for i, info := range infos {
 		t := check.geckoFieldType(info.rhs, ctorParams)
 		if dt, ok := declType[info.name]; ok {
 			t = dt
 		}
-		strct.fields[i] = NewField(info.pos, check.pkg, info.name, t, false)
+		strct.fields[embedded+i] = NewField(info.pos, check.pkg, info.name, t, false)
 	}
 
 	if check.geckoClass == nil {
 		check.geckoClass = make(map[*syntax.ClassType]*Struct)
 	}
 	check.geckoClass[cls] = strct
+
 	if len(consts) > 0 {
 		if check.geckoConstFields == nil {
 			check.geckoConstFields = make(map[*Struct]map[string]bool)
@@ -200,6 +247,79 @@ func (check *Checker) geckoClassType(cls *syntax.ClassType) *Struct {
 	}
 
 	return strct
+}
+
+// geckoBaseClass resolves the base class of a derived gecko class and
+// returns its named type. The base must be a class type: a same-package
+// name or a qualified `pkg.Class` selector, mirroring geckoNewType.
+// It reports nil (with a diagnostic) when the base does not resolve to a
+// class type, which covers recursive inheritance: a base whose declaration
+// is still being type-checked (grey) is reported here, before types2's
+// cycle machinery forces its underlying type in a state that cannot be
+// inspected.
+func (check *Checker) geckoBaseClass(e syntax.Expr) *Named {
+	var obj Object
+	switch r := syntax.Unparen(e).(type) {
+	case *syntax.Name:
+		obj = check.lookup(r.Value)
+	case *syntax.SelectorExpr:
+		if x, ok := syntax.Unparen(r.X).(*syntax.Name); ok {
+			if pkgobj, ok := check.lookup(x.Value).(*PkgName); ok {
+				// A qualified base class counts as a use of the import.
+				check.usedPkgNames[pkgobj] = true
+				obj = pkgobj.imported.Scope().Lookup(r.Sel.Value)
+				if obj != nil && obj.Pkg() != pkgobj.imported {
+					obj = nil
+				}
+			}
+		}
+	}
+	tn, ok := obj.(*TypeName)
+	if !ok {
+		if obj == nil {
+			check.errorf(e, InvalidSyntaxTree, "undefined base class %s", e)
+		} else {
+			check.errorf(e, InvalidSyntaxTree, "%s is not a class type", e)
+		}
+		return nil
+	}
+	check.objDecl(tn)
+	if _, inProgress := check.objPathIdx[tn]; inProgress {
+		// The base declaration is part of a declaration cycle (R1
+		// extends R2 and R2 extends R1, or a class extending itself).
+		// Report it here with a clear message and bail out; forcing the
+		// underlying type now would hit the grey object.
+		check.errorf(e, InvalidSyntaxTree, "cyclic inheritance with class %s", tn.Name())
+		return nil
+	}
+	named, _ := tn.typ.(*Named)
+	if named == nil {
+		return nil
+	}
+	if _, ok := named.Underlying().(*Struct); !ok {
+		check.errorf(e, InvalidSyntaxTree, "%s is not a class type", e)
+		return nil
+	}
+	return named
+}
+
+// geckoCollectFieldNames records every field name reachable on the class
+// type c (its own struct fields as well as those promoted through
+// embedded base fields) into set.
+func (check *Checker) geckoCollectFieldNames(c *Named, set map[string]bool) {
+	strct, ok := c.Underlying().(*Struct)
+	if !ok {
+		return
+	}
+	for i := 0; i < strct.NumFields(); i++ {
+		f := strct.Field(i)
+		set[f.Name()] = true
+		if f.Embedded() {
+			if embedded, ok := f.Type().(*Named); ok {
+				check.geckoCollectFieldNames(embedded, set)
+			}
+		}
+	}
 }
 
 // geckoFieldType infers the type of a class field from the RHS of its first

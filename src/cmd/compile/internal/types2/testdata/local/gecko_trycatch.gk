@@ -1,0 +1,63 @@
+// Copyright 2026 The Gecko Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// gecko try/catch/finally and throw. The compiler parser desugars
+//
+//	try { B } catch (e) { C } finally { F }
+//
+// into an immediately-invoked function literal with deferred catch/finally
+// closures, and throw X into panic(X), so types2 only ever sees the
+// desugared code. The catch variable is therefore of type any (the result
+// of recover()).
+
+package geckotrycatch
+
+func risky(): int {
+	throw "boom"
+}
+
+func f() {
+	try {
+		x = risky()
+		_ = x
+	} catch (e) {
+		s = e.(string)
+		_ = s
+	} finally {
+		println("done")
+	}
+
+	// try/finally without a catch clause.
+	try {
+		risky()
+	} finally {
+		println("cleanup")
+	}
+
+	// A bare catch still recovers and discards the value.
+	try {
+		throw "bare"
+	} catch {
+		println("recovered")
+	}
+}
+
+// The catch variable has type any, so it cannot be used as a string without
+// a type assertion.
+func g() {
+	try {
+		throw "x"
+	} catch (e) {
+		s = e /* ERROR "mismatched types" */ + "!"
+		_ = s
+	}
+}
+
+// return cannot cross the closure boundary introduced by the desugaring.
+func h() {
+	try {
+		return // ERROR "return is not allowed"
+	} catch (e) {
+	}
+}

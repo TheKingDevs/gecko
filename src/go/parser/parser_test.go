@@ -157,7 +157,7 @@ export { Greeter, greeting }
 export const version: String = "1.0"
 export var count: num = 0
 
-class Greeter() {
+class Greeter {
 	greet(name: String): String {
 		return "Hi " + name
 	}
@@ -167,8 +167,26 @@ class Greeter() {
 	}
 }
 
+class App() {
+	constructor(name: String) {}
+}
+
+class SuperGreeter extends Greeter {
+	greet(name: String): String {
+		return super.greet(name) + "!"
+	}
+}
+
 export func main() {
 	g = new Greeter()
+	s = new SuperGreeter("gecko")
+	try {
+		throw "boom"
+	} catch (e) {
+		println(e)
+	} finally {
+		println("done")
+	}
 }
 `
 	f, err := ParseFile(token.NewFileSet(), "gecko.gk", src, 0)
@@ -177,12 +195,23 @@ export func main() {
 	}
 
 	var gotClass, gotNew, gotSlice, gotExport, gotTsMember bool
+	var gotTry, gotThrow bool
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch n := n.(type) {
 		case *ast.ClassDecl:
 			gotClass = true
-			if len(n.Methods) != 2 {
+			if n.Name.Name == "Greeter" && len(n.Methods) != 2 {
 				t.Error("class Greeter should have two methods")
+			}
+			if n.Name.Name == "SuperGreeter" {
+				if n.Base == nil {
+					t.Error("class SuperGreeter should have a base class")
+				} else if id, ok := n.Base.(*ast.Ident); !ok || id.Name != "Greeter" {
+					t.Errorf("class SuperGreeter base = %v, want Greeter", n.Base)
+				}
+			}
+			if n.Name.Name == "App" && n.Base != nil {
+				t.Error("class App should have no base class")
 			}
 		case *ast.NewExpr:
 			gotNew = true
@@ -202,6 +231,18 @@ export func main() {
 			if len(n.TsNames) > 0 {
 				gotTsMember = true
 			}
+		case *ast.TryStmt:
+			gotTry = true
+			if n.Catch == nil || n.Catch.Var == nil {
+				t.Error("try statement should have a catch with a binding")
+			} else if id, ok := n.Catch.Var.(*ast.Ident); !ok || id.Name != "e" {
+				t.Errorf("catch binding = %v, want e", n.Catch.Var)
+			}
+			if n.Finally == nil {
+				t.Error("try statement should have a finally clause")
+			}
+		case *ast.ThrowStmt:
+			gotThrow = true
 		}
 		return true
 	})
@@ -209,12 +250,15 @@ export func main() {
 		t.Errorf("missing gecko decl AST: class=%v new=%v slice=%v export=%v tsMember=%v",
 			gotClass, gotNew, gotSlice, gotExport, gotTsMember)
 	}
+	if !gotTry || !gotThrow {
+		t.Errorf("missing gecko try/catch AST: try=%v throw=%v", gotTry, gotThrow)
+	}
 	if len(f.Imports) != 3 {
 		t.Errorf("got %d imports, want 3", len(f.Imports))
 	}
 
 	// The gecko keywords must remain valid identifiers in .go files.
-	for _, kw := range []string{"class", "new", "export"} {
+	for _, kw := range []string{"class", "new", "export", "try", "catch", "finally", "throw"} {
 		if _, err := ParseFile(token.NewFileSet(), "a.go", "package p\nvar "+kw+" = 1\nfunc f() { _ = "+kw+" }\n", 0); err != nil {
 			t.Errorf("%q must be a valid identifier in .go files: %v", kw, err)
 		}

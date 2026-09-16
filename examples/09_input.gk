@@ -1,0 +1,66 @@
+// 09_input.gk — reading from stdin with the input builtin.
+//
+// input(args...) formats its arguments like println (joined by spaces, no
+// trailing newline), writes the result to stdout as the prompt, then reads
+// one line from stdin. The return value *includes* the trailing '\n' (CRLF
+// is normalized to LF), and is "" once stdin reaches EOF. Calling input()
+// with no arguments reads a line without printing a prompt.
+//
+// Because the line ending is kept, the usual first step is chomp: drop a
+// single trailing '\n' before comparing or storing the line. To read many
+// lines, loop until chomp(input(...)) returns "" — that happens on EOF or
+// when the user submits an empty line.
+//
+// Covers: input with no prompt, with a plain prompt and with a formatted
+// prompt; the trailing newline; loops, slices, templates, append.
+//
+// Run from examples/:
+//   ../bin/go run 09_input.gk
+// or feed it (one line per read, EOF ends the loops):
+//   printf 'go\nMy list\nhello\nworld\n\n' | ../bin/go run 09_input.gk
+
+package main
+
+// chomp drops a single trailing '\n', if there is one. input keeps the line
+// ending, so this is the usual first step before comparing or storing it.
+func chomp(s: string): string {
+	if (len(s) > 0 && s[len(s) - 1] == '\n') {
+		return s[0:len(s) - 1]
+	}
+	return s
+}
+
+func main() {
+	println("input demo — submit an empty line or press Ctrl-D to move on")
+
+	// Several arguments are joined with spaces, like println. The result is
+	// discarded, which requires the blank identifier.
+	_ = input("Press", "Enter", "to start: ")
+
+	// No arguments: a bare, prompt-less read.
+	title = chomp(input())
+	if (title != "") {
+		println(`title: ${title}`)
+	}
+
+	// A plain prompt; the returned line still carries its '\n'.
+	echo = input("type a line> ")
+	println(`kept ${len(echo)} byte(s), ${len(chomp(echo))} after chomp`)
+
+	// Read a whole list of lines until a blank line or EOF.
+	lines = []string{}
+	for (;;) {
+		// A template prompt interpolates the counter into the string.
+		line = chomp(input(`line ${len(lines) + 1}: `))
+		if (line == "") {
+			break
+		}
+		lines = append(lines, line)
+	}
+
+	// Summarize with a template.
+	println(`read ${len(lines)} line(s)`)
+	for (i = 0; i < len(lines); i = i + 1) {
+		println(`  ${i + 1}. ${lines[i]}`)
+	}
+}
