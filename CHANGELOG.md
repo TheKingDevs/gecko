@@ -5,6 +5,24 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: bin/gecko command
+
+**Título / Title:** the build now installs the toolchain command as `bin/gecko` only. `make.bash` no longer creates `bin/go`, and the in-tree code that located the command at `$GOROOT/bin/go` now uses `$GOROOT/bin/gecko`.
+
+**Descrição / Description:**
+
+- `cmd/dist/build.go`: `gorootBinGo` points at `$GOROOT/bin/gecko`; after `go install cmd/go` the `goInstall` helper renames the freshly written `$GOROOT/bin/go` to `$GOROOT/bin/gecko` (`moveGoBinToGecko`), and the old post-bootstrap copy of `go` to `gecko` was removed. `checkNotStale` skips `cmd/go`, which `go list` always reports as "not installed" because its on-disk name is now `gecko`.
+- Runtime references switched to `gecko`: `go/build`, `go/internal/srcimporter`, `internal/exportdata`, `internal/testenv` (prefers `gecko`, falls back to `go`), `internal/trace/traceviewer`, `cmd/compile/internal/testimporter`, `cmd/cover`, `cmd/go/internal/{bug,doc,work}`, `cmd/internal/script/scripttest`, and `syscall/mksyscall_windows.go`. The shell scripts (`all.bash`, `clean.bash`, `run.bash`, `buildall.bash`, `bootstrap.bash`, `all.rc`, `run.rc`) and `cmd/distpack` now name `bin/gecko`.
+- Tests updated to the new name: `internal/testenv`, `cmd/api`, `cmd/cgo/internal/{testplugin,testshared}`, `cmd/internal/{bootstrap_test,moddeps}`, `os/exec`, `runtime/race`, `cmd/go/internal/cfg`, plus the `bug`, `cover_switch_toolchain`, `generate_goroot_PATH`, `mod_doc_path`, `tool_build_as_needed`, `run_goroot_PATH` and `test_goroot_PATH` scripts.
+- Downloaded toolchains (`cmd/go/internal/toolchain/select.go`) and the bootstrap parser (`cmd/dist/buildtool.go`, `$GOROOT_BOOTSTRAP/bin/go`) intentionally keep `bin/go`.
+
+**Hash do commit / Commit hash:** `3ac180dc`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: install the toolchain command as bin/gecko
+```
+
 ### Entry: async/await
 
 **Título / Title:** `.gk` files gain `async func` and `await`. An async function returns a *future* — a buffered channel of its declared result, or `chan any` when it declares none — and runs its body on its own goroutine (started immediately, like `go`). `await expr` blocks until the value is ready and yields it, so `await f(x)` and a stored future (`fut = f(x)` then `await fut`) both work. An async function may declare at most one result, must have a body, and a class `constructor` cannot be async.
