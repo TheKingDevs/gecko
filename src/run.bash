@@ -31,13 +31,13 @@
 
 set -e
 
-if [ ! -f ../bin/go ]; then
-	echo 'run.bash must be run from $GOROOT/src after installing cmd/go' 1>&2
+if [ ! -f ../bin/gecko ]; then
+	echo 'run.bash must be run from $GOROOT/src after installing the gecko command' 1>&2
 	exit 1
 fi
 
 export GOENV=off
-eval $(../bin/go tool dist env)
+eval $(../bin/gecko tool dist env)
 
 unset CDPATH	# in case user has it set
 
@@ -57,4 +57,4 @@ if ulimit -T &> /dev/null; then
 fi
 
 export GOPATH=/nonexist-gopath
-exec ../bin/go tool dist test -rebuild "$@"
+exec ../bin/gecko tool dist test -rebuild "$@"

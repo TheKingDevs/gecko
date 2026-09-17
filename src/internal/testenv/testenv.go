@@ -270,6 +270,11 @@ func GoTool() (string, error) {
 }
 
 var goTool = sync.OnceValues(func() (string, error) {
+	// The gecko toolchain installs its command as "gecko". Fall back to "go"
+	// so tests still work when run against an upstream toolchain.
+	if path, err := exec.LookPath("gecko"); err == nil {
+		return path, nil
+	}
 	return exec.LookPath("go")
 })
 

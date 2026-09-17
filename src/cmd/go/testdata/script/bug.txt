@@ -9,8 +9,8 @@ env BROWSER=$GOPATH/bin/browser PATH=$TMPDIR:$PATH
 go bug
 exists $TMPDIR/browser
 grep '^gecko version' $TMPDIR/browser
-grep '^GOROOT/bin/go version: gecko version' $TMPDIR/browser
-grep '^GOROOT/bin/go tool compile -V: compile version' $TMPDIR/browser
+grep '^GOROOT/bin/gecko version: gecko version' $TMPDIR/browser
+grep '^GOROOT/bin/gecko tool compile -V: compile version' $TMPDIR/browser
 grep '^uname -sr: Linux' $TMPDIR/browser
 
 -- go.mod --

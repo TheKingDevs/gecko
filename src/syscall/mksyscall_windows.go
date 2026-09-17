@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	goTool := filepath.Join(runtime.GOROOT(), "bin", "go")
+	goTool := filepath.Join(runtime.GOROOT(), "bin", "gecko")
 
 	listCmd := exec.Command(goTool, "list", "-m")
 	listCmd.Env = append(os.Environ(), "GO111MODULE=on")

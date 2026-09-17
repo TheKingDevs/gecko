@@ -40,11 +40,11 @@ func goCmd() string {
 	if runtime.GOOS == "windows" {
 		exeSuffix = ".exe"
 	}
-	path := filepath.Join(testenv.GOROOT(nil), "bin", "go"+exeSuffix)
+	path := filepath.Join(testenv.GOROOT(nil), "bin", "gecko"+exeSuffix)
 	if _, err := os.Stat(path); err == nil {
 		return path
 	}
-	return "go"
+	return "gecko"
 }
 
 // contexts are the default contexts which are scanned.

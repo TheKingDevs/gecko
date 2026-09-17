@@ -123,7 +123,7 @@ func NewEngine(t *testing.T, repls []ToolReplacement) (*script.Engine, []string)
 	}
 
 	// Add in commands for "go" and "cc".
-	testgo := filepath.Join(tgr, "bin", "go")
+	testgo := filepath.Join(tgr, "bin", "gecko")
 	gocmd := script.Program(testgo, script.InterruptCmd, gracePeriod)
 	addcmd("go", gocmd)
 	addcmd("cc", scriptCC(cmdExec, goEnv("CC")))

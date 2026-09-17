@@ -15,7 +15,7 @@ module example
 
 go 1.19
 -- main.go --
-//go:generate go run .
+//go:generate gecko run .
 
 package main
 
@@ -26,7 +26,7 @@ import (
 )
 
 func main() {
-	_, err := exec.LookPath("go")
+	_, err := exec.LookPath("gecko")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

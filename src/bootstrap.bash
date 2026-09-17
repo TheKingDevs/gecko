@@ -54,10 +54,10 @@ echo "#### Building $targ"
 echo
 cd src
 ./make.bash --no-banner $forceflag
-gohostos="$(../bin/go env GOHOSTOS)"
-gohostarch="$(../bin/go env GOHOSTARCH)"
-goos="$(../bin/go env GOOS)"
-goarch="$(../bin/go env GOARCH)"
+gohostos="$(../bin/gecko env GOHOSTOS)"
+gohostarch="$(../bin/gecko env GOHOSTARCH)"
+goos="$(../bin/gecko env GOOS)"
+goarch="$(../bin/gecko env GOARCH)"
 
 # NOTE: Cannot invoke go command after this point.
 # We're about to delete all but the cross-compiled binaries.

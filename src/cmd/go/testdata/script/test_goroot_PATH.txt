@@ -27,14 +27,14 @@ import (
 )
 
 func TestGoCommandExists(t *testing.T) {
-	got, err := exec.LookPath("go")
+	got, err := exec.LookPath("gecko")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := filepath.Join(os.Getenv("GOROOT"), "bin", "go" + os.Getenv("GOEXE"))
+	want := filepath.Join(os.Getenv("GOROOT"), "bin", "gecko" + os.Getenv("GOEXE"))
 	if got != want {
-		t.Fatalf(`exec.LookPath("go") = %q; want %q`, got, want)
+		t.Fatalf(`exec.LookPath("gecko") = %q; want %q`, got, want)
 	}
 }
 -- $WORK/bin/README.txt --

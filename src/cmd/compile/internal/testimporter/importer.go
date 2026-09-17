@@ -116,7 +116,7 @@ func (imp *Importer) compile(path, dir string) (string, error) {
 	once.Do(func() {
 		// We're first, do the build.
 		out := filepath.Join(imp.dir, strings.ReplaceAll(path, "/", "_")+".a")
-		cmd := exec.Command(filepath.Join(build.Default.GOROOT, "bin", "go"), "build", "-o", out, dir)
+		cmd := exec.Command(filepath.Join(build.Default.GOROOT, "bin", "gecko"), "build", "-o", out, dir)
 		var res *bldResult
 		if bytes, err := cmd.CombinedOutput(); err != nil {
 			res = &bldResult{err: fmt.Errorf("building %s failed: %s", path, bytes)}

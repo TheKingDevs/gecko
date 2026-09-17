@@ -115,11 +115,11 @@ func xinit() {
 	goroot = filepath.Clean(b)
 	gorootBin = pathf("%s/bin", goroot)
 
-	// Don't run just 'go' because the build infrastructure
+	// Don't run just 'gecko' because the build infrastructure
 	// runs cmd/dist inside go/bin often, and on Windows
 	// it will be found in the current directory and refuse to exec.
-	// All exec calls rewrite "go" into gorootBinGo.
-	gorootBinGo = pathf("%s/bin/go", goroot)
+	// All exec calls rewrite "gecko" into gorootBinGo.
+	gorootBinGo = pathf("%s/bin/gecko", goroot)
 
 	b = os.Getenv("GOOS")
 	if b == "" {
@@ -1652,16 +1652,8 @@ func cmdbootstrap() {
 		copyfile(pathf("%s/compile4", tooldir), pathf("%s/compile", tooldir), writeExec)
 	}
 
-	// Install bin/gecko as an alias for bin/go so the toolchain has a
-	// discoverable gecko command name. The build writes a real binary
-	// (a copy of go) so gecko is a standalone, relocatable command that
-	// can be installed system-wide without dragging a symlink along.
-	geckoBin := pathf("%s/gecko%s", gorootBin, exe)
-	xremove(geckoBin)
-	copyfile(geckoBin, pathf("%s/go%s", gorootBin, exe), writeExec)
-
 	// Check that there are no new files in $GOROOT/bin other than
-	// go, gecko, fmt and $GOOS_$GOARCH (target bin when cross-compiling).
+	// gecko, fmt, gpm and $GOOS_$GOARCH (target bin when cross-compiling).
 	binFiles, err := filepath.Glob(pathf("%s/bin/*", goroot))
 	if err != nil {
 		fatalf("glob: %v", err)
@@ -1676,7 +1668,7 @@ func cmdbootstrap() {
 			continue // unfortunate but not unexpected
 		}
 		elem := strings.TrimSuffix(filepath.Base(f), ".exe")
-		if !ok[f] && elem != "go" && elem != "gecko" && elem != "fmt" && elem != "gpm" && elem != goos+"_"+goarch {
+		if !ok[f] && elem != "gecko" && elem != "fmt" && elem != "gpm" && elem != goos+"_"+goarch {
 			fatalf("unexpected new file in $GOROOT/bin: %s", elem)
 		}
 	}
@@ -1729,6 +1721,29 @@ func wrapperPathFor(goos, goarch string) string {
 
 func goInstall(env []string, goBinary string, args ...string) {
 	goCmd(env, goBinary, "install", args...)
+	// `go install cmd/go` writes $GOROOT/bin/go. The gecko toolchain exposes a
+	// single command named gecko, so move it into place right away. Every other
+	// installed command (cmd/fmt, cmd/gpm, tools) keeps its own name.
+	for _, arg := range args {
+		if arg == "cmd/go" {
+			moveGoBinToGecko()
+			break
+		}
+	}
+}
+
+// moveGoBinToGecko renames the just-installed $GOROOT/bin/go to
+// $GOROOT/bin/gecko, discarding any previous gecko command.
+func moveGoBinToGecko() {
+	goBin := pathf("%s/go%s", gorootBin, exe)
+	if _, err := os.Stat(goBin); err != nil {
+		return
+	}
+	geckoBin := pathf("%s/gecko%s", gorootBin, exe)
+	xremove(geckoBin)
+	if err := os.Rename(goBin, geckoBin); err != nil {
+		fatalf("rename %s to %s: %v", goBin, geckoBin, err)
+	}
 }
 
 func appendCompilerFlags(args []string) []string {
@@ -1760,6 +1775,22 @@ func goCmd(env []string, goBinary string, cmd string, args ...string) {
 }
 
 func checkNotStale(env []string, goBinary string, targets ...string) {
+	// The go command is installed as $GOROOT/bin/gecko, so 'go list' would
+	// always report cmd/go as "not installed but available in build cache".
+	// It was just built by this same bootstrap, so it cannot be stale.
+	if len(targets) > 0 {
+		filtered := targets[:0:0]
+		for _, t := range targets {
+			if t != "cmd/go" {
+				filtered = append(filtered, t)
+			}
+		}
+		targets = filtered
+	}
+	if len(targets) == 0 {
+		return
+	}
+
 	goCmd := []string{goBinary, "list"}
 	if noOpt {
 		goCmd = append(goCmd, "-tags=noopt")

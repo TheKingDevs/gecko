@@ -24,10 +24,11 @@ func TestGoToolLocation(t *testing.T) {
 
 	// Tests are defined to run within their package source directory,
 	// and this package's source directory is $GOROOT/src/internal/testenv.
-	// The 'go' command is installed at $GOROOT/bin/go, so if the environment
-	// is correct then testenv.GoTool() should be identical to ../../../bin/go.
+	// The 'gecko' command is installed at $GOROOT/bin/gecko, so if the
+	// environment is correct then testenv.GoTool() should be identical to
+	// ../../../bin/gecko.
 
-	relWant := "../../../bin/go" + exeSuffix
+	relWant := "../../../bin/gecko" + exeSuffix
 	absWant, err := filepath.Abs(relWant)
 	if err != nil {
 		t.Fatal(err)
@@ -117,7 +118,7 @@ func TestHasGoBuild(t *testing.T) {
 		hasExec = true
 	})
 	t.Run("MustHaveExecPath", func(t *testing.T) {
-		testenv.MustHaveExecPath(t, "go")
+		testenv.MustHaveExecPath(t, "gecko")
 		hasExecGo = true
 	})
 	if !hasExec {
@@ -128,11 +129,11 @@ func TestHasGoBuild(t *testing.T) {
 	}
 
 	dir := t.TempDir()
-	mainGo := filepath.Join(dir, "main.go")
+	mainGo := filepath.Join(dir, "main.gk")
 	if err := os.WriteFile(mainGo, []byte("package main\nfunc main() {}\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
-	cmd := testenv.Command(t, "go", "build", "-o", os.DevNull, mainGo)
+	cmd := testenv.Command(t, "gecko", "build", "-o", os.DevNull, mainGo)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("%v: %v\n%s", cmd, err, out)

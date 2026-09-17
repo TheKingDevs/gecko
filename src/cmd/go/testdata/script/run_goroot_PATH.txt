@@ -24,15 +24,15 @@ import (
 )
 
 func main() {
-	got, err := exec.LookPath("go")
+	got, err := exec.LookPath("gecko")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	want := filepath.Join(os.Getenv("GOROOT"), "bin", "go" + os.Getenv("GOEXE"))
+	want := filepath.Join(os.Getenv("GOROOT"), "bin", "gecko" + os.Getenv("GOEXE"))
 	if got != want {
-		fmt.Printf(`exec.LookPath("go") = %q; want %q\n`, got, want)
+		fmt.Printf(`exec.LookPath("gecko") = %q; want %q\n`, got, want)
 		os.Exit(1)
 	}
 }

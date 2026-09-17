@@ -179,11 +179,11 @@ func main() {
 		return true
 	})
 
-	// Add go and fmt to bin, using cross-compiled binaries
+	// Add gecko, fmt and gpm to bin, using cross-compiled binaries
 	// if this is a cross-compiled distribution.
 	// Keep in sync with binExesIncludedInDistpack in cmd/dist/build.go.
 	binExes := []string{
-		"go",
+		"gecko",
 		"fmt",
 		"gpm",
 	}

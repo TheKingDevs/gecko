@@ -201,7 +201,7 @@ func TestAllDependencies(t *testing.T) {
 					"GOWORK=off",
 				),
 			}
-			goBinCopy := filepath.Join(gorootCopyDir, "bin", "go")
+			goBinCopy := filepath.Join(gorootCopyDir, "bin", "gecko")
 			r.run(t, goBinCopy, "mod", "tidy")   // See issue 43687.
 			r.run(t, goBinCopy, "mod", "verify") // Verify should be a no-op, but test it just in case.
 			r.run(t, goBinCopy, "mod", "vendor") // See issue 36852.

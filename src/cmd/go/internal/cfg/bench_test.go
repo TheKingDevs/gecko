@@ -11,10 +11,10 @@ import (
 )
 
 func BenchmarkLookPath(b *testing.B) {
-	testenv.MustHaveExecPath(b, "go")
+	testenv.MustHaveExecPath(b, "gecko")
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := pathcache.LookPath("go")
+		_, err := pathcache.LookPath("gecko")
 		if err != nil {
 			b.Fatal(err)
 		}

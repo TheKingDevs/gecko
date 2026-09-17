@@ -1793,11 +1793,11 @@ func TestPathRace(t *testing.T) {
 
 func TestAbsPathExec(t *testing.T) {
 	testenv.MustHaveExec(t)
-	testenv.MustHaveGoBuild(t) // must have GOROOT/bin/{go,gofmt}
+	testenv.MustHaveGoBuild(t) // must have GOROOT/bin/{gecko,fmt}
 
 	// A simple exec of a full path should work.
 	// Go 1.22 broke this on Windows, requiring ".exe"; see #66586.
-	exe := filepath.Join(testenv.GOROOT(t), "bin/gofmt")
+	exe := filepath.Join(testenv.GOROOT(t), "bin/fmt")
 	cmd := exec.Command(exe)
 	if cmd.Path != exe {
 		t.Errorf("exec.Command(%#q) set Path=%#q", exe, cmd.Path)
@@ -1813,7 +1813,7 @@ func TestAbsPathExec(t *testing.T) {
 		t.Errorf("using exec.Cmd{Path: %#q}: %v", cmd.Path, err)
 	}
 
-	cmd = &exec.Cmd{Path: "gofmt", Dir: "/"}
+	cmd = &exec.Cmd{Path: "fmt", Dir: "/"}
 	err = cmd.Run()
 	if err == nil {
 		t.Errorf("using exec.Cmd{Path: %#q}: unexpected success", cmd.Path)
@@ -1822,14 +1822,14 @@ func TestAbsPathExec(t *testing.T) {
 	// A simple exec after modifying Cmd.Path should work.
 	// This broke on Windows. See go.dev/issue/68314.
 	t.Run("modified", func(t *testing.T) {
-		if exec.Command(filepath.Join(testenv.GOROOT(t), "bin/go")).Run() == nil {
+		if exec.Command(filepath.Join(testenv.GOROOT(t), "bin/gecko")).Run() == nil {
 			// The implementation of the test case below relies on the go binary
 			// exiting with a non-zero exit code when run without any arguments.
 			// In the unlikely case that changes, we need to use another binary.
 			t.Fatal("test case needs updating to verify fix for go.dev/issue/68314")
 		}
-		exe1 := filepath.Join(testenv.GOROOT(t), "bin/go")
-		exe2 := filepath.Join(testenv.GOROOT(t), "bin/gofmt")
+		exe1 := filepath.Join(testenv.GOROOT(t), "bin/gecko")
+		exe2 := filepath.Join(testenv.GOROOT(t), "bin/fmt")
 		cmd := exec.Command(exe1)
 		cmd.Path = exe2
 		cmd.Args = []string{cmd.Path}

@@ -50,12 +50,12 @@ func dirsInit(extra ...Dir) {
 	go dirs.walk(codeRoots())
 }
 
-// goCmd returns the "go" command path corresponding to cfg.GOROOT.
+// goCmd returns the gecko command path corresponding to cfg.GOROOT.
 func goCmd() string {
 	if cfg.GOROOT == "" {
-		return "go"
+		return "gecko"
 	}
-	return filepath.Join(cfg.GOROOT, "bin", "go")
+	return filepath.Join(cfg.GOROOT, "bin", "gecko")
 }
 
 // Reset puts the scan back at the beginning.

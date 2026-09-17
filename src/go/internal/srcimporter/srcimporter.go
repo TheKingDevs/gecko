@@ -205,9 +205,9 @@ func (p *Importer) cgo(bp *build.Package) (*ast.File, error) {
 	}
 	defer os.RemoveAll(tmpdir)
 
-	goCmd := "go"
+	goCmd := "gecko"
 	if p.ctxt.GOROOT != "" {
-		goCmd = filepath.Join(p.ctxt.GOROOT, "bin", "go")
+		goCmd = filepath.Join(p.ctxt.GOROOT, "bin", "gecko")
 	}
 	args := []string{goCmd, "tool", "cgo", "-objdir", tmpdir}
 	if bp.Goroot {
