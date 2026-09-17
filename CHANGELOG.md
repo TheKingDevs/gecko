@@ -24,10 +24,10 @@ logs modifications that are specific to gecko and are not part of upstream Go.
   ```
   `await e` becomes the receive `<-e`. A function with no declared result runs its body for its side effects and sends `null` (so awaiting it yields `any`). The inner closure keeps the declared result type, so `return` statements are checked against the declaration and no special control-flow handling is needed (unlike try/catch, returns do not cross the goroutine boundary). `async` is accepted as a top-level declaration (`async func`), after `export`, and as a class method; `async constructor` is rejected, as is an async function with more than one result or without a body.
 - No IR changes: the desugared AST is ordinary `go`/`chan`/`make`/receive code, so noder/typecheck/walk are untouched on the compiler path.
-- Formatter mirror (`go/token`, `go/scanner`, `go/ast`, `go/parser`, `go/printer`): new `ASYNC`/`AWAIT` tokens, `ast.AwaitExpr` (with `Walk` support) and `FuncDecl.Async`/`AsyncPos`, parser support for async functions and class methods plus the `await` unary operator, and canonical printing (`async func`, `await expr`, `async metodo`). `go/types` (partial gecko mirror) models an async function object as returning `chan T` while checking its body against the declared result, and typechecks `await` as a receive.
+- Formatter mirror (`go/token`, `go/scanner`, `go/ast`, `go/parser`, `go/printer`): new `ASYNC`/`AWAIT` tokens, `ast.AwaitExpr` (with `Walk` support) and `FuncDecl.Async`/`AsyncPos`, parser support for async functions and class methods plus the `await` unary operator, and canonical printing (`async func`, `await expr`, `async method`). `go/types` (partial gecko mirror) models an async function object as returning `chan T` while checking its body against the declared result, and typechecks `await` as a receive.
 - Tests/examples: `testdata/local/gecko_async.gk` covers async result/void functions, futures used as channels, `await` of a non-future, and `await` as a statement; the `go/printer` `gecko.gk` golden covers parsing/formatting; new `examples/11_async.gk` demonstrates the feature.
 
-**Hash do commit / Commit hash:** `TBD`
+**Hash do commit / Commit hash:** `2e187f665b`
 
 **Mensagem do commit / Commit message:**
 ```
