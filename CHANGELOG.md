@@ -16,7 +16,7 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 - `cmd/go` `gopath_install` script + `internal/work/build.go`: the `helloworld` fixture and the CLI message now use `.gk` (`gecko: no install location for .gk files listed on command line (GOBIN not set)`).
 - The `testplugin` fixtures and the `goroot_executable`/`goroot_executable_trimpath` check programs remain in upstream Go syntax and continue to fail by design — gecko cannot compile `.go` files, whether named on the command line or contained in a package, and converting those fixtures is out of scope (see the gecko dialect rules below).
 
-**Hash do commit / Commit hash:** `9fe428e3`
+**Hash do commit / Commit hash:** `0bce5daa`
 
 **Mensagem do commit / Commit message:**
 ```
