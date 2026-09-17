@@ -24,12 +24,12 @@ cd ..
 # (there is nowhere to install it).
 env GOPATH= # reset to default ($HOME/go, which does not exist)
 env GOBIN=
-! go install go-cmd-test/helloworld.go
-stderr '^gecko: no install location for \.go files listed on command line \(GOBIN not set\)$'
+! go install go-cmd-test/helloworld.gk
+stderr '^gecko: no install location for \.gk files listed on command line \(GOBIN not set\)$'
 
 # With $GOBIN set, should install there.
 env GOBIN=$WORK/bin1
-go install go-cmd-test/helloworld.go
+go install go-cmd-test/helloworld.gk
 exists $GOBIN/helloworld$GOEXE
 
 # We can't assume that we can write to GOROOT, because it may not be writable.
@@ -44,7 +44,7 @@ env GOBIN=$WORK/bin1
 go list -f '{{.Target}}' cmd/fix
 stdout $GOROOT'[/\\]pkg[/\\]tool[/\\]'$GOOS'_'$GOARCH'[/\\]fix'$GOEXE'$'
 
--- go-cmd-test/helloworld.go --
+-- go-cmd-test/helloworld.gk --
 package main
 
 func main() {

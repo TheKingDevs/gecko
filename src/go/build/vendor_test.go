@@ -22,6 +22,23 @@ var allowedPackagePrefixes = []string{
 	"github.com/google/pprof",
 	"github.com/ianlancetaylor/demangle",
 	"rsc.io/markdown",
+
+	// Dependencies of the gecko package manager (cmd/gpm), vendored under
+	// cmd/vendor.
+	"github.com/atotto/clipboard",
+	"github.com/aymanbagabas/go-osc52",
+	"github.com/catppuccin/go",
+	"github.com/charmbracelet",
+	"github.com/clipperhouse",
+	"github.com/dustin/go-humanize",
+	"github.com/erikgeiser/coninput",
+	"github.com/lucasb-eyer/go-colorful",
+	"github.com/mattn",
+	"github.com/mitchellh/hashstructure",
+	"github.com/muesli",
+	"github.com/rivo/uniseg",
+	"github.com/sahilm/fuzzy",
+	"github.com/xo/terminfo",
 }
 
 // Verify that the vendor directories contain only packages matching the list above.

@@ -776,7 +776,7 @@ func InstallPackages(ld *modload.Loader, ctx context.Context, patterns []string,
 			case p.Internal.GobinSubdir:
 				base.Errorf("gecko: cannot install cross-compiled binaries when GOBIN is set")
 			case p.Internal.CmdlineFiles:
-				base.Errorf("gecko: no install location for .go files listed on command line (GOBIN not set)")
+				base.Errorf("gecko: no install location for .gk files listed on command line (GOBIN not set)")
 			case p.ConflictDir != "":
 				base.Errorf("gecko: no install location for %s: hidden by %s", p.Dir, p.ConflictDir)
 			default:

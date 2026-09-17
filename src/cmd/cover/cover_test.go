@@ -158,7 +158,13 @@ func TestCover(t *testing.T) {
 		[]byte("}"))
 	lines = append(lines, []byte("func unFormatted2(b bool) {if b{}else{}}"))
 
-	coverInput := filepath.Join(dir, "test_line.go")
+	// Keep the uninstrumented input out of the package directory that
+	// will be built below, so it is not compiled alongside the output.
+	inputDir := filepath.Join(dir, "input")
+	if err := os.MkdirAll(inputDir, 0777); err != nil {
+		t.Fatal(err)
+	}
+	coverInput := filepath.Join(inputDir, "test_line.go")
 	if err := os.WriteFile(coverInput, bytes.Join(lines, []byte("\n")), 0666); err != nil {
 		t.Fatal(err)
 	}
@@ -186,8 +192,14 @@ func TestCover(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// go run ./testdata/main.go ./testdata/test.go
-	cmd = testenv.Command(t, testenv.GoToolPath(t), "run", tmpTestMain, coverOutput)
+	// gecko rejects .go files named directly on the command line, so build the
+	// generated files as a package in a throwaway module instead.
+	if err := os.WriteFile(filepath.Join(dir, "go.mod"), []byte("module cover.run\n\ngo 1.19\n"), 0444); err != nil {
+		t.Fatal(err)
+	}
+
+	cmd = testenv.Command(t, testenv.GoToolPath(t), "run", ".")
+	cmd.Dir = dir
 	run(cmd, t)
 
 	file, err = os.ReadFile(coverOutput)

@@ -5,6 +5,24 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: fix fork fallout in the toolchain's own test suite
+
+**Título / Title:** the toolchain's own tests no longer pin the `bin/go` → `bin/gecko` renaming or the gecko dialect restrictions to stale upstream text, so `go/build`, `cmd/cover` and `internal/testenv` pass again.
+
+**Descrição / Description:**
+
+- `go/build`: `TestImportPackageOutsideModule` now expects `no gecko.json found in current directory or any parent directory` (was `go.mod file not found ...`), and the `TestVendorPackages` allowlist gains the `cmd/vendor` dependency prefixes used by the fork's `cmd/gpm` package manager (`github.com/charmbracelet`, `github.com/atotto/clipboard`, `github.com/aymanbagabas`, `github.com/catppuccin`, `github.com/clipperhouse`, `github.com/dustin/go-humanize`, `github.com/erikgeiser`, `github.com/lucasb-eyer`, `github.com/mattn`, `github.com/mitchellh`, `github.com/muesli`, `github.com/rivo/uniseg`, `github.com/sahilm`, `github.com/xo/terminfo`).
+- `cmd/cover` `TestCover`: the instrumented output is compiled as a package in a throwaway module (`go run .` in a temp directory with a `go.mod`) instead of naming `.go` files on the command line, which gecko rejects.
+- `cmd/go` `gopath_install` script + `internal/work/build.go`: the `helloworld` fixture and the CLI message now use `.gk` (`gecko: no install location for .gk files listed on command line (GOBIN not set)`).
+- The `testplugin` fixtures and the `goroot_executable`/`goroot_executable_trimpath` check programs remain in upstream Go syntax and continue to fail by design — gecko cannot compile `.go` files, whether named on the command line or contained in a package, and converting those fixtures is out of scope (see the gecko dialect rules below).
+
+**Hash do commit / Commit hash:** `9fe428e3`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: fix fork fallout in the toolchain's own tests
+```
+
 ### Entry: bin/gecko command
 
 **Título / Title:** the build now installs the toolchain command as `bin/gecko` only. `make.bash` no longer creates `bin/go`, and the in-tree code that located the command at `$GOROOT/bin/go` now uses `$GOROOT/bin/gecko`.
