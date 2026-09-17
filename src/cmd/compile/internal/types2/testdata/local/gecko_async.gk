@@ -1,0 +1,50 @@
+// Copyright 2026 The Gecko Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// gecko async/await. The compiler parser desugars
+//
+//	async func f(a: int): T { B }
+//
+// into a function returning a buffered channel of T that runs B in a
+// goroutine, and `await e` into a receive operation `<-e`, so types2 only
+// ever sees the desugared code: an async function's type is func(...) chan T
+// and awaiting a future yields its element type.
+
+package geckoasync
+
+// async func returns a future (chan T); await receives from it.
+async func add(a: int, b: int): int {
+	return a + b
+}
+
+async func greet(name: string): string {
+	return "hi " + name
+}
+
+// An async function without a result returns chan any and awaits to any.
+async func fire() {
+	println("fire")
+}
+
+func f() {
+	x = await add(1, 2) // x is int
+	_ = x
+	s = await greet("a") // s is string
+	_ = s
+	await fire()
+}
+
+// The future is a normal channel: it can be stored and awaited later.
+func g() {
+	fut = add(1, 2)
+	x = await fut
+	_ = x
+}
+
+// await of a non-future is a receive from a non-channel.
+func h() {
+	n = 3
+	x = await n // ERROR "cannot receive from"
+	_ = x
+}

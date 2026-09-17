@@ -1186,6 +1186,12 @@ func (check *Checker) exprInternal(T *target, x *operand, e ast.Expr) exprKind {
 			x.typ_ = base
 		}
 
+	case *ast.AwaitExpr:
+		check.geckoAwait(x, e)
+		if !x.isValid() {
+			goto Error
+		}
+
 	case *ast.UnaryExpr:
 		check.unary(x, e)
 		if !x.isValid() {

@@ -1,0 +1,54 @@
+// 11_async.gk — concurrency with async/await in gecko.
+//
+// An `async func` returns a future instead of its declared result. Calling it
+// starts the body on its own goroutine (immediately, like `go`), and the
+// future is a buffered channel carrying the body's result. A future is
+// awaited with `await expr`, which blocks until the value is ready and yields
+// it. Awaiting is therefore just a receive from the channel:
+//
+//	async func add(a: int, b: int): int { return a + b }
+//
+//	func main() {
+//		f = add(20, 22)    // f is a chan int; body already running
+//		println(await f)   // 42
+//	}
+//
+// `await` also accepts a direct call, `await add(20, 22)`. An async function
+// with no declared result awaits to the value `null`:
+//
+//	async func log(msg: string) { println(msg) }
+//	await log("hi")
+//
+// An async function may declare at most one result, must have a body, and the
+// constructor of a class cannot be async.
+//
+// Run from examples/:
+//   ../bin/go run 11_async.gk
+
+package main
+
+async func add(a: int, b: int): int {
+	return a + b
+}
+
+async func greet(name: string): string {
+	return "hello " + name
+}
+
+async func shout(message: string) {
+	println("shout:", message)
+}
+
+func main() {
+	// Awaiting a future yields the value the body returned.
+	println("add(20, 22) =", await add(20, 22))
+	println("greet =", await greet("gecko"))
+
+	// A future can be stored and awaited later.
+	f = add(1, 2)
+	println("stored future =", await f)
+
+	// An async function without a result is awaited for ordering only.
+	await shout("done")
+	println("main done")
+}

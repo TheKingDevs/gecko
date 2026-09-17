@@ -75,6 +75,8 @@ const (
 	_Catch       // catch
 	_Finally     // finally
 	_Throw       // throw
+	_Async       // async
+	_Await       // await
 
 	// empty line comment to exclude it from .String
 	tokenCount //

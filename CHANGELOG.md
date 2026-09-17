@@ -5,6 +5,35 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: async/await
+
+**Título / Title:** `.gk` files gain `async func` and `await`. An async function returns a *future* — a buffered channel of its declared result, or `chan any` when it declares none — and runs its body on its own goroutine (started immediately, like `go`). `await expr` blocks until the value is ready and yields it, so `await f(x)` and a stored future (`fut = f(x)` then `await fut`) both work. An async function may declare at most one result, must have a body, and a class `constructor` cannot be async.
+
+**Descrição / Description:**
+
+- Syntax (`cmd/compile/internal/syntax`): `tokens.go` gains `_Async`/`_Await` after `_Throw` (`token_string.go` updated); `scanner.go` recognizes the two keywords only in `.gk` files and does not insert a semicolon after them. `parser.go` parses `await e` as a unary expression and **desugars async functions and await at parse time**:
+  ```go
+  async func f(a: int): T { <body> }
+
+  // becomes
+  func f(a: int) chan T {
+      var geckoAsyncCh: chan T = make(chan T, 1)
+      go func() { geckoAsyncCh <- func() T { <body> }() }()
+      return geckoAsyncCh
+  }
+  ```
+  `await e` becomes the receive `<-e`. A function with no declared result runs its body for its side effects and sends `null` (so awaiting it yields `any`). The inner closure keeps the declared result type, so `return` statements are checked against the declaration and no special control-flow handling is needed (unlike try/catch, returns do not cross the goroutine boundary). `async` is accepted as a top-level declaration (`async func`), after `export`, and as a class method; `async constructor` is rejected, as is an async function with more than one result or without a body.
+- No IR changes: the desugared AST is ordinary `go`/`chan`/`make`/receive code, so noder/typecheck/walk are untouched on the compiler path.
+- Formatter mirror (`go/token`, `go/scanner`, `go/ast`, `go/parser`, `go/printer`): new `ASYNC`/`AWAIT` tokens, `ast.AwaitExpr` (with `Walk` support) and `FuncDecl.Async`/`AsyncPos`, parser support for async functions and class methods plus the `await` unary operator, and canonical printing (`async func`, `await expr`, `async metodo`). `go/types` (partial gecko mirror) models an async function object as returning `chan T` while checking its body against the declared result, and typechecks `await` as a receive.
+- Tests/examples: `testdata/local/gecko_async.gk` covers async result/void functions, futures used as channels, `await` of a non-future, and `await` as a statement; the `go/printer` `gecko.gk` golden covers parsing/formatting; new `examples/11_async.gk` demonstrates the feature.
+
+**Hash do commit / Commit hash:** `TBD`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: add async/await
+```
+
 ### Entry: cross-package class members, gecko.json projects, and gecko.json-first errors
 
 **Título / Title:** struct fields and methods of gecko classes are now reachable from importing packages regardless of capitalization (e.g. `p.name` / `p.greet()` on a value returned by `new pkg.Class(...)`), `examples/` is now a `gecko.json` project instead of a Go module, and the "no main module" error asks for a `gecko.json` (`gpm init`) rather than a `go.mod`.

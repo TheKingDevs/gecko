@@ -779,6 +779,13 @@ func (check *Checker) funcDecl(obj *Func, decl *declInfo) {
 	sig.scope.pos = fdecl.Pos()
 	sig.scope.end = fdecl.End()
 
+	// A gecko async function returns a future rather than its declared
+	// result; its body is still checked against the declared result.
+	bodySig := sig
+	if fdecl.Async {
+		bodySig = check.geckoAsyncResult(sig)
+	}
+
 	if fdecl.Type.TypeParams.NumFields() > 0 && fdecl.Body == nil {
 		check.softErrorf(fdecl.Name, BadDecl, "generic function is missing function body")
 	}
@@ -787,7 +794,7 @@ func (check *Checker) funcDecl(obj *Func, decl *declInfo) {
 	// (functions implemented elsewhere have no body)
 	if !check.conf.IgnoreFuncBodies && fdecl.Body != nil {
 		check.later(func() {
-			check.funcBody(decl, obj.name, sig, fdecl.Body, nil)
+			check.funcBody(decl, obj.name, bodySig, fdecl.Body, nil)
 		}).describef(obj, "func %s", obj.name)
 	}
 }

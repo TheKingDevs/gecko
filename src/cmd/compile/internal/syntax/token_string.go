@@ -62,12 +62,14 @@ func _() {
 	_ = x[_Catch-52]
 	_ = x[_Finally-53]
 	_ = x[_Throw-54]
-	_ = x[tokenCount-55]
+	_ = x[_Async-55]
+	_ = x[_Await-56]
+	_ = x[tokenCount-57]
 }
 
-const _token_name = "EOFnameliteralopop=opop=:=<-*([{)]},;:....breakcasechanconstcontinuedefaultdeferelsefallthroughforfuncgogotoifimportinterfacemappackagerangereturnselectstructswitchtypevarwhileclassnewexporttrycatchfinallythrow"
+const _token_name = "EOFnameliteralopop=opop=:=<-*([{)]},;:....breakcasechanconstcontinuedefaultdeferelsefallthroughforfuncgogotoifimportinterfacemappackagerangereturnselectstructswitchtypevarwhileclassnewexporttrycatchfinallythrowasyncawait"
 
-var _token_index = [...]uint8{0, 3, 7, 14, 16, 19, 23, 24, 26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 42, 47, 51, 55, 60, 68, 75, 80, 84, 95, 98, 102, 104, 108, 110, 116, 125, 128, 135, 140, 146, 152, 158, 164, 168, 171, 176, 181, 184, 190, 193, 198, 205, 210, 210}
+var _token_index = [...]uint8{0, 3, 7, 14, 16, 19, 23, 24, 26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 42, 47, 51, 55, 60, 68, 75, 80, 84, 95, 98, 102, 104, 108, 110, 116, 125, 128, 135, 140, 146, 152, 158, 164, 168, 171, 176, 181, 184, 190, 193, 198, 205, 210, 215, 220, 220}
 
 func (i token) String() string {
 	idx := int(i) - 1

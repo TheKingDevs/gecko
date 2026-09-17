@@ -14,6 +14,7 @@ package types
 import (
 	"go/ast"
 	"go/token"
+	. "internal/types/errors"
 	"strings"
 )
 
@@ -135,3 +136,42 @@ func (check *Checker) geckoLitType(e ast.Expr) Type {
 // const class fields) are modelled only by the compiler's types2 front end,
 // so there is nothing here for this mirror to enforce.
 func (check *Checker) geckoConstFieldGuard(lhs, rhs ast.Expr) {}
+
+// geckoAsyncResult rewrites sig so that an async function returns a future (a
+// channel of its declared result, or `chan any` when it declares none). It
+// returns the signature to use when checking the function body, which keeps
+// the declared result so that `return` statements are checked as written.
+// This mirrors the compiler's desugaring of async functions into functions
+// that return a buffered channel.
+func (check *Checker) geckoAsyncResult(sig *Signature) *Signature {
+	body := *sig
+	var elem Type = universeAny.Type()
+	if sig.results.Len() == 1 {
+		elem = sig.results.At(0).typ
+	}
+	sig.results = NewTuple(NewVar(token.NoPos, check.pkg, "", NewChan(SendRecv, elem)))
+	return &body
+}
+
+// geckoAwait type-checks a gecko `await X` expression. X must be a future
+// (a channel); the result is the future's element type, mirroring the
+// compiler's lowering of await to a receive operation.
+func (check *Checker) geckoAwait(x *operand, e *ast.AwaitExpr) {
+	check.expr(nil, x, e.X)
+	if !x.isValid() {
+		return
+	}
+	ch, _ := x.typ().Underlying().(*Chan)
+	if ch == nil {
+		check.errorf(e.X, InvalidReceive, invalidOp+"cannot await non-future value of type %s", x.typ())
+		x.invalidate()
+		return
+	}
+	if !check.isComplete(ch.elem) {
+		x.invalidate()
+		return
+	}
+	x.mode_ = value
+	x.typ_ = ch.elem
+	check.hasCallOrRecv = true
+}

@@ -1920,6 +1920,13 @@ func (p *parser) parseUnaryExpr() ast.Expr {
 		x := p.parseUnaryExpr()
 		return &ast.UnaryExpr{OpPos: pos, Op: op, X: x}
 
+	case token.AWAIT:
+		// gecko: await x
+		await := p.pos
+		p.next()
+		x := p.parseUnaryExpr()
+		return &ast.AwaitExpr{Await: await, X: x}
+
 	case token.ARROW:
 		// channel type or receive expression
 		arrow := p.pos
@@ -2710,7 +2717,7 @@ func (p *parser) parseStmt() (s ast.Stmt) {
 		// tokens that may start an expression
 		token.IDENT, token.INT, token.FLOAT, token.IMAG, token.CHAR, token.STRING, token.FUNC, token.LPAREN, // operands
 		token.LBRACK, token.STRUCT, token.MAP, token.CHAN, token.INTERFACE, // composite types
-		token.ADD, token.SUB, token.MUL, token.AND, token.XOR, token.ARROW, token.NOT: // unary operators
+		token.ADD, token.SUB, token.MUL, token.AND, token.XOR, token.ARROW, token.NOT, token.AWAIT: // unary operators
 		s, _ = p.parseSimpleStmt(labelOk)
 		// because of the required look-ahead, labeled statements are
 		// parsed by parseSimpleStmt - don't expect a semicolon after
@@ -3104,7 +3111,10 @@ func (p *parser) parseGenDecl(keyword token.Token, f parseSpecFunction) *ast.Gen
 	}
 }
 
-func (p *parser) parseFuncDecl(export bool) *ast.FuncDecl {
+// parseFuncDecl parses a function declaration. async is the position of the
+// gecko "async" keyword preceding "func", or token.NoPos for a normal
+// function.
+func (p *parser) parseFuncDecl(async token.Pos, export bool) *ast.FuncDecl {
 	if p.trace {
 		defer un(trace(p, "FunctionDecl"))
 	}
@@ -3144,17 +3154,19 @@ func (p *parser) parseFuncDecl(export bool) *ast.FuncDecl {
 	}
 
 	decl := &ast.FuncDecl{
-		Doc:    doc,
-		Recv:   recv,
-		Name:   ident,
+		Doc:  doc,
+		Recv: recv,
+		Name: ident,
 		Type: &ast.FuncType{
 			Func:       pos,
 			TypeParams: tparams,
 			Params:     params,
 			Results:    results,
 		},
-		Body:   body,
-		Export: export,
+		Body:     body,
+		Export:   export,
+		Async:    async.IsValid(),
+		AsyncPos: async,
 	}
 	return decl
 }
@@ -3169,7 +3181,16 @@ func (p *parser) parseExportDecl() ast.Decl {
 
 	switch p.tok {
 	case token.FUNC:
-		d := p.parseFuncDecl(true)
+		d := p.parseFuncDecl(token.NoPos, true)
+		if d.Doc == nil {
+			d.Doc = doc
+		}
+		return d
+
+	case token.ASYNC:
+		async := p.pos
+		p.next()
+		d := p.parseFuncDecl(async, true)
 		if d.Doc == nil {
 			d.Doc = doc
 		}
@@ -3259,6 +3280,17 @@ func (p *parser) parseClassDecl(export bool) ast.Decl {
 					decl.Fields = append(decl.Fields, spec)
 				}
 				decl.Inits = append(decl.Inits, p.fieldInitStmts(spec.Names, spec.Values)...)
+			case token.ASYNC:
+				async := p.pos
+				p.next()
+				name := p.parseIdent()
+				if name.Name == "constructor" {
+					p.error(async, "the constructor cannot be async (gecko)")
+				}
+				m := p.parseClassMethodTail(name)
+				m.Async = true
+				m.AsyncPos = async
+				decl.Methods = append(decl.Methods, m)
 			case token.IDENT:
 				name := p.parseIdent()
 				if p.tok == token.ASSIGN {
@@ -3384,7 +3416,12 @@ func (p *parser) parseDecl(sync map[token.Token]bool) ast.Decl {
 		f = p.parseTypeSpec
 
 	case token.FUNC:
-		return p.parseFuncDecl(false)
+		return p.parseFuncDecl(token.NoPos, false)
+
+	case token.ASYNC:
+		async := p.pos
+		p.next()
+		return p.parseFuncDecl(async, false)
 
 	case token.CLASS:
 		return p.parseClassDecl(false)

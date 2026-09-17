@@ -126,21 +126,23 @@ func main() {
 	//     47  .  .  .  .  Rbrace: 5:1
 	//     48  .  .  .  }
 	//     49  .  .  .  Export: false
-	//     50  .  .  .  GeckoSynthCtor: false
-	//     51  .  .  }
-	//     52  .  }
-	//     53  .  FileStart: 1:1
-	//     54  .  FileEnd: 5:3
-	//     55  .  Scope: *ast.Scope {
-	//     56  .  .  Objects: map[string]*ast.Object (len = 1) {
-	//     57  .  .  .  "main": *(obj @ 11)
-	//     58  .  .  }
-	//     59  .  }
-	//     60  .  Unresolved: []*ast.Ident (len = 1) {
-	//     61  .  .  0: *(obj @ 29)
-	//     62  .  }
-	//     63  .  GoVersion: ""
-	//     64  }
+	//     50  .  .  .  Async: false
+	//     51  .  .  .  AsyncPos: -
+	//     52  .  .  .  GeckoSynthCtor: false
+	//     53  .  .  }
+	//     54  .  }
+	//     55  .  FileStart: 1:1
+	//     56  .  FileEnd: 5:3
+	//     57  .  Scope: *ast.Scope {
+	//     58  .  .  Objects: map[string]*ast.Object (len = 1) {
+	//     59  .  .  .  "main": *(obj @ 11)
+	//     60  .  .  }
+	//     61  .  }
+	//     62  .  Unresolved: []*ast.Ident (len = 1) {
+	//     63  .  .  0: *(obj @ 29)
+	//     64  .  }
+	//     65  .  GoVersion: ""
+	//     66  }
 }
 
 func ExamplePreorder() {

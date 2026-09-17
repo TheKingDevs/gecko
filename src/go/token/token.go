@@ -131,6 +131,8 @@ const (
 	CATCH
 	FINALLY
 	THROW
+	ASYNC
+	AWAIT
 	keyword_end
 
 	additional_beg
@@ -232,19 +234,21 @@ var tokens = [...]string{
 	RANGE:     "range",
 	RETURN:    "return",
 
-	SELECT: "select",
-	STRUCT: "struct",
-	SWITCH: "switch",
-	TYPE:   "type",
-	VAR:    "var",
-	WHILE:  "while",
-	CLASS:  "class",
-	NEW:    "new",
+	SELECT:  "select",
+	STRUCT:  "struct",
+	SWITCH:  "switch",
+	TYPE:    "type",
+	VAR:     "var",
+	WHILE:   "while",
+	CLASS:   "class",
+	NEW:     "new",
 	EXPORT:  "export",
 	TRY:     "try",
 	CATCH:   "catch",
 	FINALLY: "finally",
 	THROW:   "throw",
+	ASYNC:   "async",
+	AWAIT:   "await",
 
 	TILDE: "~",
 }

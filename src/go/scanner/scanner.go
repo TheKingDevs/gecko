@@ -852,11 +852,12 @@ scanAgain:
 			tok = token.Lookup(lit)
 			if !s.Gecko {
 				// "while", "class", "new", "export", "try", "catch",
-				// "finally" and "throw" are keywords only for gecko (.gk)
-				// source files.
+				// "finally", "throw", "async" and "await" are keywords only
+				// for gecko (.gk) source files.
 				switch tok {
 				case token.WHILE, token.CLASS, token.NEW, token.EXPORT,
-					token.TRY, token.CATCH, token.FINALLY, token.THROW:
+					token.TRY, token.CATCH, token.FINALLY, token.THROW,
+					token.ASYNC, token.AWAIT:
 					tok = token.IDENT
 				}
 			}

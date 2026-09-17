@@ -328,7 +328,7 @@ type (
 
 	// A CompositeLit node represents a composite literal.
 	CompositeLit struct {
-		Type          Expr // literal type; or nil
+		Type          Expr      // literal type; or nil
 		Lbrace        token.Pos // position of "{" (or "[" for a gecko dynamic-slice literal)
 		Elts          []Expr    // list of composite elements; or nil
 		Rbrace        token.Pos // position of "}" (or "]" for a gecko dynamic-slice literal)
@@ -345,6 +345,13 @@ type (
 		Args     []Expr    // constructor arguments; or nil
 		Ellipsis token.Pos // position of "..." (token.NoPos if there is no "...")
 		Rparen   token.Pos // position of ")"
+	}
+
+	// An AwaitExpr node represents a gecko "await X" expression, which
+	// waits for the future X and yields its result value.
+	AwaitExpr struct {
+		Await token.Pos // position of "await" keyword
+		X     Expr      // future expression
 	}
 
 	// A ParenExpr node represents a parenthesized expression.
@@ -523,6 +530,7 @@ func (x *SliceExpr) Pos() token.Pos      { return x.X.Pos() }
 func (x *TypeAssertExpr) Pos() token.Pos { return x.X.Pos() }
 func (x *CallExpr) Pos() token.Pos       { return x.Fun.Pos() }
 func (x *NewExpr) Pos() token.Pos        { return x.New }
+func (x *AwaitExpr) Pos() token.Pos      { return x.Await }
 func (x *StarExpr) Pos() token.Pos       { return x.Star }
 func (x *UnaryExpr) Pos() token.Pos      { return x.OpPos }
 func (x *BinaryExpr) Pos() token.Pos     { return x.X.Pos() }
@@ -566,6 +574,7 @@ func (x *SliceExpr) End() token.Pos      { return x.Rbrack + 1 }
 func (x *TypeAssertExpr) End() token.Pos { return x.Rparen + 1 }
 func (x *CallExpr) End() token.Pos       { return x.Rparen + 1 }
 func (x *NewExpr) End() token.Pos        { return x.Rparen + 1 }
+func (x *AwaitExpr) End() token.Pos      { return x.X.End() }
 func (x *StarExpr) End() token.Pos       { return x.X.End() }
 func (x *UnaryExpr) End() token.Pos      { return x.X.End() }
 func (x *BinaryExpr) End() token.Pos     { return x.Y.End() }
@@ -596,8 +605,9 @@ func (*IndexExpr) exprNode()      {}
 func (*IndexListExpr) exprNode()  {}
 func (*SliceExpr) exprNode()      {}
 func (*TypeAssertExpr) exprNode() {}
-func (*CallExpr) exprNode()        {}
-func (*NewExpr) exprNode()         {}
+func (*CallExpr) exprNode()       {}
+func (*NewExpr) exprNode()        {}
+func (*AwaitExpr) exprNode()      {}
 func (*StarExpr) exprNode()       {}
 func (*UnaryExpr) exprNode()      {}
 func (*BinaryExpr) exprNode()     {}
@@ -808,8 +818,8 @@ type (
 
 	// A CatchClause represents the catch clause of a gecko TryStmt.
 	CatchClause struct {
-		Catch token.Pos   // position of "catch" keyword
-		Var   Expr        // catch variable; or nil if the binding is omitted
+		Catch token.Pos // position of "catch" keyword
+		Var   Expr      // catch variable; or nil if the binding is omitted
 		Body  *BlockStmt
 	}
 
@@ -975,14 +985,14 @@ type (
 
 	// An ImportSpec node represents a single package import.
 	ImportSpec struct {
-		Doc       *CommentGroup // associated documentation; or nil
-		Name      *Ident        // local package name (including "."); or nil
-		TsNames   []Expr        // gecko member list for "import { a, b } from \"p\""; or nil
-		TsPos     token.Pos     // position of "{" for a member list, if any
-		TsFrom    bool          // true if the path was preceded by "from" (gecko import)
-		Path      *BasicLit     // import path
-		Comment   *CommentGroup // line comments; or nil
-		EndPos    token.Pos     // end of spec (overrides Path.Pos if nonzero)
+		Doc     *CommentGroup // associated documentation; or nil
+		Name    *Ident        // local package name (including "."); or nil
+		TsNames []Expr        // gecko member list for "import { a, b } from \"p\""; or nil
+		TsPos   token.Pos     // position of "{" for a member list, if any
+		TsFrom  bool          // true if the path was preceded by "from" (gecko import)
+		Path    *BasicLit     // import path
+		Comment *CommentGroup // line comments; or nil
+		EndPos  token.Pos     // end of spec (overrides Path.Pos if nonzero)
 	}
 
 	// A ValueSpec node represents a constant or variable declaration
@@ -1089,29 +1099,29 @@ type (
 	// recorded in source order; they use an implicit "this" receiver that
 	// is not part of the source text.
 	ClassDecl struct {
-		Doc     *CommentGroup  // associated documentation; or nil
-		Class   token.Pos      // position of "class" keyword
-		Export  bool           // exported via the gecko export keyword
-		Name    *Ident         // class name
+		Doc    *CommentGroup // associated documentation; or nil
+		Class  token.Pos     // position of "class" keyword
+		Export bool          // exported via the gecko export keyword
+		Name   *Ident        // class name
 		// Base is the base class expression of an `extends` clause
 		// ("class Dog extends Animal { ... }"), or nil for a standalone
 		// class.
-		Base    Expr           // base class (extends clause); or nil
-		Lbrace  token.Pos      // position of "{", if any
-		Fields  []*ValueSpec   // field declarations (var) in class body
-		Consts  []*ValueSpec   // read-only field declarations (const) in class body
-		Inits   []Stmt     // merged field initializer statements (run before the constructor body)
-		Methods []*FuncDecl    // class methods in source order
-		Rbrace  token.Pos      // position of "}", if any
+		Base    Expr         // base class (extends clause); or nil
+		Lbrace  token.Pos    // position of "{", if any
+		Fields  []*ValueSpec // field declarations (var) in class body
+		Consts  []*ValueSpec // read-only field declarations (const) in class body
+		Inits   []Stmt       // merged field initializer statements (run before the constructor body)
+		Methods []*FuncDecl  // class methods in source order
+		Rbrace  token.Pos    // position of "}", if any
 	}
 
 	// An ExportDecl node represents a gecko export declaration,
 	// "export X" or "export { X, Y }", which marks the named
 	// package-level declarations as exported.
 	ExportDecl struct {
-		Doc      *CommentGroup // associated documentation; or nil
-		ExportPos token.Pos    // position of "export" keyword
-		Names    []*Ident      // names to export (len(Names) > 0)
+		Doc       *CommentGroup // associated documentation; or nil
+		ExportPos token.Pos     // position of "export" keyword
+		Names     []*Ident      // names to export (len(Names) > 0)
 	}
 
 	// A FuncDecl node represents a function declaration.
@@ -1122,6 +1132,10 @@ type (
 		Type   *FuncType     // function signature: type and value parameters, results, and position of "func" keyword
 		Body   *BlockStmt    // function body; or nil for external (non-Go) function
 		Export bool          // exported via the gecko export keyword
+		Async  bool          // declared with the gecko async keyword
+		// AsyncPos is the position of the "async" keyword (token.NoPos if
+		// Async is false).
+		AsyncPos token.Pos
 		// GeckoSynthCtor reports whether this class method is the
 		// constructor synthesized by the parser for a class that declares
 		// field initializers but has no explicit constructor.
@@ -1131,8 +1145,8 @@ type (
 
 // Pos and End implementations for declaration nodes.
 
-func (d *BadDecl) Pos() token.Pos  { return d.From }
-func (d *GenDecl) Pos() token.Pos  { return d.TokPos }
+func (d *BadDecl) Pos() token.Pos { return d.From }
+func (d *GenDecl) Pos() token.Pos { return d.TokPos }
 func (d *ClassDecl) Pos() token.Pos {
 	return d.Class
 }
@@ -1142,7 +1156,12 @@ func (d *ExportDecl) Pos() token.Pos {
 	}
 	return d.Names[0].Pos()
 }
-func (d *FuncDecl) Pos() token.Pos { return d.Type.Pos() }
+func (d *FuncDecl) Pos() token.Pos {
+	if d.Async && d.AsyncPos.IsValid() {
+		return d.AsyncPos
+	}
+	return d.Type.Pos()
+}
 
 func (d *BadDecl) End() token.Pos { return d.To }
 func (d *GenDecl) End() token.Pos {
@@ -1184,11 +1203,11 @@ func (d *FuncDecl) End() token.Pos {
 
 // declNode() ensures that only declaration nodes can be
 // assigned to a Decl.
-func (*BadDecl) declNode()  {}
-func (*GenDecl) declNode()  {}
-func (*ClassDecl) declNode() {}
+func (*BadDecl) declNode()    {}
+func (*GenDecl) declNode()    {}
+func (*ClassDecl) declNode()  {}
 func (*ExportDecl) declNode() {}
-func (*FuncDecl) declNode() {}
+func (*FuncDecl) declNode()   {}
 
 // ----------------------------------------------------------------------------
 // Files and packages

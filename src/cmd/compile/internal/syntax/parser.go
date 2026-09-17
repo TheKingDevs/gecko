@@ -477,6 +477,13 @@ func (p *parser) fileOrNil() *File {
 				f.DeclList = append(f.DeclList, d)
 			}
 
+		case _Async:
+			apos := p.pos()
+			p.next()
+			if d := p.geckoAsyncDecl(apos, false); d != nil {
+				f.DeclList = append(f.DeclList, d)
+			}
+
 		case _Export:
 			p.next()
 			f.DeclList = appendGeckoExport(f.DeclList, p)
@@ -488,7 +495,7 @@ func (p *parser) fileOrNil() *File {
 			} else {
 				p.syntaxError("non-declaration statement outside function body")
 			}
-			p.advance(_Import, _Const, _Class, _Type, _Var, _Func)
+			p.advance(_Import, _Const, _Class, _Type, _Var, _Func, _Async)
 			continue
 		}
 
@@ -498,7 +505,7 @@ func (p *parser) fileOrNil() *File {
 
 		if p.tok != _EOF && !p.got(_Semi) {
 			p.syntaxError("after top level declaration")
-			p.advance(_Import, _Const, _Class, _Type, _Var, _Func, _Export)
+			p.advance(_Import, _Const, _Class, _Type, _Var, _Func, _Export, _Async)
 		}
 	}
 	// p.tok == _EOF
@@ -541,6 +548,13 @@ func appendGeckoExport(list []Decl, p *parser) []Decl {
 	case _Func:
 		p.next()
 		if d := p.funcDeclOrNil(true); d != nil {
+			return append(list, d)
+		}
+
+	case _Async:
+		apos := p.pos()
+		p.next()
+		if d := p.geckoAsyncDecl(apos, true); d != nil {
 			return append(list, d)
 		}
 
@@ -924,6 +938,24 @@ func (p *parser) classDecl(export bool) []Decl {
 				m.Name = name
 				methods = append(methods, p.classMethodTail(m))
 			}
+		case _Async:
+			// async method: async name(...) : T { ... }
+			apos := p.pos()
+			p.next()
+			if p.tok != _Name {
+				p.syntaxError("expected method name after async (gecko)")
+				p.advance(_Rbrace, _Name, _Var, _Const, _Async)
+				break
+			}
+			mname := p.name()
+			if mname.Value == "constructor" {
+				p.errorAt(apos, "the constructor cannot be async (gecko)")
+			}
+			m := new(FuncDecl)
+			m.pos = mname.Pos()
+			m.Pragma = p.takePragma()
+			m.Name = mname
+			methods = append(methods, p.geckoAsyncFunc(apos, p.classMethodTail(m)))
 		case _Var:
 			p.next()
 			f := p.varDecl(nil, false).(*VarDecl)
@@ -1116,9 +1148,9 @@ func (p *parser) geckoBaseName(e Expr) string {
 // geckoRewriteSuper rewrites gecko `super` references inside a derived
 // class method body into selections on the embedded base class:
 //
-//		super(args)     -> this.<base>.constructor(args)
-//		super.m(args)   -> this.<base>.m(args)
-//		super.field     -> this.<base>.field
+//	super(args)     -> this.<base>.constructor(args)
+//	super.m(args)   -> this.<base>.m(args)
+//	super.field     -> this.<base>.field
 //
 // A bare `super` used in any other position stays as an unresolved name
 // and is rejected by the type checker.
@@ -1359,6 +1391,169 @@ func (p *parser) funcBody() *BlockStmt {
 	return body
 }
 
+// geckoAsyncDecl parses `async func name(...) ...` (pos is the position of
+// `async`, the current token is `func`) and desugars it into a function that
+// returns a future and runs its body in a goroutine. See geckoAsyncFunc.
+func (p *parser) geckoAsyncDecl(pos Pos, export bool) *FuncDecl {
+	if trace {
+		defer p.trace("asyncDecl")()
+	}
+
+	if !p.got(_Func) {
+		p.syntaxError("expected func after async (gecko)")
+		p.advance(_Semi)
+		return nil
+	}
+	f := p.funcDeclOrNil(export)
+	if f == nil {
+		return nil
+	}
+	return p.geckoAsyncFunc(pos, f)
+}
+
+// geckoAsyncFunc rewrites an async function or method declaration so that it
+// returns a future (a buffered channel) and runs its body in a goroutine:
+//
+//	async func f(a: int): int { return a * 2 }
+//
+// becomes
+//
+//	func f(a: int) chan int {
+//		var geckoAsyncCh: chan int = make(chan int, 1)
+//		go func() {
+//			geckoAsyncCh <- func() int { return a * 2 }()
+//		}()
+//		return geckoAsyncCh
+//	}
+//
+// `await f(2)` receives the sent value. A function without a result type
+// sends null (nil) once its body completes, so awaiting it yields nothing.
+// The declared result type is preserved for the body, so return statements
+// are checked against it; only the outer function's result becomes a channel.
+func (p *parser) geckoAsyncFunc(pos Pos, f *FuncDecl) *FuncDecl {
+	if f == nil || f.Type == nil {
+		return f
+	}
+	if f.Body == nil {
+		p.errorAt(pos, "async function must have a body (gecko)")
+		return f
+	}
+
+	// The future's element type is the declared result, or `any` when the
+	// async function returns nothing. Multiple results are not supported.
+	var elem Expr
+	var results []*Field
+	switch len(f.Type.ResultList) {
+	case 0:
+		elem = NewName(pos, "any")
+	case 1:
+		results = f.Type.ResultList
+		elem = results[0].Type
+	default:
+		p.errorAt(pos, "async functions must have at most one result (gecko)")
+		return f
+	}
+
+	// A fresh channel type for each use: the variable declaration, the make
+	// call, and the function result must not share syntax nodes.
+	newChan := func() *ChanType {
+		ct := new(ChanType)
+		ct.pos = pos
+		ct.Elem = elem
+		return ct
+	}
+
+	// var geckoAsyncCh: chan E = make(chan E, 1)
+	one := new(BasicLit)
+	one.pos = pos
+	one.Value = "1"
+	one.Kind = IntLit
+
+	makeCall := new(CallExpr)
+	makeCall.pos = pos
+	makeCall.Fun = NewName(pos, "make")
+	makeCall.ArgList = []Expr{newChan(), one}
+
+	chName := NewName(pos, "geckoAsyncCh")
+	vd := new(VarDecl)
+	vd.pos = pos
+	vd.NameList = []*Name{chName}
+	vd.Type = newChan()
+	vd.Values = makeCall
+
+	declStmt := new(DeclStmt)
+	declStmt.pos = pos
+	declStmt.DeclList = []Decl{vd}
+
+	// The body runs in a nested closure with the original result signature,
+	// so the original `return` statements keep working.
+	innerCall := new(CallExpr)
+	innerCall.pos = pos
+	if results != nil {
+		ft := new(FuncType)
+		ft.pos = pos
+		ft.ResultList = results
+		fl := new(FuncLit)
+		fl.pos = pos
+		fl.Type = ft
+		fl.Body = f.Body
+		innerCall.Fun = fl
+	} else {
+		innerCall.Fun = p.geckoClosure(pos, f.Body.List)
+	}
+
+	goBody := new(BlockStmt)
+	goBody.pos = pos
+	if results != nil {
+		send := new(SendStmt)
+		send.pos = pos
+		send.Chan = chName
+		send.Value = innerCall
+		goBody.List = []Stmt{send}
+	} else {
+		run := new(ExprStmt)
+		run.pos = pos
+		run.X = innerCall
+		send := new(SendStmt)
+		send.pos = pos
+		send.Chan = chName
+		send.Value = NewName(pos, "null")
+		goBody.List = []Stmt{run, send}
+	}
+
+	goClosure := new(FuncLit)
+	goClosure.pos = pos
+	goClosure.Type = new(FuncType)
+	goClosure.Type.pos = pos
+	goClosure.Body = goBody
+
+	runCall := new(CallExpr)
+	runCall.pos = pos
+	runCall.Fun = goClosure
+
+	goStmt := new(CallStmt)
+	goStmt.pos = pos
+	goStmt.Tok = _Go
+	goStmt.Call = runCall
+
+	ret := new(ReturnStmt)
+	ret.pos = pos
+	ret.Results = chName
+
+	body := new(BlockStmt)
+	body.pos = pos
+	body.List = []Stmt{declStmt, goStmt, ret}
+
+	// The outer function now returns the future.
+	res := new(Field)
+	res.pos = pos
+	res.Type = newChan()
+	f.Type.ResultList = []*Field{res}
+	f.Body = body
+
+	return f
+}
+
 // ----------------------------------------------------------------------------
 // Expressions
 
@@ -1417,6 +1612,17 @@ func (p *parser) unaryExpr() Expr {
 			x.X = Unparen(p.unaryExpr())
 			return x
 		}
+
+	case _Await:
+		// gecko: await x waits for the future (channel) x and yields its
+		// value. It lowers to a receive operation.
+		pos := p.pos()
+		p.next()
+		x := new(Operation)
+		x.pos = pos
+		x.Op = Recv
+		x.X = p.unaryExpr()
+		return x
 
 	case _Arrow:
 		// receive op (<-x) or receive-only channel (<-chan E)
@@ -3640,7 +3846,8 @@ func (p *parser) stmtOrNil() Stmt {
 
 	case _Literal, _Func, _Lparen, // operands
 		_Lbrack, _Struct, _Map, _Chan, _Interface, // composite types
-		_Arrow: // receive operator
+		_Arrow, // receive operator
+		_Await: // await operator
 		return p.simpleStmt(nil, 0)
 
 	case _For:

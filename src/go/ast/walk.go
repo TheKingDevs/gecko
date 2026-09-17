@@ -124,6 +124,9 @@ func Walk(v Visitor, node Node) {
 		Walk(v, n.Type)
 		walkList(v, n.Args)
 
+	case *AwaitExpr:
+		Walk(v, n.X)
+
 	case *StarExpr:
 		Walk(v, n.X)
 

@@ -164,6 +164,10 @@ func WriteExpr(buf *bytes.Buffer, x ast.Expr) {
 		}
 		buf.WriteString(s)
 		WriteExpr(buf, x.Value)
+
+	case *ast.AwaitExpr:
+		buf.WriteString("await ")
+		WriteExpr(buf, x.X)
 	}
 }
 

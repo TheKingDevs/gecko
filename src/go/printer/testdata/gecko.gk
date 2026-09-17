@@ -94,3 +94,23 @@ func guard() {
 	}
 }
 
+// gecko async/await.
+async func fetch(id: int): string {
+	return "item " + id
+}
+
+async func log(msg: string) {
+	println(msg)
+}
+
+func wait() {
+	x = await fetch(1)
+	println(x)
+	await log("done")
+}
+
+class Worker {
+	async run(task: string): string {
+		return task
+	}
+}

@@ -1016,6 +1016,11 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 			p.print(unindent)
 		}
 
+	case *ast.AwaitExpr:
+		p.setPos(x.Await)
+		p.print(token.AWAIT, blank)
+		p.expr1(x.X, token.HighestPrec, depth)
+
 	case *ast.NewExpr:
 		p.setPos(x.New)
 		p.print(token.NEW, blank)
@@ -2105,6 +2110,9 @@ func (p *printer) funcDecl(d *ast.FuncDecl) {
 	if d.Export {
 		p.print(token.EXPORT, blank)
 	}
+	if d.Async {
+		p.print(token.ASYNC, blank)
+	}
 	p.print(token.FUNC, blank)
 	// We have to save startCol only after emitting FUNC; otherwise it can be on a
 	// different line (all whitespace preceding the FUNC is emitted only when the
@@ -2213,6 +2221,9 @@ func (p *printer) classDecl(d *ast.ClassDecl) {
 				case *ast.FuncDecl:
 					p.setComment(m.Doc)
 					p.setPos(m.Pos())
+					if m.Async {
+						p.print(token.ASYNC, blank)
+					}
 					p.expr(m.Name)
 					p.signature(m.Type)
 					p.funcBody(0, vtab, p.classMethodBodyPruned(m))

@@ -433,6 +433,16 @@ func (s *scanner) ident() {
 				s.lit = string(lit)
 				s.tok = _Throw
 				return
+			case "async":
+				s.nlsemi = false
+				s.lit = string(lit)
+				s.tok = _Async
+				return
+			case "await":
+				s.nlsemi = false
+				s.lit = string(lit)
+				s.tok = _Await
+				return
 			}
 		}
 	}

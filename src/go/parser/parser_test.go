@@ -177,9 +177,20 @@ class SuperGreeter extends Greeter {
 	}
 }
 
+class Worker {
+	async run(task: String): String {
+		return task
+	}
+}
+
+async func fetch(id: int): String {
+	return "item " + id
+}
+
 export func main() {
 	g = new Greeter()
 	s = new SuperGreeter("gecko")
+	v = await fetch(1)
 	try {
 		throw "boom"
 	} catch (e) {
@@ -195,9 +206,23 @@ export func main() {
 	}
 
 	var gotClass, gotNew, gotSlice, gotExport, gotTsMember bool
-	var gotTry, gotThrow bool
+	var gotTry, gotThrow, gotAwait, gotAsyncFunc, gotAsyncMethod bool
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch n := n.(type) {
+		case *ast.AwaitExpr:
+			gotAwait = true
+		case *ast.FuncDecl:
+			if n.Async {
+				switch n.Name.Name {
+				case "fetch":
+					gotAsyncFunc = true
+				case "run":
+					gotAsyncMethod = true
+				}
+				if !n.AsyncPos.IsValid() {
+					t.Error("async function should record its async position")
+				}
+			}
 		case *ast.ClassDecl:
 			gotClass = true
 			if n.Name.Name == "Greeter" && len(n.Methods) != 2 {
@@ -253,12 +278,16 @@ export func main() {
 	if !gotTry || !gotThrow {
 		t.Errorf("missing gecko try/catch AST: try=%v throw=%v", gotTry, gotThrow)
 	}
+	if !gotAwait || !gotAsyncFunc || !gotAsyncMethod {
+		t.Errorf("missing gecko async AST: await=%v asyncFunc=%v asyncMethod=%v",
+			gotAwait, gotAsyncFunc, gotAsyncMethod)
+	}
 	if len(f.Imports) != 3 {
 		t.Errorf("got %d imports, want 3", len(f.Imports))
 	}
 
 	// The gecko keywords must remain valid identifiers in .go files.
-	for _, kw := range []string{"class", "new", "export", "try", "catch", "finally", "throw"} {
+	for _, kw := range []string{"class", "new", "export", "try", "catch", "finally", "throw", "async", "await"} {
 		if _, err := ParseFile(token.NewFileSet(), "a.go", "package p\nvar "+kw+" = 1\nfunc f() { _ = "+kw+" }\n", 0); err != nil {
 			t.Errorf("%q must be a valid identifier in .go files: %v", kw, err)
 		}
