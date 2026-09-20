@@ -19,26 +19,26 @@ import (
 func DefaultConds() map[string]Cond {
 	conds := make(map[string]Cond)
 
-	conds["GOOS"] = PrefixCondition(
+	conds["GKOS"] = PrefixCondition(
 		"runtime.GOOS == <suffix>",
 		func(_ *State, suffix string) (bool, error) {
 			if suffix == runtime.GOOS {
 				return true, nil
 			}
 			if _, ok := syslist.KnownOS[suffix]; !ok {
-				return false, fmt.Errorf("unrecognized GOOS %q", suffix)
+				return false, fmt.Errorf("unrecognized GKOS %q", suffix)
 			}
 			return false, nil
 		})
 
-	conds["GOARCH"] = PrefixCondition(
+	conds["GKARCH"] = PrefixCondition(
 		"runtime.GOARCH == <suffix>",
 		func(_ *State, suffix string) (bool, error) {
 			if suffix == runtime.GOARCH {
 				return true, nil
 			}
 			if _, ok := syslist.KnownArch[suffix]; !ok {
-				return false, fmt.Errorf("unrecognized GOARCH %q", suffix)
+				return false, fmt.Errorf("unrecognized GKARCH %q", suffix)
 			}
 			return false, nil
 		})

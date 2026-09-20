@@ -1,7 +1,7 @@
 The Go source code and supporting files in this directory
 are covered by the usual Go license (see ../../../../LICENSE).
 
-When building with GOEXPERIMENT=boringcrypto, the following applies.
+When building with GKEXPERIMENT=boringcrypto, the following applies.
 
 The goboringcrypto_linux_amd64.syso object file is built
 from BoringSSL source code by build/build.sh and is covered

@@ -1,5 +1,5 @@
-[GOOS:plan9] skip 'signals differ on Plan 9'
-[GOOS:windows] skip 'os.Interrupt is not implemented on Windows'
+[GKOS:plan9] skip 'signals differ on Plan 9'
+[GKOS:windows] skip 'os.Interrupt is not implemented on Windows'
 
 ! go tool interrupter
 stderr 'gecko tool interrupter: signal: interrupt'

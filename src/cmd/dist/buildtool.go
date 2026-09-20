@@ -133,7 +133,7 @@ var tryDirs = []string{
 }
 
 func bootstrapBuildTools() {
-	goroot_bootstrap := os.Getenv("GOROOT_BOOTSTRAP")
+	goroot_bootstrap := os.Getenv("GKROOT_BOOTSTRAP")
 	if goroot_bootstrap == "" {
 		home := os.Getenv("HOME")
 		goroot_bootstrap = pathf("%s/go1.4", home)
@@ -224,19 +224,34 @@ func bootstrapBuildTools() {
 	// Restore GOROOT, GOPATH, and GOBIN when done.
 	// Don't bother with GOOS, GOHOSTOS, GOARCH, and GOHOSTARCH,
 	// because setup will take care of those when bootstrapBuildTools returns.
+	//
+	// The bootstrap toolchain is a standard Go binary, so it only reads the
+	// standard GO* environment variables. Set both the standard GO* names and
+	// the gecko GK* equivalents so that a gecko binary can also be used as the
+	// bootstrap toolchain.
 
+	defer os.Setenv("GKROOT", os.Getenv("GKROOT"))
+	os.Setenv("GKROOT", goroot_bootstrap)
 	defer os.Setenv("GOROOT", os.Getenv("GOROOT"))
 	os.Setenv("GOROOT", goroot_bootstrap)
 
+	defer os.Setenv("GKPATH", os.Getenv("GKPATH"))
+	os.Setenv("GKPATH", workspace)
 	defer os.Setenv("GOPATH", os.Getenv("GOPATH"))
 	os.Setenv("GOPATH", workspace)
 
+	defer os.Setenv("GKBIN", os.Getenv("GKBIN"))
+	os.Setenv("GKBIN", "")
 	defer os.Setenv("GOBIN", os.Getenv("GOBIN"))
 	os.Setenv("GOBIN", "")
 
+	os.Setenv("GKOS", "")
 	os.Setenv("GOOS", "")
+	os.Setenv("GKHOSTOS", "")
 	os.Setenv("GOHOSTOS", "")
+	os.Setenv("GKARCH", "")
 	os.Setenv("GOARCH", "")
+	os.Setenv("GKHOSTARCH", "")
 	os.Setenv("GOHOSTARCH", "")
 
 	// Run Go bootstrap to build binaries.

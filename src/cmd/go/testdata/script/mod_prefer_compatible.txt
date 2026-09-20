@@ -2,7 +2,7 @@
 # @latest, @upgrade, and @patch should prefer compatible versions over
 # +incompatible ones, even if offered by a proxy.
 
-env GOSUMDB=off
+env GKSUMDB=off
 
 # vcs-test.golang.org/git/prefercompatible.git v2.0.0+incompatible exists,
 # and should be resolved if we ask for it explicitly.
@@ -33,7 +33,7 @@ stderr '^gecko: vcs-test.golang.org/git/prefercompatible.git@patch: can''t query
 
 [short] stop
 [!git] stop
-env GOPROXY=direct
+env GKPROXY=direct
 
 go list -versions -m vcs-test.golang.org/git/prefercompatible.git
 stdout '^vcs-test.golang.org/git/prefercompatible.git v1\.5\.1 v1\.5\.2' # and possibly others

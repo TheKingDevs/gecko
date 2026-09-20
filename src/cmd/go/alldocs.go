@@ -21,7 +21,6 @@
 //	fix         apply fixes suggested by static checkers
 //	fmt         fmt (reformat) source files
 //	generate    generate gecko files by processing source
-//	get         add dependencies to current module and install them
 //	install     compile and install packages and dependencies
 //	list        list packages or modules
 //	run         compile and run gecko program
@@ -196,7 +195,7 @@
 //		include path must be in the same directory as the Go package they are
 //		included from, overlays will not appear when binaries and tests are
 //		run through gecko run and gecko test respectively, and files beneath
-//		GOMODCACHE may not be replaced.
+//		GKMODCACHE may not be replaced.
 //	-pgo file
 //		specify the file path of a profile for profile-guided optimization (PGO).
 //		When the special name "auto" is specified, for each main package in the
@@ -217,7 +216,7 @@
 //		remove all file system paths from the resulting executable.
 //		Instead of absolute file system paths, the recorded file names
 //		will begin either a module path@version (when using modules),
-//		or a plain import path (when using the standard library, or GOPATH).
+//		or a plain import path (when using the standard library, or GKPATH).
 //	-toolexec 'cmd args'
 //		a program to use to invoke toolchain programs like vet and asm.
 //		For example, instead of running asm, the gecko command will run
@@ -244,18 +243,18 @@
 // For more about specifying packages, see 'gecko help packages'.
 // For more about where binaries are installed, run 'gecko help gopath'.
 // For more about calling between Go and C/C++, run 'gecko help c'.
-// For more about project organization, run 'gecko help modules'.
+// For more about project organization, run 'gpm help'.
 //
 // Note: gecko build adheres to certain conventions for organizing projects:
-// it primarily supports gecko modules (see 'gecko help modules') while
-// also supporting an alternative GOPATH mode (see 'gecko help gopath').
+// it primarily supports project mode (see 'gpm help') while
+// also supporting an alternative GKPATH mode (see 'gecko help gopath').
 // Not all projects can follow these conventions,
 // however. Installations that have their own conventions or that use
 // a separate software build system may choose to use lower-level
 // invocations such as 'gecko tool compile' and 'gecko tool link' to avoid
 // some of the overheads and design decisions of the build tool.
 //
-// See also: gecko install, gecko get, gecko clean.
+// See also: gecko install, gecko clean.
 //
 // # Remove object files and cached files
 //
@@ -344,7 +343,7 @@
 //
 // When run with one argument, the argument is treated as a Go-syntax-like
 // representation of the item to be documented. What the argument selects depends
-// on what is installed in GOROOT and GOPATH, as well as the form of the argument,
+// on what is installed in GKROOT and GKPATH, as well as the form of the argument,
 // which is schematically one of these:
 //
 //	gecko doc <pkg>
@@ -358,8 +357,8 @@
 //
 // For packages, the order of scanning is determined lexically in breadth-first order.
 // That is, the package presented is the one that matches the search and is nearest
-// the root and lexically first at its level of the hierarchy. The GOROOT tree is
-// always scanned in its entirety before GOPATH.
+// the root and lexically first at its level of the hierarchy. The GKROOT tree is
+// always scanned in its entirety before GKPATH.
 //
 // If there is no package specified or matched, the package in the current
 // directory is selected, so "gecko doc Foo" shows the documentation for symbol Foo in
@@ -528,7 +527,7 @@
 // The -x flag prints commands as they are executed.
 //
 // In module mode the -mod flag's value sets which module download mode
-// to use: readonly or vendor. See 'gecko help modules' for more.
+// to use: readonly or vendor.
 //
 // To run fmt with specific options, run fmt itself.
 //
@@ -580,9 +579,9 @@
 //
 // Go generate sets several variables when it runs the generator:
 //
-//	$GOARCH
+//	$GKARCH
 //		The execution architecture (arm, amd64, etc.)
-//	$GOOS
+//	$GKOS
 //		The execution operating system (linux, windows, etc.)
 //	$GOFILE
 //		The base name of the file.
@@ -590,13 +589,13 @@
 //		The line number of the directive in the source file.
 //	$GOPACKAGE
 //		The name of the package of the file containing the directive.
-//	$GOROOT
-//		The GOROOT directory for the 'gecko' command that invoked the
+//	$GKROOT
+//		The GKROOT directory for the 'gecko' command that invoked the
 //		generator, containing the Go toolchain and standard library.
 //	$DOLLAR
 //		A dollar sign.
 //	$PATH
-//		The $PATH of the parent process, with $GOROOT/bin
+//		The $PATH of the parent process, with $GKROOT/bin
 //		placed at the beginning. This causes generators
 //		that execute 'gecko' commands to use the same 'gecko'
 //		as the parent 'gecko generate' command.
@@ -669,83 +668,6 @@
 //
 // For more about specifying packages, see 'gecko help packages'.
 //
-// # Add dependencies to current module and install them
-//
-// Usage:
-//
-//	gecko get [-t] [-u] [-tool] [build flags] [packages]
-//
-// Get resolves its command-line arguments to packages at specific module versions,
-// updates go.mod to require those versions, and downloads source code into the
-// module cache.
-//
-// To add a dependency for a package or upgrade it to its latest version:
-//
-//	gecko get example.com/pkg
-//
-// To upgrade or downgrade a package to a specific version:
-//
-//	gecko get example.com/pkg@v1.2.3
-//
-// To remove a dependency on a module and downgrade modules that require it:
-//
-//	gecko get example.com/mod@none
-//
-// To upgrade the minimum required Go version to the latest released Go version:
-//
-//	gecko get go@latest
-//
-// To upgrade the Go toolchain to the latest patch release of the current Go toolchain:
-//
-//	gecko get toolchain@patch
-//
-// See https://go.dev/ref/mod#go-get for details.
-//
-// In earlier versions of Go, 'gecko get' was used to build and install packages.
-// Now, 'gecko get' is dedicated to adjusting dependencies in go.mod. 'gecko install'
-// may be used to build and install commands instead. When a version is specified,
-// 'gecko install' runs in module-aware mode and ignores the go.mod file in the
-// current directory. For example:
-//
-//	gecko install example.com/pkg@v1.2.3
-//	gecko install example.com/pkg@latest
-//
-// See 'gecko help install' or https://go.dev/ref/mod#go-install for details.
-//
-// 'gecko get' accepts the following flags.
-//
-// The -t flag instructs get to consider modules needed to build tests of
-// packages specified on the command line.
-//
-// The -u flag instructs get to update modules providing dependencies
-// of packages named on the command line to use newer minor or patch
-// releases when available.
-//
-// The -u=patch flag (not -u patch) also instructs get to update dependencies,
-// but changes the default to select patch releases.
-//
-// When the -t and -u flags are used together, get will update
-// test dependencies as well.
-//
-// The -tool flag instructs go to add a matching tool line to go.mod for each
-// listed package. If -tool is used with @none, the line will be removed.
-// See 'gecko help tool' for more information.
-//
-// The -x flag prints commands as they are executed. This is useful for
-// debugging version control commands when a module is downloaded directly
-// from a repository.
-//
-// For more about build flags, see 'gecko help build'.
-//
-// For more about modules, see https://go.dev/ref/mod.
-//
-// For more about using 'gecko get' to update the minimum Go version and
-// suggested Go toolchain, see https://go.dev/doc/toolchain.
-//
-// For more about specifying packages, see 'gecko help packages'.
-//
-// See also: gecko build, gecko install, gecko clean, gecko mod.
-//
 // # Compile and install packages and dependencies
 //
 // Usage:
@@ -754,11 +676,11 @@
 //
 // Install compiles and installs the packages named by the import paths.
 //
-// Executables are installed in the directory named by the GOBIN environment
-// variable, which defaults to $GOPATH/bin or $HOME/go/bin if the GOPATH
-// environment variable is not set. Executables in $GOROOT
-// are installed in $GOROOT/bin or $GOTOOLDIR instead of $GOBIN.
-// Cross compiled binaries are installed in $GOOS_$GOARCH subdirectories
+// Executables are installed in the directory named by the GKBIN environment
+// variable, which defaults to $GKPATH/bin or $HOME/go/bin if the GKPATH
+// environment variable is not set. Executables in $GKROOT
+// are installed in $GKROOT/bin or $GKTOOLDIR instead of $GKBIN.
+// Cross compiled binaries are installed in $GOOS_$GKARCH subdirectories
 // of the above.
 //
 // If the arguments have version suffixes (like @latest or @v1.0.0), "gecko install"
@@ -790,26 +712,26 @@
 // included in the module zip files downloaded by 'gecko install'.)
 //
 // If the arguments don't have version suffixes, "gecko install" may run in
-// module-aware mode or GOPATH mode, depending on the GO111MODULE environment
-// variable and the presence of a go.mod file. See 'gecko help modules' for details.
+// module-aware mode or GKPATH mode, depending on the GK111MODULE environment
+// variable and the presence of a go.mod file. See 'gecko help gopath' for details.
 // If module-aware mode is enabled, "gecko install" runs in the context of the main
 // module.
 //
 // When module-aware mode is disabled, non-main packages are installed in the
-// directory $GOPATH/pkg/$GOOS_$GOARCH. When module-aware mode is enabled,
+// directory $GKPATH/pkg/$GOOS_$GKARCH. When module-aware mode is enabled,
 // non-main packages are built and cached but not installed.
 //
 // Before Go 1.20, the standard library was installed to
-// $GOROOT/pkg/$GOOS_$GOARCH.
+// $GKROOT/pkg/$GOOS_$GKARCH.
 // Starting in Go 1.20, the standard library is built and cached but not installed.
 // Setting GODEBUG=installgoroot=all restores the use of
-// $GOROOT/pkg/$GOOS_$GOARCH.
+// $GKROOT/pkg/$GOOS_$GKARCH.
 //
 // For more about build flags, see 'gecko help build'.
 //
 // For more about specifying packages, see 'gecko help packages'.
 //
-// See also: gecko build, gecko get, gecko clean.
+// See also: gecko build, gecko clean.
 //
 // # List packages or modules
 //
@@ -846,7 +768,7 @@
 //	    Stale          bool     // would 'gecko install' do anything for this package?
 //	    StaleReason    string   // explanation for Stale==true
 //	    Root           string   // Go root or Go path dir containing this package
-//	    ConflictDir    string   // this directory shadows Dir in $GOPATH
+//	    ConflictDir    string   // this directory shadows Dir in $GKPATH
 //	    BinaryOnly     bool     // binary-only package (no longer supported)
 //	    ForTest        string   // package is only for use in named test
 //	    Export         string   // file containing export data (when using -export)
@@ -927,10 +849,10 @@
 // The template function "context" returns the build context, defined as:
 //
 //	type Context struct {
-//	    GOARCH        string   // target architecture
-//	    GOOS          string   // target operating system
-//	    GOROOT        string   // Go root
-//	    GOPATH        string   // Go path
+//	    GKARCH        string   // target architecture
+//	    GKOS          string   // target operating system
+//	    GKROOT        string   // Go root
+//	    GKPATH        string   // Go path
 //	    CgoEnabled    bool     // whether cgo can be used
 //	    UseAllFiles   bool     // use files regardless of //go:build lines, file names
 //	    Compiler      string   // compiler to assume when computing target paths
@@ -1103,7 +1025,6 @@
 // module paths match the pattern.
 // A query of the form path@version specifies the result of that query,
 // which is not limited to active modules.
-// See 'gecko help modules' for more about module queries.
 //
 // The template function "module" takes a single string argument
 // that must be a module path or query and returns the specified
@@ -1143,8 +1064,8 @@
 // for running programs without affecting the dependencies of the main module.
 //
 // If the package argument doesn't have a version suffix, "gecko run" may run in
-// module-aware mode or GOPATH mode, depending on the GO111MODULE environment
-// variable and the presence of a go.mod file. See 'gecko help modules' for details.
+// module-aware mode or GKPATH mode, depending on the GK111MODULE environment
+// variable and the presence of a go.mod file. See 'gecko help gopath' for details.
 // If module-aware mode is enabled, "gecko run" runs in the context of the main
 // module.
 //
@@ -1153,7 +1074,7 @@
 //
 //	'xprog a.out arguments...'.
 //
-// If the -exec flag is not given, GOOS or GOARCH is different from the system
+// If the -exec flag is not given, GKOS or GKARCH is different from the system
 // default, and a program named go_$GOOS_$GOARCH_exec can be found
 // on the current search path, 'gecko run' invokes the binary using that program,
 // for example 'go_js_wasm_exec a.out arguments...'. This allows execution of
@@ -1164,7 +1085,7 @@
 // used by debuggers, to reduce build time. To include debugger information in
 // the binary, use 'gecko build'.
 //
-// The gecko command places $GOROOT/bin at the beginning of $PATH in the
+// The gecko command places $GKROOT/bin at the beginning of $PATH in the
 // subprocess environment, so that subprocesses that execute 'gecko' commands
 // use the same 'gecko' as their parent.
 //
@@ -1256,7 +1177,7 @@
 // error. (The gecko command's standard error is reserved for printing
 // errors building the tests.)
 //
-// The gecko command places $GOROOT/bin at the beginning of $PATH
+// The gecko command places $GKROOT/bin at the beginning of $PATH
 // in the test's environment, so that tests that execute
 // 'gecko' commands use the same 'gecko' as the parent 'gecko test' command.
 //
@@ -1370,7 +1291,7 @@
 //
 // Tool also provides the -C, -overlay, and -modcacherw build flags.
 //
-// The gecko command places $GOROOT/bin at the beginning of $PATH in the
+// The gecko command places $GKROOT/bin at the beginning of $PATH in the
 // environment of commands run via tool directives, so that they use the
 // same 'gecko' as the parent 'gecko tool'.
 //
@@ -1456,9 +1377,6 @@
 // Note that support for workspaces is built into many other commands, not
 // just 'gecko work'.
 //
-// See 'gecko help modules' for information about Go's module system of which
-// workspaces are a part.
-//
 // See https://go.dev/ref/mod#workspaces for an in-depth reference on
 // workspaces.
 //
@@ -1506,7 +1424,7 @@
 // modules.
 //
 // To determine whether the gecko command is operating in workspace mode, use
-// the "gecko env GOWORK" command. This will specify the workspace file being
+// the "gecko env GKWORK" command. This will specify the workspace file being
 // used.
 //
 // Usage:
@@ -1742,12 +1660,12 @@
 // During a particular build, the following build tags are satisfied:
 //
 //   - the target operating system, as spelled by runtime.GOOS, set with the
-//     GOOS environment variable.
+//     GKOS environment variable.
 //   - the target architecture, as spelled by runtime.GOARCH, set with the
-//     GOARCH environment variable.
-//   - any architecture features, in the form GOARCH.feature
+//     GKARCH environment variable.
+//   - any architecture features, in the form GKARCH.feature
 //     (for example, "amd64.v2"), as detailed below.
-//   - "unix", if GOOS is a Unix or Unix-like system.
+//   - "unix", if GKOS is a Unix or Unix-like system.
 //   - the compiler being used, either "gc" or "gccgo"
 //   - "cgo", if the cgecko command is supported (see CGO_ENABLED in
 //     'gecko help environment').
@@ -1764,54 +1682,54 @@
 //	*_GOARCH
 //	*_GOOS_GOARCH
 //
-// (example: source_windows_amd64.go) where GOOS and GOARCH represent
+// (example: source_windows_amd64.go) where GKOS and GKARCH represent
 // any known operating system and architecture values respectively, then
 // the file is considered to have an implicit build constraint requiring
 // those terms (in addition to any explicit constraints in the file).
 //
-// Using GOOS=android matches build tags and files as for GOOS=linux
+// Using GKOS=android matches build tags and files as for GKOS=linux
 // in addition to android tags and files.
 //
-// Using GOOS=illumos matches build tags and files as for GOOS=solaris
+// Using GKOS=illumos matches build tags and files as for GKOS=solaris
 // in addition to illumos tags and files.
 //
-// Using GOOS=ios matches build tags and files as for GOOS=darwin
+// Using GKOS=ios matches build tags and files as for GKOS=darwin
 // in addition to ios tags and files.
 //
 // The defined architecture feature build tags are:
 //
-//   - For GOARCH=386, GO386=387 and GO386=sse2
+//   - For GKARCH=386, GK386=387 and GK386=sse2
 //     set the 386.387 and 386.sse2 build tags, respectively.
-//   - For GOARCH=amd64, GOAMD64=v1, v2, and v3
+//   - For GKARCH=amd64, GKAMD64=v1, v2, and v3
 //     correspond to the amd64.v1, amd64.v2, and amd64.v3 feature build tags.
-//   - For GOARCH=arm, GOARM=5, 6, and 7
+//   - For GKARCH=arm, GKARM=5, 6, and 7
 //     correspond to the arm.5, arm.6, and arm.7 feature build tags.
-//   - For GOARCH=arm64, GOARM64=v8.{0-9} and v9.{0-5}
+//   - For GKARCH=arm64, GKARM64=v8.{0-9} and v9.{0-5}
 //     correspond to the arm64.v8.{0-9} and arm64.v9.{0-5} feature build tags.
-//   - For GOARCH=mips or mipsle,
-//     GOMIPS=hardfloat and softfloat
+//   - For GKARCH=mips or mipsle,
+//     GKMIPS=hardfloat and softfloat
 //     correspond to the mips.hardfloat and mips.softfloat
 //     (or mipsle.hardfloat and mipsle.softfloat) feature build tags.
-//   - For GOARCH=mips64 or mips64le,
-//     GOMIPS64=hardfloat and softfloat
+//   - For GKARCH=mips64 or mips64le,
+//     GKMIPS64=hardfloat and softfloat
 //     correspond to the mips64.hardfloat and mips64.softfloat
 //     (or mips64le.hardfloat and mips64le.softfloat) feature build tags.
-//   - For GOARCH=ppc64 or ppc64le,
-//     GOPPC64=power8, power9, and power10 correspond to the
+//   - For GKARCH=ppc64 or ppc64le,
+//     GKPPC64=power8, power9, and power10 correspond to the
 //     ppc64.power8, ppc64.power9, and ppc64.power10
 //     (or ppc64le.power8, ppc64le.power9, and ppc64le.power10)
 //     feature build tags.
-//   - For GOARCH=riscv64,
-//     GORISCV64=rva20u64, rva22u64 and rva23u64 correspond to the riscv64.rva20u64,
+//   - For GKARCH=riscv64,
+//     GKRISCV64=rva20u64, rva22u64 and rva23u64 correspond to the riscv64.rva20u64,
 //     riscv64.rva22u64 and riscv64.rva23u64 build tags.
-//   - For GOARCH=wasm, GOWASM=satconv and signext
+//   - For GKARCH=wasm, GKWASM=satconv and signext
 //     correspond to the wasm.satconv and wasm.signext feature build tags.
 //
-// For GOARCH=amd64, arm, ppc64, ppc64le, and riscv64, a particular feature level
+// For GKARCH=amd64, arm, ppc64, ppc64le, and riscv64, a particular feature level
 // sets the feature build tags for all previous levels as well.
-// For example, GOAMD64=v2 sets the amd64.v1 and amd64.v2 feature flags.
+// For example, GKAMD64=v2 sets the amd64.v1 and amd64.v2 feature flags.
 // This ensures that code making use of v2 features continues to compile
-// when, say, GOAMD64=v4 is introduced.
+// when, say, GKAMD64=v4 is introduced.
 // Code handling the absence of a particular feature level
 // should use a negation:
 //
@@ -1967,11 +1885,11 @@
 // # Build and test caching
 //
 // The gecko command caches build outputs for reuse in future builds.
-// The default location for cache data is a subdirectory named go-build
+// The default location for cache data is a subdirectory named gecko-build
 // in the standard user cache directory for the current operating system.
 // The cache is safe for concurrent invocations of the gecko command.
-// Setting the GOCACHE environment variable overrides this default,
-// and running 'gecko env GOCACHE' prints the current cache directory.
+// Setting the GKCACHE environment variable overrides this default,
+// and running 'gecko env GKCACHE' prints the current cache directory.
 //
 // The gecko command periodically deletes cached data that has not been
 // used recently. Running 'gecko clean -cache' deletes all cached data.
@@ -2010,7 +1928,7 @@
 // GODEBUG=gocachetest=1 causes the gecko command to print details of its
 // decisions about whether to reuse a cached test result.
 //
-// The GOCACHEPROG environment variable can be used to provide an
+// The GKCACHEPROG environment variable can be used to provide an
 // externally managed build cache. For details see:
 // "gecko doc cmd/go/internal/cacheprog".
 //
@@ -2024,7 +1942,7 @@
 // are recorded in a Go environment configuration file stored in the
 // per-user configuration directory, as reported by os.UserConfigDir.
 // The location of the configuration file can be changed by setting
-// the environment variable GOENV, and 'gecko env GOENV' prints the
+// the environment variable GKENV, and 'gecko env GKENV' prints the
 // effective location, but 'gecko env -w' cannot change the default location.
 // See 'gecko help env' for details.
 //
@@ -2032,22 +1950,22 @@
 //
 //	GCCGO
 //		The gccgecko command to run for 'gecko build -compiler=gccgo'.
-//	GO111MODULE
-//		Controls whether the gecko command runs in module-aware mode or GOPATH mode.
+//	GK111MODULE
+//		Controls whether the gecko command runs in module-aware mode or GKPATH mode.
 //		May be "off", "on", or "auto".
 //		See https://go.dev/ref/mod#mod-commands.
-//	GOARCH
+//	GKARCH
 //		The architecture, or processor, for which to compile code.
 //		Examples are amd64, 386, arm, ppc64.
-//	GOAUTH
+//	GKAUTH
 //		Controls authentication for go-import and HTTPS module mirror interactions.
 //		See 'gecko help goauth'.
-//	GOBIN
+//	GKBIN
 //		The directory where 'gecko install' will install a command.
-//	GOCACHE
+//	GKCACHE
 //		The directory where the gecko command will store cached
 //		information for reuse in future builds. Must be an absolute path.
-//	GOCACHEPROG
+//	GKCACHEPROG
 //		A command (with optional space-separated flags) that implements an
 //		external gecko command build cache.
 //		See 'gecko doc cmd/go/internal/cacheprog'.
@@ -2055,60 +1973,60 @@
 //		Enable various debugging facilities for programs built with Go,
 //		including the gecko command. Cannot be set using 'gecko env -w'.
 //		See https://go.dev/doc/godebug for details.
-//	GOENV
+//	GKENV
 //		The location of the Go environment configuration file.
 //		Cannot be set using 'gecko env -w'.
-//		Setting GOENV=off in the environment disables the use of the
+//		Setting GKENV=off in the environment disables the use of the
 //		default configuration file.
-//	GOFLAGS
+//	GKFLAGS
 //		A space-separated list of -flag=value settings to apply
 //		to gecko commands by default, when the given flag is known by
 //		the current command. Each entry must be a standalone flag.
 //		Because the entries are space-separated, flag values must
 //		not contain spaces. Flags listed on the command line
 //		are applied after this list and therefore override it.
-//	GOINSECURE
+//	GKINSECURE
 //		Comma-separated list of glob patterns (in the syntax of Go's path.Match)
 //		of module path prefixes that should always be fetched in an insecure
 //		manner. Only applies to dependencies that are being fetched directly.
-//		GOINSECURE does not disable checksum database validation. GOPRIVATE or
-//		GONOSUMDB may be used to achieve that.
-//	GOMODCACHE
+//		GKINSECURE does not disable checksum database validation. GKPRIVATE or
+//		GKNOSUMDB may be used to achieve that.
+//	GKMODCACHE
 //		The directory where the gecko command will store downloaded modules.
-//	GOOS
+//	GKOS
 //		The operating system for which to compile code.
 //		Examples are linux, darwin, windows, netbsd.
-//	GOPATH
+//	GKPATH
 //		Controls where various files are stored. See: 'gecko help gopath'.
-//	GOPRIVATE, GONOPROXY, GONOSUMDB
+//	GKPRIVATE, GKNOPROXY, GKNOSUMDB
 //		Comma-separated list of glob patterns (in the syntax of Go's path.Match)
 //		of module path prefixes that should always be fetched directly
 //		or that should not be compared against the checksum database.
 //		See https://go.dev/ref/mod#private-modules.
-//	GOPROXY
+//	GKPROXY
 //		URL of Go module proxy. See https://go.dev/ref/mod#environment-variables
 //		and https://go.dev/ref/mod#module-proxy for details.
-//	GOROOT
+//	GKROOT
 //		The root of the go tree.
-//	GOSUMDB
+//	GKSUMDB
 //		The name of checksum database to use and optionally its public key and
 //		URL. See https://go.dev/ref/mod#authenticating.
-//	GOTMPDIR
+//	GKTMPDIR
 //		Temporary directory used by the gecko command and testing package.
 //		Overrides the platform-specific temporary directory such as "/tmp".
 //		The gecko command and testing package will write temporary source files,
 //		packages, and binaries here.
-//	GOTOOLCHAIN
+//	GKTOOLCHAIN
 //		Controls which Go toolchain is used. See https://go.dev/doc/toolchain.
-//	GOVCS
+//	GKVCS
 //		Lists version control commands that may be used with matching servers.
 //		See 'gecko help vcs'.
-//	GOWORK
+//	GKWORK
 //		In module aware mode, use the given go.work file as a workspace file.
-//		By default or when GOWORK is "auto", the gecko command searches for a
+//		By default or when GKWORK is "auto", the gecko command searches for a
 //		file named go.work in the current directory and then containing directories
 //		until one is found. If a valid go.work file is found, the modules
-//		specified will collectively be used as the main modules. If GOWORK
+//		specified will collectively be used as the main modules. If GKWORK
 //		is "off", or a go.work file is not found in "auto" mode, workspace
 //		mode is disabled.
 //
@@ -2154,15 +2072,15 @@
 //
 // Architecture-specific environment variables:
 //
-//	GO386
-//		For GOARCH=386, how to implement floating point instructions.
+//	GK386
+//		For GKARCH=386, how to implement floating point instructions.
 //		Valid values are sse2 (default), softfloat.
-//	GOAMD64
-//		For GOARCH=amd64, the microarchitecture level for which to compile.
+//	GKAMD64
+//		For GKARCH=amd64, the microarchitecture level for which to compile.
 //		Valid values are v1 (default), v2, v3, v4.
 //		See https://go.dev/wiki/MinimumRequirements#amd64
-//	GOARM
-//		For GOARCH=arm, the ARM architecture for which to compile.
+//	GKARM
+//		For GKARCH=arm, the ARM architecture for which to compile.
 //		Valid values are 5, 6, 7.
 //		When the Go tools are built on an arm system,
 //		the default value is set based on what the build system supports.
@@ -2171,29 +2089,29 @@
 //		the default value is 7.
 //		The value can be followed by an option specifying how to implement floating point instructions.
 //		Valid options are ,softfloat (default for 5) and ,hardfloat (default for 6 and 7).
-//	GOARM64
-//		For GOARCH=arm64, the ARM64 architecture for which to compile.
+//	GKARM64
+//		For GKARCH=arm64, the ARM64 architecture for which to compile.
 //		Valid values are v8.0 (default), v8.{1-9}, v9.{0-5}.
 //		The value can be followed by an option specifying extensions implemented by target hardware.
 //		Valid options are ,lse and ,crypto.
-//		Note that some extensions are enabled by default starting from a certain GOARM64 version;
+//		Note that some extensions are enabled by default starting from a certain GKARM64 version;
 //		for example, lse is enabled by default starting from v8.1.
-//	GOMIPS
-//		For GOARCH=mips{,le}, whether to use floating point instructions.
+//	GKMIPS
+//		For GKARCH=mips{,le}, whether to use floating point instructions.
 //		Valid values are hardfloat (default), softfloat.
-//	GOMIPS64
-//		For GOARCH=mips64{,le}, whether to use floating point instructions.
+//	GKMIPS64
+//		For GKARCH=mips64{,le}, whether to use floating point instructions.
 //		Valid values are hardfloat (default), softfloat.
-//	GOPPC64
-//		For GOARCH=ppc64{,le}, the target ISA (Instruction Set Architecture).
+//	GKPPC64
+//		For GKARCH=ppc64{,le}, the target ISA (Instruction Set Architecture).
 //		Valid values are power8 (default), power9, power10.
-//	GORISCV64
-//		For GOARCH=riscv64, the RISC-V user-mode application profile for which
+//	GKRISCV64
+//		For GKARCH=riscv64, the RISC-V user-mode application profile for which
 //		to compile. Valid values are rva20u64 (default), rva22u64, rva23u64.
 //		See https://github.com/riscv/riscv-profiles/blob/main/src/profiles.adoc
 //		and https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc
-//	GOWASM
-//		For GOARCH=wasm, comma-separated list of experimental WebAssembly features to use.
+//	GKWASM
+//		For GKARCH=wasm, comma-separated list of experimental WebAssembly features to use.
 //		Valid values are satconv, signext.
 //
 // Environment variables for use with code coverage:
@@ -2207,39 +2125,39 @@
 //	GCCGOTOOLDIR
 //		If set, where to find gccgecko tools, such as cgo.
 //		The default is based on how gccgo was configured.
-//	GOEXPERIMENT
+//	GKEXPERIMENT
 //		Comma-separated list of toolchain experiments to enable or disable.
 //		The list of available experiments may change arbitrarily over time.
-//		See GOROOT/src/internal/goexperiment/flags.go for currently valid values.
+//		See GKROOT/src/internal/goexperiment/flags.go for currently valid values.
 //		Warning: This variable is provided for the development and testing
 //		of the Go toolchain itself. Use beyond that purpose is unsupported.
-//	GOFIPS140
+//	GKFIPS140
 //		The FIPS-140 cryptography mode to use when building binaries.
-//		The default is GOFIPS140=off, which makes no FIPS-140 changes at all.
+//		The default is GKFIPS140=off, which makes no FIPS-140 changes at all.
 //		Other values enable FIPS-140 compliance measures and select alternate
 //		versions of the cryptography source code.
 //		See https://go.dev/doc/security/fips140 for details.
-//	GO_EXTLINK_ENABLED
+//	GK_EXTLINK_ENABLED
 //		Whether the linker should use external linking mode
 //		when using -linkmode=auto with code that uses cgo.
 //		Set to 0 to disable external linking mode, 1 to enable it.
 //	GIT_ALLOW_PROTOCOL
 //		Defined by Git. A colon-separated list of schemes that are allowed
 //		to be used with git fetch/clone. If set, any scheme not explicitly
-//		mentioned will be considered insecure by 'gecko get'.
+//		mentioned will be considered insecure by gecko's fetch tooling.
 //		Because the variable is defined by Git, the default value cannot
 //		be set using 'gecko env -w'.
 //
 // Additional information available from 'gecko env' but not read from the environment:
 //
-//	GOEXE
+//	GKEXE
 //		The executable file name suffix (".exe" on Windows, "" on other systems).
-//	GOGCCFLAGS
+//	GKGCCFLAGS
 //		A space-separated list of arguments supplied to the CC command.
-//	GOHOSTARCH
-//		The architecture (GOARCH) of the Go toolchain binaries.
-//	GOHOSTOS
-//		The operating system (GOOS) of the Go toolchain binaries.
+//	GKHOSTARCH
+//		The architecture (GKARCH) of the Go toolchain binaries.
+//	GKHOSTOS
+//		The operating system (GKOS) of the Go toolchain binaries.
 //	GOMOD
 //		The absolute path to the go.mod of the main module.
 //		If module-aware mode is enabled, but there is no go.mod, GOMOD will be
@@ -2250,7 +2168,7 @@
 //		See "gecko help telemetry" for more information.
 //	GOTELEMETRYDIR
 //		The directory Go telemetry data is written is written to.
-//	GOTOOLDIR
+//	GKTOOLDIR
 //		The directory where the gecko tools (compile, cover, doc, etc...) are installed.
 //	GOVERSION
 //		The version of the installed Go tree, as reported by runtime.Version.
@@ -2290,9 +2208,9 @@
 // line comment. See the go/build package documentation for
 // more details.
 //
-// # GOAUTH environment variable
+// # GKAUTH environment variable
 //
-// GOAUTH is a semicolon-separated list of authentication commands for go-import and
+// GKAUTH is a semicolon-separated list of authentication commands for go-import and
 // HTTPS module mirror interactions. The default is netrc.
 //
 // The supported authentication commands are:
@@ -2350,70 +2268,45 @@
 //
 //	Note: it is safe to use net/http.ReadResponse to parse this input.
 //
-// Before the first HTTPS fetch, the gecko command will invoke each GOAUTH
+// Before the first HTTPS fetch, the gecko command will invoke each GKAUTH
 // command in the list with no additional arguments and no input.
 // If the server responds with any 4xx code, the gecko command will invoke the
-// GOAUTH commands again with the URL as an additional command-line argument
+// GKAUTH commands again with the URL as an additional command-line argument
 // and the HTTP Response to the program's stdin.
 // If the server responds with an error again, the fetch fails: a URL-specific
-// GOAUTH will only be attempted once per fetch.
+// GKAUTH will only be attempted once per fetch.
 //
-// # The go.mod file
+// # GKPATH environment variable
 //
-// A module version is defined by a tree of source files, with a go.mod
-// file in its root. When the gecko command is run, it looks in the current
-// directory and then successive parent directories to find the go.mod
-// marking the root of the main (current) module.
-//
-// The go.mod file format is described in detail at
-// https://go.dev/ref/mod#go-mod-file.
-//
-// To create a new go.mod file, use 'gecko mod init'. For details see
-// 'gecko help mod init' or https://go.dev/ref/mod#go-mod-init.
-//
-// To add missing module requirements or remove unneeded requirements,
-// use 'gecko mod tidy'. For details, see 'gecko help mod tidy' or
-// https://go.dev/ref/mod#go-mod-tidy.
-//
-// To add, upgrade, downgrade, or remove a specific module requirement, use
-// 'gecko get'. For details, see 'gecko help module-get' or
-// https://go.dev/ref/mod#go-get.
-//
-// To make other changes or to parse go.mod as JSON for use by other tools,
-// use 'gecko mod edit'. See 'gecko help mod edit' or
-// https://go.dev/ref/mod#go-mod-edit.
-//
-// # GOPATH environment variable
-//
-// The GOPATH environment variable is used to change the default
+// The GKPATH environment variable is used to change the default
 // location to store the module cache and installed binaries, if
-// not overridden by GOMODCACHE and GOBIN respectively.
+// not overridden by GKMODCACHE and GKBIN respectively.
 //
-// Most users don't need to explicitly set GOPATH.
-// If the environment variable is unset, GOPATH defaults
+// Most users don't need to explicitly set GKPATH.
+// If the environment variable is unset, GKPATH defaults
 // to a subdirectory named "go" in the user's home directory
 // ($HOME/go on Unix, %USERPROFILE%\go on Windows),
 // unless that directory holds a Go distribution.
-// Run "gecko env GOPATH" to see the current GOPATH.
+// Run "gecko env GKPATH" to see the current GKPATH.
 //
 // The module cache is stored in the directory specified by
-// GOPATH/pkg/mod. If GOMODCACHE is set, it will be used
+// GKPATH/pkg/mod. If GKMODCACHE is set, it will be used
 // as the directory to store the module cache instead.
 //
 // Executables installed using 'gecko install' are placed in the
-// directory specified by GOPATH/bin or, if GOBIN is set, by GOBIN.
+// directory specified by GKPATH/bin or, if GKBIN is set, by GKBIN.
 //
-// # GOPATH mode
+// # GKPATH mode
 //
-// The GOPATH environment variable is also used by a legacy behavior of the
-// toolchain called GOPATH mode that allows some older projects, created before
+// The GKPATH environment variable is also used by a legacy behavior of the
+// toolchain called GKPATH mode that allows some older projects, created before
 // modules were introduced in Go 1.11 and never updated to use modules,
 // to continue to build.
 //
-// GOPATH mode is enabled when modules are disabled, either when GO111MODULE=off,
-// or when GO111MODULE=auto, and the working directory is not in a module or workspace.
+// GKPATH mode is enabled when modules are disabled, either when GK111MODULE=off,
+// or when GK111MODULE=auto, and the working directory is not in a module or workspace.
 //
-// In GOPATH mode, packages are located using the GOPATH environment variable,
+// In GKPATH mode, packages are located using the GKPATH environment variable,
 // which specifies a list of paths to search:
 // On Unix, the value is a colon-separated string.
 // On Windows, the value is a semicolon-separated string.
@@ -2421,9 +2314,9 @@
 // The first element of this list is used to set the default module cache and
 // binary install directory locations as described above.
 //
-// See https://go.dev/wiki/SettingGOPATH to set a custom GOPATH.
+// See https://go.dev/wiki/SettingGOPATH to set a custom GKPATH.
 //
-// Each directory listed in GOPATH must have a prescribed structure:
+// Each directory listed in GKPATH must have a prescribed structure:
 //
 // The src directory holds source code. The path below src
 // determines the import path or executable name.
@@ -2433,7 +2326,7 @@
 // architecture pair has its own subdirectory of pkg
 // (pkg/GOOS_GOARCH).
 //
-// If DIR is a directory listed in the GOPATH, a package with
+// If DIR is a directory listed in the GKPATH, a package with
 // source in DIR/src/foo/bar can be imported as "foo/bar" and
 // has its compiled form installed to "DIR/pkg/GOOS_GOARCH/foo/bar.a".
 //
@@ -2443,13 +2336,13 @@
 // command with source in DIR/src/foo/quux is installed into
 // DIR/bin/quux, not DIR/bin/foo/quux. The "foo/" prefix is stripped
 // so that you can add DIR/bin to your PATH to get at the
-// installed commands. If the GOBIN environment variable is
+// installed commands. If the GKBIN environment variable is
 // set, commands are installed to the directory it names instead
-// of DIR/bin. GOBIN must be an absolute path.
+// of DIR/bin. GKBIN must be an absolute path.
 //
 // Here's an example directory layout:
 //
-//	GOPATH=/home/user/go
+//	GKPATH=/home/user/go
 //
 //	/home/user/go/
 //	    src/
@@ -2465,15 +2358,15 @@
 //	            foo/
 //	                bar.a          (installed package object)
 //
-// Go searches each directory listed in GOPATH to find source code,
+// Go searches each directory listed in GKPATH to find source code,
 // but new packages are always downloaded into the first directory
 // in the list.
 //
 // See https://go.dev/doc/code.html for an example.
 //
-// # GOPATH mode vendor directories
+// # GKPATH mode vendor directories
 //
-// In GOPATH mode, code below a directory named "vendor" is importable only
+// In GKPATH mode, code below a directory named "vendor" is importable only
 // by code in the directory tree rooted at the parent of "vendor",
 // and only using an import path that omits the prefix up to and
 // including the vendor element.
@@ -2503,20 +2396,20 @@
 // The same visibility rules apply as for internal, but the code
 // in z.go is imported as "baz", not as "foo/vendor/baz".
 //
-// Code in GOPATH mode vendor directories deeper in the source tree shadows
+// Code in GKPATH mode vendor directories deeper in the source tree shadows
 // code in higher directories. Within the subtree rooted at foo, an import
 // of "crash/bang" resolves to "foo/vendor/crash/bang", not the
 // top-level "crash/bang".
 //
-// Code in GOPATH mode vendor directories is not subject to
-// GOPATH mode import path checking (see 'gecko help importpath').
+// Code in GKPATH mode vendor directories is not subject to
+// GKPATH mode import path checking (see 'gecko help importpath').
 //
-// In GOPATH mode, the default GODEBUG values built into a binary
+// In GKPATH mode, the default GODEBUG values built into a binary
 // will be the same GODEBUG values as when a module specifies
 // "godebug default=go1.20". To use different GODEBUG settings, the
 // GODEBUG environment variable must be set to override those values.
 // This also means that the standard library tests will not run
-// properly with GO111MODULE=off.
+// properly with GK111MODULE=off.
 //
 // See https://go.dev/s/go15vendor for details.
 //
@@ -2530,15 +2423,14 @@
 // a site serving from a fixed file system (including a file:/// URL)
 // can be a module proxy.
 //
-// For details on the GOPROXY protocol, see
+// For details on the GKPROXY protocol, see
 // https://go.dev/ref/mod#goproxy-protocol.
 //
 // # Import path syntax
 //
 // An import path is used to uniquely identify and locate a package.
 // In general, an import path denotes either a standard library package
-// (such as "unicode/utf8") or a package found in a module (for more
-// details see: 'gecko help modules').
+// (such as "unicode/utf8") or a package found in a project or module.
 //
 // The standard library reserves all import paths without a dot in the
 // first element for its packages. See "Fully-qualified import paths"
@@ -2710,7 +2602,7 @@
 // will result in the following requests:
 //
 //	https://example.org/pkg/foo?go-get=1 (preferred)
-//	http://example.org/pkg/foo?go-get=1  (fallback, only with use of correctly set GOINSECURE)
+//	http://example.org/pkg/foo?go-get=1  (fallback, only with use of correctly set GKINSECURE)
 //
 // If that page contains the meta tag
 //
@@ -2741,30 +2633,6 @@
 // See https://go.dev/ref/mod#goproxy-protocol for details about the
 // proxy protocol.
 //
-// # Modules, module versions, and more
-//
-// Modules are how Go manages dependencies.
-//
-// A module is a collection of packages that are released, versioned, and
-// distributed together. Modules may be downloaded directly from version control
-// repositories or from module proxy servers.
-//
-// For a series of tutorials on modules, see
-// https://go.dev/doc/tutorial/create-module.
-//
-// For a detailed reference on modules, see https://go.dev/ref/mod.
-//
-// By default, the gecko command may download modules from https://proxy.golang.org.
-// It may authenticate modules using the checksum database at
-// https://sum.golang.org. Both services are operated by the Go team at Google.
-// The privacy policies for these services are available at
-// https://proxy.golang.org/privacy and https://sum.golang.org/privacy,
-// respectively.
-//
-// The gecko command's download behavior may be configured using GOPROXY, GOSUMDB,
-// GOPRIVATE, and other environment variables. See 'gecko help environment'
-// and https://go.dev/ref/mod#private-module-privacy for more information.
-//
 // # Module authentication using go.sum
 //
 // When the gecko command downloads a module zip file or go.mod file into the
@@ -2772,7 +2640,7 @@
 // value to verify the file hasn't changed since it was first downloaded. Known
 // hashes are stored in a file in the module root directory named go.sum. Hashes
 // may also be downloaded from the checksum database depending on the values of
-// GOSUMDB, GOPRIVATE, and GONOSUMDB.
+// GKSUMDB, GKPRIVATE, and GKNOSUMDB.
 //
 // For details, see https://go.dev/ref/mod#authenticating.
 //
@@ -2863,7 +2731,7 @@
 //
 // - "all" expands to all packages in the main module (or workspace modules) and
 // their dependencies, including dependencies needed by tests of any of those. In
-// the legacy GOPATH mode, "all" expands to all packages found in all the GOPATH trees.
+// the legacy GKPATH mode, "all" expands to all packages found in all the GKPATH trees.
 //
 // - "std" expands to all the packages in the standard library
 // and their internal libraries.
@@ -2884,7 +2752,7 @@
 //
 // Packages are identified by their import path.
 // Import paths for packages in the standard library use their
-// relative path under "$GOROOT/src".
+// relative path under "$GKROOT/src".
 // Import paths for all other packages are a combination of their module name
 // and their relative directory path within the module.
 // Within a program, all packages must be identified by a unique import path.
@@ -2929,33 +2797,33 @@
 // regardless of source, against the public Go checksum database at sum.golang.org.
 // These defaults work well for publicly available source code.
 //
-// The GOPRIVATE environment variable controls which modules the gecko command
+// The GKPRIVATE environment variable controls which modules the gecko command
 // considers to be private (not available publicly) and should therefore not use
 // the proxy or checksum database. The variable is a comma-separated list of
 // glob patterns (in the syntax of Go's path.Match) of module path prefixes.
 // For example,
 //
-//	GOPRIVATE=*.corp.example.com,rsc.io/private
+//	GKPRIVATE=*.corp.example.com,rsc.io/private
 //
 // causes the gecko command to treat as private any module with a path prefix
 // matching either pattern, including git.corp.example.com/xyzzy, rsc.io/private,
 // and rsc.io/private/quux.
 //
-// For fine-grained control over module download and validation, the GONOPROXY
-// and GONOSUMDB environment variables accept the same kind of glob list
-// and override GOPRIVATE for the specific decision of whether to use the proxy
+// For fine-grained control over module download and validation, the GKNOPROXY
+// and GKNOSUMDB environment variables accept the same kind of glob list
+// and override GKPRIVATE for the specific decision of whether to use the proxy
 // and checksum database, respectively.
 //
 // For example, if a company ran a module proxy serving private modules,
 // users would configure go using:
 //
-//	GOPRIVATE=*.corp.example.com
-//	GOPROXY=proxy.example.com
-//	GONOPROXY=none
+//	GKPRIVATE=*.corp.example.com
+//	GKPROXY=proxy.example.com
+//	GKNOPROXY=none
 //
-// The GOPRIVATE variable is also used to define the "public" and "private"
-// patterns for the GOVCS variable; see 'gecko help vcs'. For that usage,
-// GOPRIVATE applies even in GOPATH mode. In that case, it matches import paths
+// The GKPRIVATE variable is also used to define the "public" and "private"
+// patterns for the GKVCS variable; see 'gecko help vcs'. For that usage,
+// GKPRIVATE applies even in GKPATH mode. In that case, it matches import paths
 // instead of module paths.
 //
 // The 'gecko env -w' command (see 'gecko help env') can be used to set these variables
@@ -3321,7 +3189,7 @@
 //
 // See the documentation of the testing package for more information.
 //
-// # Controlling version control with GOVCS
+// # Controlling version control with GKVCS
 //
 // The gecko command can run version control commands like git
 // to download imported code. This functionality is critical to the decentralized
@@ -3333,7 +3201,7 @@
 // by default will only use git and hg to download code from public servers.
 // But it will use any known version control system (fossil, git, hg, svn)
 // to download code from private servers, defined as those hosting packages
-// matching the GOPRIVATE variable (see 'gecko help private'). The rationale behind
+// matching the GKPRIVATE variable (see 'gecko help private'). The rationale behind
 // allowing only Git and Mercurial is that these two systems have had the most
 // attention to issues of being run as clients of untrusted servers. In contrast,
 // Bazaar, Fossil, and Subversion have primarily been used in trusted,
@@ -3350,27 +3218,27 @@
 // use the Go module mirror, which takes on the security risk of running the
 // version control commands using a custom sandbox.
 //
-// The GOVCS variable can be used to change the allowed version control systems
+// The GKVCS variable can be used to change the allowed version control systems
 // for specific packages (identified by a module or import path).
-// The GOVCS variable applies when building package in both module-aware mode
-// and GOPATH mode. When using modules, the patterns match against the module path.
-// When using GOPATH, the patterns match against the import path corresponding to
+// The GKVCS variable applies when building package in both module-aware mode
+// and GKPATH mode. When using modules, the patterns match against the module path.
+// When using GKPATH, the patterns match against the import path corresponding to
 // the root of the version control repository.
 //
-// The general form of the GOVCS setting is a comma-separated list of
+// The general form of the GKVCS setting is a comma-separated list of
 // pattern:vcslist rules. The pattern is a glob pattern that must match
 // one or more leading elements of the module or import path. The vcslist
 // is a pipe-separated list of allowed version control commands, or "all"
 // to allow use of any known command, or "off" to disallow all commands.
 // Note that if a module matches a pattern with vcslist "off", it may still be
 // downloaded if the origin server uses the "mod" scheme, which instructs the
-// gecko command to download the module using the GOPROXY protocol.
+// gecko command to download the module using the GKPROXY protocol.
 // The earliest matching pattern in the list applies, even if later patterns
 // might also match.
 //
 // For example, consider:
 //
-//	GOVCS=github.com:git,evil.com:off,*:git|hg
+//	GKVCS=github.com:git,evil.com:off,*:git|hg
 //
 // With this setting, code with a module or import path beginning with
 // github.com/ can only use git; paths on evil.com cannot use any version
@@ -3378,21 +3246,21 @@
 // only git or hg.
 //
 // The special patterns "public" and "private" match public and private
-// module or import paths. A path is private if it matches the GOPRIVATE
+// module or import paths. A path is private if it matches the GKPRIVATE
 // variable; otherwise it is public.
 //
-// If no rules in the GOVCS variable match a particular module or import path,
+// If no rules in the GKVCS variable match a particular module or import path,
 // the 'gecko get' command applies its default rule, which can now be summarized
-// in GOVCS notation as 'public:git|hg,private:all'.
+// in GKVCS notation as 'public:git|hg,private:all'.
 //
 // To allow unfettered use of any version control system for any package, use:
 //
-//	GOVCS=*:all
+//	GKVCS=*:all
 //
 // To disable all use of version control, use:
 //
-//	GOVCS=*:off
+//	GKVCS=*:off
 //
-// The 'gecko env -w' command (see 'gecko help env') can be used to set the GOVCS
+// The 'gecko env -w' command (see 'gecko help env') can be used to set the GKVCS
 // variable for future gecko command invocations.
 package main

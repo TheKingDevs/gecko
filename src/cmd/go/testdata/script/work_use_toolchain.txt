@@ -25,10 +25,10 @@ env TESTGO_VERSION=go1.21
 env TESTGO_VERSION_SWITCH=switch
 rm go.work
 go work init
-env GOTOOLCHAIN=local
+env GKTOOLCHAIN=local
 ! go work use ./m1_22_0
-stderr '^gecko: m1_22_0'${/}'go.mod requires go >= 1.22.0 \(running go 1.21; GOTOOLCHAIN=local\)$'
-env GOTOOLCHAIN=auto
+stderr '^gecko: m1_22_0'${/}'go.mod requires go >= 1.22.0 \(running go 1.21; GKTOOLCHAIN=local\)$'
+env GKTOOLCHAIN=auto
 go work use ./m1_22_0
 stderr '^gecko: m1_22_0'${/}'go.mod requires go >= 1.22.0; switching to go1.22.9$'
 grep '^go 1.22.0$' go.work
@@ -41,10 +41,10 @@ grep '^go 1.22.1$' go.work
 ! grep toolchain go.work
 
 # work use with an even newer module should bump go and toolchain again.
-env GOTOOLCHAIN=go1.22.9
+env GKTOOLCHAIN=go1.22.9
 ! go work use ./m1_24_rc0
-stderr '^gecko: m1_24_rc0'${/}'go.mod requires go >= 1.24rc0 \(running go 1.22.9; GOTOOLCHAIN=go1.22.9\)$'
-env GOTOOLCHAIN=auto
+stderr '^gecko: m1_24_rc0'${/}'go.mod requires go >= 1.24rc0 \(running go 1.22.9; GKTOOLCHAIN=go1.22.9\)$'
+env GKTOOLCHAIN=auto
 go work use ./m1_24_rc0
 stderr '^gecko: m1_24_rc0'${/}'go.mod requires go >= 1.24rc0; switching to go1.24rc1$'
 grep '^go 1.24rc0$' go.work

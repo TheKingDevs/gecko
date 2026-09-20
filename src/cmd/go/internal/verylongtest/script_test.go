@@ -29,7 +29,7 @@ func TestScript(t *testing.T) {
 
 	engine, env := scripttest.NewEngine(t, nil)
 	modcache := filepath.Join(t.TempDir(), "modcache")
-	env = append(env, "GOMODCACHE="+modcache)
+	env = append(env, "GKMODCACHE="+modcache)
 	// Remove write only permissions on GOMODCACHE so we can clear its files.
 	t.Cleanup(func() {
 		filepath.WalkDir(modcache, func(path string, info fs.DirEntry, err error) error {
@@ -37,7 +37,7 @@ func TestScript(t *testing.T) {
 			return nil
 		})
 	})
-	env = append(env, "GOROOT="+runtime.GOROOT())
+	env = append(env, "GKROOT="+runtime.GOROOT())
 	go404proxyAddr := start404Proxy(t)
 	env = append(env, "TESTGO_404_PROXY_ADDR="+go404proxyAddr)
 	engine.Conds["net"] = script.PrefixCondition("can connect to external network host <suffix>", hasNet)

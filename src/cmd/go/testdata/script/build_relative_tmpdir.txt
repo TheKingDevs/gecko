@@ -1,14 +1,14 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
-# If GOTMPDIR is relative, 'go build' should derive an absolute $WORK directory.
+# If GKTMPDIR is relative, 'go build' should derive an absolute $WORK directory.
 cd $WORK
 mkdir tmp
-env GOTMPDIR=tmp
+env GKTMPDIR=tmp
 go build -work a
 stderr 'WORK='$WORK
 
 # Similarly if TMP/TMPDIR is relative.
-env GOTMPDIR=
+env GKTMPDIR=
 env TMP=tmp    # Windows
 env TMPDIR=tmp # Unix
 go build -work a

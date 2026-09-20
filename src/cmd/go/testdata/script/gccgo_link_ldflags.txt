@@ -10,7 +10,7 @@ go build
 [!exec:gccgo] skip
 
 # TODO: remove once gccgo on builder is updated
-[GOOS:aix] [GOARCH:ppc64] skip
+[GKOS:aix] [GKARCH:ppc64] skip
 
 go build -compiler gccgo
 

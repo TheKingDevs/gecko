@@ -1,14 +1,14 @@
 # Download modules and populate go.sum.
 go get -modcacherw
-exists $GOPATH/pkg/mod/rsc.io/quote@v1.5.2/go.mod
+exists $GKPATH/pkg/mod/rsc.io/quote@v1.5.2/go.mod
 
 # 'go mod verify' should fail if we delete a file.
 go mod verify
-rm $GOPATH/pkg/mod/rsc.io/quote@v1.5.2/go.mod
+rm $GKPATH/pkg/mod/rsc.io/quote@v1.5.2/go.mod
 ! go mod verify
 
 # Create a .partial file to simulate an failure extracting the zip file.
-cp empty $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.partial
+cp empty $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.partial
 
 # 'go mod verify' should not fail, since the module hasn't been completely
 # ingested into the cache.
@@ -20,7 +20,7 @@ go mod verify
 # module cache, or local replacements. In this case, the directory is in the
 # right place, but it's incomplete, so 'go list' acts as if it's not an
 # active module.
-! go list $GOPATH/pkg/mod/rsc.io/quote@v1.5.2
+! go list $GKPATH/pkg/mod/rsc.io/quote@v1.5.2
 stderr 'outside main module or its selected dependencies'
 
 # 'go list -m' should not print the directory.
@@ -29,11 +29,11 @@ go list -m -f '{{.Dir}}' rsc.io/quote
 
 # 'go mod download' should re-extract the module and remove the .partial file.
 go mod download -modcacherw rsc.io/quote
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.partial
-exists $GOPATH/pkg/mod/rsc.io/quote@v1.5.2/go.mod
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.partial
+exists $GKPATH/pkg/mod/rsc.io/quote@v1.5.2/go.mod
 
 # 'go list' should succeed.
-go list $GOPATH/pkg/mod/rsc.io/quote@v1.5.2
+go list $GKPATH/pkg/mod/rsc.io/quote@v1.5.2
 stdout '^rsc.io/quote$'
 
 # 'go list -m' should print the directory.
@@ -42,17 +42,17 @@ stdout 'pkg[/\\]mod[/\\]rsc.io[/\\]quote@v1.5.2'
 
 # go mod verify should fail if we delete a file.
 go mod verify
-rm $GOPATH/pkg/mod/rsc.io/quote@v1.5.2/go.mod
+rm $GKPATH/pkg/mod/rsc.io/quote@v1.5.2/go.mod
 ! go mod verify
 
 # 'go mod download' should not leave behind a directory or a .partial file
 # if there is an error extracting the zip file.
-rm $GOPATH/pkg/mod/rsc.io/quote@v1.5.2
-cp empty $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
+rm $GKPATH/pkg/mod/rsc.io/quote@v1.5.2
+cp empty $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
 ! go mod download
 stderr 'not a valid zip file'
-! exists $GOPATH/pkg/mod/rsc.io/quote@v1.5.2
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.partial
+! exists $GKPATH/pkg/mod/rsc.io/quote@v1.5.2
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.partial
 
 -- go.mod --
 module m

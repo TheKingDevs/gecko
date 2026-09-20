@@ -51,7 +51,7 @@ func runVendor(ctx context.Context, cmd *base.Command, args []string) {
 	moduleLoader := modload.NewLoader()
 	moduleLoader.InitWorkfile()
 	if modload.WorkFilePath(moduleLoader) == "" {
-		base.Fatalf("gecko: no go.work file found\n\t(run 'gecko work init' first or specify path using GOWORK environment variable)")
+		base.Fatalf("gecko: no go.work file found\n\t(run 'gecko work init' first or specify path using GKWORK environment variable)")
 	}
 
 	modcmd.RunVendor(moduleLoader, ctx, vendorE, vendorO, args)

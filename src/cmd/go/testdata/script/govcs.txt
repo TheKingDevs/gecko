@@ -1,81 +1,81 @@
-env proxy=$GOPROXY
-env GOPROXY=direct
+env proxy=$GKPROXY
+env GKPROXY=direct
 
-# GOVCS stops go get
-env GOVCS='*:none'
+# GKVCS stops go get
+env GKVCS='*:none'
 ! go get github.com/google/go-cmp
-stderr '^gecko: GOVCS disallows using git for public github.com/google/go-cmp; see ''gecko help vcs''$'
-env GOPRIVATE='github.com/google'
+stderr '^gecko: GKVCS disallows using git for public github.com/google/go-cmp; see ''gecko help vcs''$'
+env GKPRIVATE='github.com/google'
 ! go get github.com/google/go-cmp
-stderr '^gecko: GOVCS disallows using git for private github.com/google/go-cmp; see ''gecko help vcs''$'
+stderr '^gecko: GKVCS disallows using git for private github.com/google/go-cmp; see ''gecko help vcs''$'
 
 # public pattern works
-env GOPRIVATE='github.com/google'
-env GOVCS='public:all,private:none'
+env GKPRIVATE='github.com/google'
+env GKVCS='public:all,private:none'
 ! go get github.com/google/go-cmp
-stderr '^gecko: GOVCS disallows using git for private github.com/google/go-cmp; see ''gecko help vcs''$'
+stderr '^gecko: GKVCS disallows using git for private github.com/google/go-cmp; see ''gecko help vcs''$'
 
 # private pattern works
-env GOPRIVATE='hubgit.com/google'
-env GOVCS='private:all,public:none'
+env GKPRIVATE='hubgit.com/google'
+env GKVCS='private:all,public:none'
 ! go get github.com/google/go-cmp
-stderr '^gecko: GOVCS disallows using git for public github.com/google/go-cmp; see ''gecko help vcs''$'
+stderr '^gecko: GKVCS disallows using git for public github.com/google/go-cmp; see ''gecko help vcs''$'
 
 # other patterns work (for more patterns, see TestGOVCS)
-env GOPRIVATE=
-env GOVCS='github.com:svn|hg'
+env GKPRIVATE=
+env GKVCS='github.com:svn|hg'
 ! go get github.com/google/go-cmp
-stderr '^gecko: GOVCS disallows using git for public github.com/google/go-cmp; see ''gecko help vcs''$'
-env GOVCS='github.com/google/go-cmp/inner:git,github.com:svn|hg'
+stderr '^gecko: GKVCS disallows using git for public github.com/google/go-cmp; see ''gecko help vcs''$'
+env GKVCS='github.com/google/go-cmp/inner:git,github.com:svn|hg'
 ! go get github.com/google/go-cmp
-stderr '^gecko: GOVCS disallows using git for public github.com/google/go-cmp; see ''gecko help vcs''$'
+stderr '^gecko: GKVCS disallows using git for public github.com/google/go-cmp; see ''gecko help vcs''$'
 
 # bad patterns are reported (for more bad patterns, see TestGOVCSErrors)
-env GOVCS='git'
+env GKVCS='git'
 ! go get github.com/google/go-cmp
-stderr '^gecko: github.com/google/go-cmp: malformed entry in GOVCS \(missing colon\): "git"$'
+stderr '^gecko: github.com/google/go-cmp: malformed entry in GKVCS \(missing colon\): "git"$'
 
-env GOVCS=github.com:hg,github.com:git
+env GKVCS=github.com:hg,github.com:git
 ! go get github.com/google/go-cmp
-stderr '^gecko: github.com/google/go-cmp: unreachable pattern in GOVCS: "github.com:git" after "github.com:hg"$'
+stderr '^gecko: github.com/google/go-cmp: unreachable pattern in GKVCS: "github.com:git" after "github.com:hg"$'
 
-# bad GOVCS patterns do not stop commands that do not need to check VCS
+# bad GKVCS patterns do not stop commands that do not need to check VCS
 go list
-env GOPROXY=$proxy
+env GKPROXY=$proxy
 go get rsc.io/quote # ok because used proxy
-env GOPROXY=direct
+env GKPROXY=direct
 
 # svn is disallowed by default
-env GOPRIVATE=
-env GOVCS=
+env GKPRIVATE=
+env GKVCS=
 ! go get rsc.io/nonexist.svn/hello
-stderr '^gecko: rsc.io/nonexist.svn/hello: GOVCS disallows using svn for public rsc.io/nonexist.svn; see ''gecko help vcs''$'
+stderr '^gecko: rsc.io/nonexist.svn/hello: GKVCS disallows using svn for public rsc.io/nonexist.svn; see ''gecko help vcs''$'
 
 # fossil is disallowed by default
-env GOPRIVATE=
-env GOVCS=
+env GKPRIVATE=
+env GKVCS=
 ! go get rsc.io/nonexist.fossil/hello
-stderr '^gecko: rsc.io/nonexist.fossil/hello: GOVCS disallows using fossil for public rsc.io/nonexist.fossil; see ''gecko help vcs''$'
+stderr '^gecko: rsc.io/nonexist.fossil/hello: GKVCS disallows using fossil for public rsc.io/nonexist.fossil; see ''gecko help vcs''$'
 
 # git is OK by default
-env GOVCS=
-env GONOSUMDB='*'
+env GKVCS=
+env GKNOSUMDB='*'
 [git] [!short] go get vcs-test.golang.org/git/hello.git
 
 # hg is OK by default
-env GOVCS=
-env GONOSUMDB='*'
+env GKVCS=
+env GKNOSUMDB='*'
 [exec:hg] [!short] go get vcs-test.golang.org/go/custom-hg-hello
 
 # git can be disallowed
-env GOVCS=public:hg
+env GKVCS=public:hg
 ! go get rsc.io/nonexist.git/hello
-stderr '^gecko: rsc.io/nonexist.git/hello: GOVCS disallows using git for public rsc.io/nonexist.git; see ''gecko help vcs''$'
+stderr '^gecko: rsc.io/nonexist.git/hello: GKVCS disallows using git for public rsc.io/nonexist.git; see ''gecko help vcs''$'
 
 # hg can be disallowed
-env GOVCS=public:git
+env GKVCS=public:git
 ! go get rsc.io/nonexist.hg/hello
-stderr '^gecko: rsc.io/nonexist.hg/hello: GOVCS disallows using hg for public rsc.io/nonexist.hg; see ''gecko help vcs''$'
+stderr '^gecko: rsc.io/nonexist.hg/hello: GKVCS disallows using hg for public rsc.io/nonexist.hg; see ''gecko help vcs''$'
 
 -- go.mod --
 module m

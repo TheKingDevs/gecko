@@ -58,7 +58,7 @@ func StartProxy() {
 		}
 		*proxyAddr = l.Addr().String()
 		proxyURL = "http://" + *proxyAddr + "/mod"
-		fmt.Fprintf(os.Stderr, "gecko test proxy running at GOPROXY=%s\n", proxyURL)
+		fmt.Fprintf(os.Stderr, "gecko test proxy running at GKPROXY=%s\n", proxyURL)
 		go func() {
 			log.Fatalf("gecko proxy: http.Serve: %v", http.Serve(l, http.HandlerFunc(proxyHandler)))
 		}()

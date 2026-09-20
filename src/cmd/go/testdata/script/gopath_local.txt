@@ -1,28 +1,28 @@
-env GO111MODULE=off  # Relative imports only work in GOPATH mode.
+env GK111MODULE=off  # Relative imports only work in GKPATH mode.
 
 # Imports should be resolved relative to the source file.
 go build testdata/local/easy.go
-exec ./easy$GOEXE
+exec ./easy$GKEXE
 stdout '^easysub\.Hello'
 
 # Ignored files should be able to import the package built from
 # non-ignored files in the same directory.
-go build -o easysub$GOEXE testdata/local/easysub/main.go
-exec ./easysub$GOEXE
+go build -o easysub$GKEXE testdata/local/easysub/main.go
+exec ./easysub$GKEXE
 stdout '^easysub\.Hello'
 
 # Files in relative-imported packages should be able to
 # use relative imports themselves.
 go build testdata/local/hard.go
-exec ./hard$GOEXE
+exec ./hard$GKEXE
 stdout '^sub\.Hello'
 
 # Explicit source files listed on the command line should not install without
-# GOBIN set, since individual source files aren't part of the containing GOPATH.
+# GKBIN set, since individual source files aren't part of the containing GKPATH.
 ! go install testdata/local/easy.go
-stderr '^gecko: no install location for \.go files listed on command line \(GOBIN not set\)$'
+stderr '^gecko: no install location for \.go files listed on command line \(GKBIN not set\)$'
 
-[GOOS:windows] stop  # Windows does not allow the ridiculous directory name we're about to use.
+[GKOS:windows] stop  # Windows does not allow the ridiculous directory name we're about to use.
 
 env BAD_DIR_NAME='#$%:, &()*;<=>?\^{}'
 
@@ -38,25 +38,25 @@ cp testdata/local/sub/sub/subsub.go testdata/$BAD_DIR_NAME/sub/sub/subsub.go
 
 # Imports should be resolved relative to the source file.
 go build testdata/$BAD_DIR_NAME/easy.go
-exec ./easy$GOEXE
+exec ./easy$GKEXE
 stdout '^easysub\.Hello'
 
 # Ignored files should be able to import the package built from
 # non-ignored files in the same directory.
-go build -o easysub$GOEXE testdata/$BAD_DIR_NAME/easysub/main.go
-exec ./easysub$GOEXE
+go build -o easysub$GKEXE testdata/$BAD_DIR_NAME/easysub/main.go
+exec ./easysub$GKEXE
 stdout '^easysub\.Hello'
 
 # Files in relative-imported packages should be able to
 # use relative imports themselves.
 go build testdata/$BAD_DIR_NAME/hard.go
-exec ./hard$GOEXE
+exec ./hard$GKEXE
 stdout '^sub\.Hello'
 
 # Explicit source files listed on the command line should not install without
-# GOBIN set, since individual source files aren't part of the containing GOPATH.
+# GKBIN set, since individual source files aren't part of the containing GKPATH.
 ! go install testdata/$BAD_DIR_NAME/easy.go
-stderr '^gecko: no install location for \.go files listed on command line \(GOBIN not set\)$'
+stderr '^gecko: no install location for \.go files listed on command line \(GKBIN not set\)$'
 
 -- testdata/local/easy.go --
 package main

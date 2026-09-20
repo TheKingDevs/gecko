@@ -20,8 +20,8 @@ chmod 0755 hooks/pre-revprop-change
 
 env ROOT=$PWD
 cd .checkout
-[GOOS:windows] svn checkout file:///$ROOT .
-[!GOOS:windows] svn checkout file://$ROOT .
+[GKOS:windows] svn checkout file:///$ROOT .
+[!GKOS:windows] svn checkout file://$ROOT .
 
 cd git-README-only
 git init
@@ -85,7 +85,7 @@ svn propset svn:date 2017-10-04T15:08:26.291877Z --revprop -r5
 svn update
 svn log --xml
 
-[GOOS:windows] replace '\n' '\r\n' .svn-log
+[GKOS:windows] replace '\n' '\r\n' .svn-log
 cmp stdout .svn-log
 
 -- .checkout/git-README-only/pkg/pkg.go --

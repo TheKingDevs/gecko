@@ -356,7 +356,7 @@ var defaultGOROOT string // set by cmd/link
 // Use the system path to locate the “go” binary, and use
 // “go env GOROOT” to find its GOROOT.
 func GOROOT() string {
-	s := gogetenv("GOROOT")
+	s := gogetenv("GKROOT")
 	if s != "" {
 		return s
 	}

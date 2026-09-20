@@ -1,6 +1,6 @@
-# Set up fresh GOCACHE.
-env GOCACHE=$WORK/gocache
-mkdir $GOCACHE
+# Set up fresh GKCACHE.
+env GKCACHE=$WORK/gocache
+mkdir $GKCACHE
 
 # Building trivial non-main package should run preprofile the first time.
 go build -x -pgo=default.pgo lib.go
@@ -17,7 +17,7 @@ stderr 'preprofile.*default\.pgo'
 # ... building a different package should not run preprofile again, instead
 # using a profile from cache.
 #
-# Note we can't directly look for $GOCACHE in the regex below because the
+# Note we can't directly look for $GKCACHE in the regex below because the
 # Windows slashes would need to be escaped. Instead just look for the "gocache"
 # component (specified above) as an approximation.
 go build -x -pgo=default.pgo lib2.go

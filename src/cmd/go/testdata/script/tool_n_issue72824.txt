@@ -1,17 +1,17 @@
 # Start with a fresh cache because we want to verify the behavior
 # when the tool hasn't been cached previously.
-env GOCACHE=$WORK${/}cache
+env GKCACHE=$WORK${/}cache
 
 # Even when the tool hasn't been previously cached but was built and
 # saved to the cache in the invocation of 'go tool -n' we should return
 # its cached location.
 go tool -n foo
-stdout $GOCACHE
+stdout $GKCACHE
 
 # And of course we should also return the cached location on subsequent
 # runs.
 go tool -n foo
-stdout $GOCACHE
+stdout $GKCACHE
 
 -- go.mod --
 module example.com/foo

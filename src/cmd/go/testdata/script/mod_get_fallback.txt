@@ -1,7 +1,7 @@
-env GOSUMDB=off
+env GKSUMDB=off
 
-env LOCALMODPROXY=$GOPROXY
-env GOPROXY=$LOCALMODPROXY,direct
+env LOCALMODPROXY=$GKPROXY
+env GKPROXY=$LOCALMODPROXY,direct
 
 go get -x -v vcs-test.golang.org/git/hello.git
 stderr '# get '$LOCALMODPROXY'/vcs-test.golang.org/git/hello.git/@v/list'

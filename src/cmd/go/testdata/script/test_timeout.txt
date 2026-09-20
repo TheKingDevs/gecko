@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 cd a
 
 # If no timeout is set explicitly, 'go test' should set

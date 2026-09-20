@@ -138,9 +138,9 @@ func buildGoobj(t *testing.T) goobjPaths {
 				if err != nil {
 					return err
 				}
-				cmd := testenv.Command(t, gotool, "build", "-buildmode=archive", "-o", cgoarchive, "-gcflags=all="+os.Getenv("GO_GCFLAGS"), "mycgo")
+				cmd := testenv.Command(t, gotool, "build", "-buildmode=archive", "-o", cgoarchive, "-gcflags=all="+os.Getenv("GK_GCFLAGS"), "mycgo")
 				cmd.Dir = filepath.Join(gopath, "src", "mycgo")
-				cmd.Env = append(os.Environ(), "GOPATH="+gopath)
+				cmd.Env = append(os.Environ(), "GKPATH="+gopath)
 				out, err = cmd.CombinedOutput()
 				if err != nil {
 					return fmt.Errorf("go install mycgo: %v\n%s", err, out)
@@ -188,7 +188,7 @@ func TestParseGoobj(t *testing.T) {
 			t.Errorf("wrong type of object: want EntryGoObj, got %v", e.Type)
 		}
 		if !bytes.Contains(e.Obj.TextHeader, []byte(runtime.GOARCH)) {
-			t.Errorf("text header does not contain GOARCH %s: %q", runtime.GOARCH, e.Obj.TextHeader)
+			t.Errorf("text header does not contain GKARCH %s: %q", runtime.GOARCH, e.Obj.TextHeader)
 		}
 	}
 }
@@ -219,7 +219,7 @@ func TestParseArchive(t *testing.T) {
 			t.Errorf("wrong type of object: want EntryGoObj, got %v", e.Type)
 		}
 		if !bytes.Contains(e.Obj.TextHeader, []byte(runtime.GOARCH)) {
-			t.Errorf("text header does not contain GOARCH %s: %q", runtime.GOARCH, e.Obj.TextHeader)
+			t.Errorf("text header does not contain GKARCH %s: %q", runtime.GOARCH, e.Obj.TextHeader)
 		}
 		if e.Name == "go1.o" {
 			found1 = true
@@ -279,7 +279,7 @@ func TestParseCGOArchive(t *testing.T) {
 		case EntryGoObj:
 			foundgo = true
 			if !bytes.Contains(e.Obj.TextHeader, []byte(runtime.GOARCH)) {
-				t.Errorf("text header does not contain GOARCH %s: %q", runtime.GOARCH, e.Obj.TextHeader)
+				t.Errorf("text header does not contain GKARCH %s: %q", runtime.GOARCH, e.Obj.TextHeader)
 			}
 			continue
 		case EntryNativeObj:

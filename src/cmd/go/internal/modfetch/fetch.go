@@ -1131,7 +1131,7 @@ module cache, it computes a cryptographic hash and compares it with a known
 value to verify the file hasn't changed since it was first downloaded. Known
 hashes are stored in a file in the module root directory named go.sum. Hashes
 may also be downloaded from the checksum database depending on the values of
-GOSUMDB, GOPRIVATE, and GONOSUMDB.
+GKSUMDB, GKPRIVATE, and GKNOSUMDB.
 
 For details, see https://go.dev/ref/mod#authenticating.
 `,
@@ -1146,33 +1146,33 @@ mirror at proxy.golang.org. It also defaults to validating downloaded modules,
 regardless of source, against the public Go checksum database at sum.golang.org.
 These defaults work well for publicly available source code.
 
-The GOPRIVATE environment variable controls which modules the gecko command
+The GKPRIVATE environment variable controls which modules the gecko command
 considers to be private (not available publicly) and should therefore not use
 the proxy or checksum database. The variable is a comma-separated list of
 glob patterns (in the syntax of Go's path.Match) of module path prefixes.
 For example,
 
-	GOPRIVATE=*.corp.example.com,rsc.io/private
+	GKPRIVATE=*.corp.example.com,rsc.io/private
 
 causes the gecko command to treat as private any module with a path prefix
 matching either pattern, including git.corp.example.com/xyzzy, rsc.io/private,
 and rsc.io/private/quux.
 
-For fine-grained control over module download and validation, the GONOPROXY
-and GONOSUMDB environment variables accept the same kind of glob list
-and override GOPRIVATE for the specific decision of whether to use the proxy
+For fine-grained control over module download and validation, the GKNOPROXY
+and GKNOSUMDB environment variables accept the same kind of glob list
+and override GKPRIVATE for the specific decision of whether to use the proxy
 and checksum database, respectively.
 
 For example, if a company ran a module proxy serving private modules,
 users would configure go using:
 
-	GOPRIVATE=*.corp.example.com
-	GOPROXY=proxy.example.com
-	GONOPROXY=none
+	GKPRIVATE=*.corp.example.com
+	GKPROXY=proxy.example.com
+	GKNOPROXY=none
 
-The GOPRIVATE variable is also used to define the "public" and "private"
-patterns for the GOVCS variable; see 'gecko help vcs'. For that usage,
-GOPRIVATE applies even in GOPATH mode. In that case, it matches import paths
+The GKPRIVATE variable is also used to define the "public" and "private"
+patterns for the GKVCS variable; see 'gecko help vcs'. For that usage,
+GKPRIVATE applies even in GKPATH mode. In that case, it matches import paths
 instead of module paths.
 
 The 'gecko env -w' command (see 'gecko help env') can be used to set these variables

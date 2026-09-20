@@ -23,7 +23,7 @@ func p256OrdInverse(t *testing.T, k *[4]uint64) {
 		case "amd64", "arm64":
 			t.Fatal(err)
 		default:
-			t.Skip("this GOARCH didn't have P256OrdInverse in v1.0/v1.26")
+			t.Skip("this GKARCH didn't have P256OrdInverse in v1.0/v1.26")
 		}
 	}
 	*k = bytesToLimbs(out)

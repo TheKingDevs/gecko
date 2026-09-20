@@ -46,10 +46,10 @@ func testSO(t *testing.T, dir string) {
 		log.Panic(err)
 	}
 
-	cmd := exec.Command("go", "env", "CC", "GOGCCFLAGS")
+	cmd := exec.Command("go", "env", "CC", "GKGCCFLAGS")
 	cmd.Dir = modRoot
 	cmd.Stderr = new(strings.Builder)
-	cmd.Env = append(os.Environ(), "GOPATH="+GOPATH)
+	cmd.Env = append(os.Environ(), "GKPATH="+GOPATH)
 	out, err := cmd.Output()
 	if err != nil {
 		t.Fatalf("%#q: %v\n%s", cmd, err, cmd.Stderr)
@@ -87,7 +87,7 @@ func testSO(t *testing.T, dir string) {
 
 	cmd = exec.Command(cc, args...)
 	cmd.Dir = modRoot
-	cmd.Env = append(os.Environ(), "GOPATH="+GOPATH)
+	cmd.Env = append(os.Environ(), "GKPATH="+GOPATH)
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("%#q: %s\n%s", cmd, err, out)
@@ -106,7 +106,7 @@ func testSO(t *testing.T, dir string) {
 
 	cmd = exec.Command(testenv.GoToolPath(t), "build", "-o", "main.exe", "main.go")
 	cmd.Dir = modRoot
-	cmd.Env = append(os.Environ(), "GOPATH="+GOPATH)
+	cmd.Env = append(os.Environ(), "GKPATH="+GOPATH)
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("%#q: %s\n%s", cmd, err, out)
@@ -115,7 +115,7 @@ func testSO(t *testing.T, dir string) {
 
 	cmd = exec.Command("./main.exe")
 	cmd.Dir = modRoot
-	cmd.Env = append(os.Environ(), "GOPATH="+GOPATH)
+	cmd.Env = append(os.Environ(), "GKPATH="+GOPATH)
 	if runtime.GOOS != "windows" {
 		s := "LD_LIBRARY_PATH"
 		if runtime.GOOS == "darwin" || runtime.GOOS == "ios" {

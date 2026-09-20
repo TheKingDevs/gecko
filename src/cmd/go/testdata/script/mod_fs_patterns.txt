@@ -31,7 +31,7 @@ stderr 'import lookup disabled'
 
 ! go build -mod=readonly ./nonexist
 ! stderr 'import lookup disabled'
-stderr '^stat '$GOPATH'[/\\]src[/\\]x[/\\]nonexist: directory not found'
+stderr '^stat '$GKPATH'[/\\]src[/\\]x[/\\]nonexist: directory not found'
 
 ! go build -mod=readonly ./go.mod
 ! stderr 'import lookup disabled'

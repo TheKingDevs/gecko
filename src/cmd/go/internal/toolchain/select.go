@@ -113,8 +113,8 @@ func Select() {
 	//	GOTOOLCHAIN=go1.999 go env -newflag GOTOOLCHAIN
 	//
 	// where -newflag is a flag known to Go 1.999 but not known to us.
-	if (len(os.Args) == 3 && os.Args[1] == "env" && os.Args[2] == "GOTOOLCHAIN") ||
-		(len(os.Args) == 4 && os.Args[1] == "env" && os.Args[2] == "-w" && strings.HasPrefix(os.Args[3], "GOTOOLCHAIN=")) {
+	if (len(os.Args) == 3 && os.Args[1] == "env" && os.Args[2] == "GKTOOLCHAIN") ||
+		(len(os.Args) == 4 && os.Args[1] == "env" && os.Args[2] == "-w" && strings.HasPrefix(os.Args[3], "GKTOOLCHAIN=")) {
 		return
 	}
 
@@ -122,12 +122,12 @@ func Select() {
 	// the local toolchain. Users expect to be able to look up GOMOD and GOWORK
 	// since the go.mod and go.work file need to be determined to determine
 	// the minimum toolchain. See issue #61455.
-	if len(os.Args) == 3 && os.Args[1] == "env" && (os.Args[2] == "GOMOD" || os.Args[2] == "GOWORK") {
+	if len(os.Args) == 3 && os.Args[1] == "env" && (os.Args[2] == "GOMOD" || os.Args[2] == "GKWORK") {
 		return
 	}
 
 	// Interpret GOTOOLCHAIN to select the Go toolchain to run.
-	gotoolchain := cfg.Getenv("GOTOOLCHAIN")
+	gotoolchain := cfg.Getenv("GKTOOLCHAIN")
 	gover.Startup.GOTOOLCHAIN = gotoolchain
 	if gotoolchain == "" {
 		// cfg.Getenv should fall back to $GOROOT/go.env,
@@ -154,19 +154,19 @@ func Select() {
 			v := gover.FromToolchain(min)
 			if v == "" {
 				if plus {
-					base.Fatalf("invalid GOTOOLCHAIN %q: invalid minimum toolchain %q", gotoolchain, min)
+					base.Fatalf("invalid GKTOOLCHAIN %q: invalid minimum toolchain %q", gotoolchain, min)
 				}
-				base.Fatalf("invalid GOTOOLCHAIN %q", gotoolchain)
+				base.Fatalf("invalid GKTOOLCHAIN %q", gotoolchain)
 			}
 			minToolchain = min
 			minVers = v
 		}
 		if plus && suffix != "auto" && suffix != "path" {
-			base.Fatalf("invalid GOTOOLCHAIN %q: only version suffixes are +auto and +path", gotoolchain)
+			base.Fatalf("invalid GKTOOLCHAIN %q: only version suffixes are +auto and +path", gotoolchain)
 		}
 		mode = suffix
 		if toolchainTrace {
-			fmt.Fprintf(&toolchainTraceBuffer, "gecko: default toolchain set to %s from GOTOOLCHAIN=%s\n", minToolchain, gotoolchain)
+			fmt.Fprintf(&toolchainTraceBuffer, "gecko: default toolchain set to %s from GKTOOLCHAIN=%s\n", minToolchain, gotoolchain)
 		}
 	}
 
@@ -202,10 +202,10 @@ func Select() {
 				if gover.Compare(toolVers, minVers) > 0 {
 					if toolchainTrace {
 						modeFormat := mode
-						if strings.Contains(cfg.Getenv("GOTOOLCHAIN"), "+") { // go1.2.3+auto
+						if strings.Contains(cfg.Getenv("GKTOOLCHAIN"), "+") { // go1.2.3+auto
 							modeFormat = fmt.Sprintf("<name>+%s", mode)
 						}
-						fmt.Fprintf(&toolchainTraceBuffer, "gecko: upgrading toolchain to %s (required by toolchain line in %s; upgrade allowed by GOTOOLCHAIN=%s)\n", toolchain, base.ShortPath(file), modeFormat)
+						fmt.Fprintf(&toolchainTraceBuffer, "gecko: upgrading toolchain to %s (required by toolchain line in %s; upgrade allowed by GKTOOLCHAIN=%s)\n", toolchain, base.ShortPath(file), modeFormat)
 					}
 					gotoolchain = toolchain
 					minVers = toolVers
@@ -226,10 +226,10 @@ func Select() {
 				gover.Startup.AutoToolchain = "" // in case we are overriding it for being too old
 				if toolchainTrace {
 					modeFormat := mode
-					if strings.Contains(cfg.Getenv("GOTOOLCHAIN"), "+") { // go1.2.3+auto
+					if strings.Contains(cfg.Getenv("GKTOOLCHAIN"), "+") { // go1.2.3+auto
 						modeFormat = fmt.Sprintf("<name>+%s", mode)
 					}
-					fmt.Fprintf(&toolchainTraceBuffer, "gecko: upgrading toolchain to %s (required by go line in %s; upgrade allowed by GOTOOLCHAIN=%s)\n", gotoolchain, base.ShortPath(file), modeFormat)
+					fmt.Fprintf(&toolchainTraceBuffer, "gecko: upgrading toolchain to %s (required by go line in %s; upgrade allowed by GKTOOLCHAIN=%s)\n", gotoolchain, base.ShortPath(file), modeFormat)
 				}
 			}
 		}
@@ -281,7 +281,7 @@ func Select() {
 	// We want to disallow mistakes / bad ideas like GOTOOLCHAIN=bash,
 	// since we will find that in the path lookup.
 	if !strings.HasPrefix(gotoolchain, "go1") && !strings.Contains(gotoolchain, "-go1") {
-		base.Fatalf("invalid GOTOOLCHAIN %q", gotoolchain)
+		base.Fatalf("invalid GKTOOLCHAIN %q", gotoolchain)
 	}
 
 	counterSelectExec.Inc()
@@ -317,7 +317,7 @@ func Exec(s *modload.Loader, gotoolchain string) {
 	}
 	os.Setenv(countEnv, fmt.Sprint(count+1))
 
-	env := cfg.Getenv("GOTOOLCHAIN")
+	env := cfg.Getenv("GKTOOLCHAIN")
 	pathOnly := env == "path" || strings.HasSuffix(env, "+path")
 
 	// For testing, if TESTGO_VERSION is already in use
@@ -338,7 +338,7 @@ func Exec(s *modload.Loader, gotoolchain string) {
 		if err != nil {
 			base.Fatalf("%v", err)
 		}
-		execGoToolchain(gotoolchain, os.Getenv("GOROOT"), exe)
+		execGoToolchain(gotoolchain, os.Getenv("GKROOT"), exe)
 	}
 
 	// Look in PATH for the toolchain before we download one.

@@ -87,7 +87,7 @@ go get ./...
 # so we shouldn't get a deprecation warning.
 cd ../withdeprecation/indirect
 cp go.mod go.mod.orig
-env GOWORK=off
+env GKWORK=off
 go get ./...
 ! stderr 'is deprecated'
 cmp go.mod go.mod.want
@@ -95,7 +95,7 @@ cmp go.mod go.mod.want
 # the deprecated module is a direct dependency of example.com/withdeprecation/direct, which
 # is a workspace module.
 cp go.mod.orig go.mod
-env GOWORK=
+env GKWORK=
 go get ./...
 stderr 'gecko: module example.com/deprecated/b is deprecated: in example.com/deprecated/b@v1.9.0'
 cmp go.mod go.mod.want
@@ -113,14 +113,14 @@ go get rsc.io/quote
 # is off, we also won't see the retraction warning because the retracted
 # module isn't selected in the graph.
 cp go.mod.orig go.mod
-env GOWORK=off
+env GKWORK=off
 go get example.com/retract@v1.0.0-good
 ! stderr 'retracted'
 # Now, with the workspace on, because example.com/retract@v1.0.0-unused
 # is a higher version, it will be selected and the retraction will
 # be reported.
 cp go.mod.orig go.mod
-env GOWORK=
+env GKWORK=
 go get example.com/retract@v1.0.0-good
 stderr 'retracted'
 # Finally, with the workspace on, if the other workspace depends on

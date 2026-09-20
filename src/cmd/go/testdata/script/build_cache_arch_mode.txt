@@ -1,11 +1,11 @@
-# Issue 9737: verify that GOARM affects the computed build ID
+# Issue 9737: verify that GKARM affects the computed build ID
 
 # arm
-env GOOS=linux
-env GOARCH=arm
-env GOARM=5
+env GKOS=linux
+env GKARCH=arm
+env GKARM=5
 go install mycmd
-env GOARM=7
+env GKARM=7
 stale mycmd
 
 

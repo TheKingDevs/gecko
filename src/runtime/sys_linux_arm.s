@@ -623,7 +623,7 @@ TEXT ·publicationBarrier(SB),NOSPLIT,$0
 	CMP	$7, R11
 	BLT	2(PC)
 	JMP	·armPublicationBarrier(SB)
-	JMP	kernelPublicationBarrier<>(SB) // extra layer so this function is leaf and no SP adjustment on GOARM=7
+	JMP	kernelPublicationBarrier<>(SB) // extra layer so this function is leaf and no SP adjustment on GKARM=7
 
 TEXT runtime·osyield(SB),NOSPLIT,$0
 	MOVW	$SYS_sched_yield, R7

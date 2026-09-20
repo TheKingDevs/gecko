@@ -2,46 +2,46 @@
 # The full test of toolchain version selection is in gotoolchain.txt.
 
 # This test is sensitive to "new" Go experiments, so
-# update the environment to remove any existing GOEXPERIMENT
+# update the environment to remove any existing GKEXPERIMENT
 # setting, see #62016 for more on this. 
-env GOEXPERIMENT=''
+env GKEXPERIMENT=''
 
 env TESTGO_VERSION=go1.21actual
 
-# GOTOOLCHAIN from network, does not exist
-env GOTOOLCHAIN=go1.9999x
+# GKTOOLCHAIN from network, does not exist
+env GKTOOLCHAIN=go1.9999x
 ! go version
 stderr 'gecko: download go1.9999x for .*: toolchain not available'
 
-# GOTOOLCHAIN from network
+# GKTOOLCHAIN from network
 [!exec:/bin/sh] stop 'the fake proxy serves shell scripts instead of binaries'
-env GOTOOLCHAIN=go1.999testmod
+env GKTOOLCHAIN=go1.999testmod
 go version
 stderr 'gecko: downloading go1.999testmod \(.*/.*\)'
 
-# GOTOOLCHAIN cached from network
+# GKTOOLCHAIN cached from network
 go version
 ! stderr downloading
 stdout go1.999testmod
 
-# GOTOOLCHAIN with GOSUMDB enabled but at a bad URL should operate in cache and not try badurl
-env oldsumdb=$GOSUMDB
-env GOSUMDB=$oldsumdb' http://badurl'
+# GKTOOLCHAIN with GKSUMDB enabled but at a bad URL should operate in cache and not try badurl
+env oldsumdb=$GKSUMDB
+env GKSUMDB=$oldsumdb' http://badurl'
 go version
 ! stderr downloading
 stdout go1.999testmod
 
-# GOTOOLCHAIN with GOSUMB=off should fail, because it cannot access even the cached sumdb info
+# GKTOOLCHAIN with GOSUMB=off should fail, because it cannot access even the cached sumdb info
 # without the sumdb name.
-env GOSUMDB=off
+env GKSUMDB=off
 ! go version
-stderr '^gecko: golang.org/toolchain@v0.0.1-go1.999testmod.[a-z0-9\-]*: verifying module: checksum database disabled by GOSUMDB=off$'
+stderr '^gecko: golang.org/toolchain@v0.0.1-go1.999testmod.[a-z0-9\-]*: verifying module: checksum database disabled by GKSUMDB=off$'
 
-# GOTOOLCHAIN with GOSUMDB enabled but at a bad URL should fail if cache is incomplete
-env GOSUMDB=$oldsumdb' http://badurl'
-rm $GOPATH/pkg/mod/cache/download/sumdb
+# GKTOOLCHAIN with GKSUMDB enabled but at a bad URL should fail if cache is incomplete
+env GKSUMDB=$oldsumdb' http://badurl'
+rm $GKPATH/pkg/mod/cache/download/sumdb
 ! go version
 ! stderr downloading
 stderr 'panic: use of network' # test catches network access
-env GOSUMDB=$oldsumdb
+env GKSUMDB=$oldsumdb
 

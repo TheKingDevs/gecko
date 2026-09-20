@@ -1,7 +1,7 @@
 # Test that errors importing packages are reported on the importing package,
 # not the imported package.
 
-env GO111MODULE=off # simplify vendor layout for test
+env GK111MODULE=off # simplify vendor layout for test
 
 go list -e -deps -f '{{.ImportPath}}: {{.Error}}' ./importvendor
 stdout 'importvendor: importvendor[\\/]p.go:2:8: vendor/p must be imported as p'

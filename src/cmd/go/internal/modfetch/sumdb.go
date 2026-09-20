@@ -101,7 +101,7 @@ func dbDial() (dbName string, db *sumdb.Client, err error) {
 	}
 
 	if gosumdb == "off" {
-		return "", nil, fmt.Errorf("checksum database disabled by GOSUMDB=off")
+		return "", nil, fmt.Errorf("checksum database disabled by GKSUMDB=off")
 	}
 
 	key := strings.Fields(gosumdb)
@@ -111,14 +111,14 @@ func dbDial() (dbName string, db *sumdb.Client, err error) {
 		}
 	}
 	if len(key) == 0 {
-		return "", nil, fmt.Errorf("missing GOSUMDB")
+		return "", nil, fmt.Errorf("missing GKSUMDB")
 	}
 	if len(key) > 2 {
-		return "", nil, fmt.Errorf("invalid GOSUMDB: too many fields")
+		return "", nil, fmt.Errorf("invalid GKSUMDB: too many fields")
 	}
 	vkey, err := note.NewVerifier(key[0])
 	if err != nil {
-		return "", nil, fmt.Errorf("invalid GOSUMDB: %v", err)
+		return "", nil, fmt.Errorf("invalid GKSUMDB: %v", err)
 	}
 	name := vkey.Name()
 
@@ -135,7 +135,7 @@ func dbDial() (dbName string, db *sumdb.Client, err error) {
 		// bypassing both the default URL derivation and any proxies.
 		u, err := url.Parse(key[1])
 		if err != nil {
-			return "", nil, fmt.Errorf("invalid GOSUMDB URL: %v", err)
+			return "", nil, fmt.Errorf("invalid GKSUMDB URL: %v", err)
 		}
 		base = u
 	}
@@ -234,7 +234,7 @@ func (c *dbClient) ReadConfig(file string) (data []byte, err error) {
 	}
 
 	if cfg.SumdbDir == "" {
-		return nil, fmt.Errorf("could not locate sumdb file: missing $GOPATH: %s",
+		return nil, fmt.Errorf("could not locate sumdb file: missing $GKPATH: %s",
 			cfg.GoPathError)
 	}
 	targ := filepath.Join(cfg.SumdbDir, file)
@@ -254,7 +254,7 @@ func (*dbClient) WriteConfig(file string, old, new []byte) error {
 		return fmt.Errorf("cannot write key")
 	}
 	if cfg.SumdbDir == "" {
-		return fmt.Errorf("could not locate sumdb file: missing $GOPATH: %s",
+		return fmt.Errorf("could not locate sumdb file: missing $GKPATH: %s",
 			cfg.GoPathError)
 	}
 	targ := filepath.Join(cfg.SumdbDir, file)

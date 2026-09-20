@@ -1,8 +1,8 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
-# Set up fresh GOCACHE.
-env GOCACHE=$WORK/gocache
-mkdir $GOCACHE
+# Set up fresh GKCACHE.
+env GKCACHE=$WORK/gocache
+mkdir $GKCACHE
 
 # Building a main package should run the compiler and linker ...
 go build -o $devnull -x main.go
@@ -15,9 +15,9 @@ go build -o $devnull -x main.go
 stderr '(link|gccgo)( |\.exe)'
 
 # ... but the output binary can serve as a cache.
-go build -o main$GOEXE -x main.go
+go build -o main$GKEXE -x main.go
 stderr '(link|gccgo)( |\.exe)'
-go build -o main$GOEXE -x main.go
+go build -o main$GKEXE -x main.go
 ! stderr '(link|gccgo)( |\.exe)'
 
 -- main.go --

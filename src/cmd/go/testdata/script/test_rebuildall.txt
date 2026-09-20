@@ -1,10 +1,10 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # Regression test for golang.org/issue/6844:
 # 'go test -a' should force dependencies in the standard library to be rebuilt.
 
 go test -x -a -c testdata/dep_test.go
-stderr '^.*[/\\]compile'$GOEXE'["]? (.* )?regexp .*[/\\]regexp\.go'
+stderr '^.*[/\\]compile'$GKEXE'["]? (.* )?regexp .*[/\\]regexp\.go'
 
 -- testdata/dep_test.go --
 package deps

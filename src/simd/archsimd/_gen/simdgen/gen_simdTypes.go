@@ -441,7 +441,7 @@ var X86 X86Features
 {{- end}}
 //
 // {{.Feature}} is defined on all GOARCHes, but will only return true on
-// GOARCH {{.GoArch}}.
+// GKARCH {{.GoArch}}.
 func ({{.FeatureVar}}Features) {{.Feature}}() bool {
 {{- if .Virtual}}
 	return {{range $i, $dep := .Implies}}{{if $i}} && {{end}}cpu.{{$f.FeatureVar}}.Has{{$dep}}{{end}}

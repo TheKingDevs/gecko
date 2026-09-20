@@ -1,22 +1,22 @@
-# Test default GOPROXY and GOSUMDB
-[go-builder] env GOPROXY=
-[go-builder] env GOSUMDB=
-[go-builder] go env GOPROXY
-[go-builder] stdout '^https://proxy.golang.org,direct$'
-[go-builder] go env GOSUMDB
-[go-builder] stdout '^sum.golang.org$'
-[go-builder] env GOPROXY=https://proxy.golang.org
-[go-builder] go env GOSUMDB
-[go-builder] stdout '^sum.golang.org$'
+# Test default GKPROXY and GKSUMDB
+[gecko-builder] env GKPROXY=
+[gecko-builder] env GKSUMDB=
+[gecko-builder] go env GKPROXY
+[gecko-builder] stdout '^https://proxy.golang.org,direct$'
+[gecko-builder] go env GKSUMDB
+[gecko-builder] stdout '^sum.golang.org$'
+[gecko-builder] env GKPROXY=https://proxy.golang.org
+[gecko-builder] go env GKSUMDB
+[gecko-builder] stdout '^sum.golang.org$'
 
 # Download direct from github.
 
 [!net:proxy.golang.org] skip
 [!net:sum.golang.org] skip
 [!git] skip
-env GOMODCACHE=$WORK/modcache # we clean the modcache below
-env GOSUMDB=sum.golang.org
-env GOPROXY=direct
+env GKMODCACHE=$WORK/modcache # we clean the modcache below
+env GKSUMDB=sum.golang.org
+env GKPROXY=direct
 
 go get rsc.io/quote@v1.5.2
 cp go.sum saved.sum
@@ -27,8 +27,8 @@ cp go.sum saved.sum
 # files not listed in go.sum.
 
 go clean -modcache
-env GOSUMDB=sum.golang.org
-env GOPROXY=https://proxy.golang.org,direct
+env GKSUMDB=sum.golang.org
+env GKPROXY=https://proxy.golang.org,direct
 
 go list -x -m all  # Download go.mod files.
 ! stderr github
@@ -65,7 +65,7 @@ cmp go.sum saved.sum
 
 # test fallback to direct
 
-env GOPROXY=$TESTGO_404_PROXY_ADDR,direct
+env GKPROXY=$TESTGO_404_PROXY_ADDR,direct
 go clean -modcache
 rm go.sum
 

@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 [!compiler:gc] skip 'using -gcflags and -ldflags'
 
@@ -58,7 +58,7 @@ cd my/cmd/prog
 go build -a -n -ldflags=-X=math.pi=3
 stderr 'link.* -X=math.pi=3'
 
-# -ldflags applies to current directory even if GOPATH is funny
+# -ldflags applies to current directory even if GKPATH is funny
 [!case-sensitive] cd $WORK/GoPath/src/my/cmd/prog
 go build -a -n -ldflags=-X=math.pi=3
 stderr 'link.* -X=math.pi=3'

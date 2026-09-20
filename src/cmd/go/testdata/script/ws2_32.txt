@@ -1,4 +1,4 @@
-[!GOOS:windows] skip
+[!GKOS:windows] skip
 
 go run .
 stdout 'ws2_32.dll: not found'

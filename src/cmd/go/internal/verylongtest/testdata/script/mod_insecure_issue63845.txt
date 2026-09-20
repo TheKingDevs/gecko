@@ -11,7 +11,7 @@
 [!git] skip
 [short] skip 'tries to access a nonexistent external Git repo'
 
-env GOPRIVATE=golang.org
+env GKPRIVATE=golang.org
 env CURLOPT_TIMEOUT_MS=100
 env GIT_SSH_COMMAND=false
 

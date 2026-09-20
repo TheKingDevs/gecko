@@ -14,32 +14,32 @@
 cd m
 
 ! go build .
-go build -overlay overlay.json -o main$GOEXE .
+go build -overlay overlay.json -o main$GKEXE .
 exec ./main$goexe
 stdout '^hello$'
 
-go build -overlay overlay.json -o print_abspath$GOEXE ./printpath
-exec ./print_abspath$GOEXE
+go build -overlay overlay.json -o print_abspath$GKEXE ./printpath
+exec ./print_abspath$GKEXE
 stdout $WORK[/\\]gopath[/\\]src[/\\]m[/\\]printpath[/\\]main.go
 
 go vet -overlay overlay.json ./printpath
 
-go build -overlay overlay.json -o print_trimpath$GOEXE -trimpath ./printpath
-exec ./print_trimpath$GOEXE
+go build -overlay overlay.json -o print_trimpath$GKEXE -trimpath ./printpath
+exec ./print_trimpath$GKEXE
 stdout ^m[/\\]printpath[/\\]main.go
 
-go build -overlay overlay.json -o print_trimpath_two_files$GOEXE printpath/main.go printpath/other.go
-exec ./print_trimpath_two_files$GOEXE
+go build -overlay overlay.json -o print_trimpath_two_files$GKEXE printpath/main.go printpath/other.go
+exec ./print_trimpath_two_files$GKEXE
 stdout $WORK[/\\]gopath[/\\]src[/\\]m[/\\]printpath[/\\]main.go
 stdout $WORK[/\\]gopath[/\\]src[/\\]m[/\\]printpath[/\\]other.go
 
-go build -overlay overlay.json -o main_call_asm$GOEXE ./call_asm
-exec ./main_call_asm$GOEXE
+go build -overlay overlay.json -o main_call_asm$GKEXE ./call_asm
+exec ./main_call_asm$GKEXE
 ! stdout .
 
 # Change the contents of a file in the overlay and ensure that makes the target stale
-env OLD_GOCACHE=$GOCACHE
-env GOCACHE=$WORK/cache  # use a fresh cache so that multiple runs of the test don't interfere
+env OLD_GOCACHE=$GKCACHE
+env GKCACHE=$WORK/cache  # use a fresh cache so that multiple runs of the test don't interfere
 go build -x -overlay overlay.json ./test_cache
 stderr '(compile|gccgo)( |\.exe).*test_cache.go'
 go build -x -overlay overlay.json ./test_cache

@@ -193,7 +193,7 @@ func run(ctx context.Context, cmd *base.Command, args []string) {
 				toolFlags = append(toolFlags, "-diff")
 				// In -diff mode, the tool prints unified diffs to stdout.
 				// Copy stdout through and exit non-zero if diffs were printed,
-				// consistent with gofmt -d and gecko mod tidy -diff.
+				// consistent with gofmt -d.
 				work.VetHandleStdout = copyAndDetectDiff
 			} else {
 				applyFixes = true
@@ -352,8 +352,7 @@ func readZip(zipfile string, out map[string][]byte) error {
 // copyAndDetectDiff copies the tool's stdout to the gecko command's stdout
 // and sets exit status 1 if any output was produced (meaning diffs exist).
 // This is used in -diff mode to implement the convention that "gecko fix -diff"
-// exits non-zero when the diff is not empty, consistent with gofmt -d
-// and gecko mod tidy -diff.
+// exits non-zero when the diff is not empty, consistent with gofmt -d.
 func copyAndDetectDiff(r io.Reader) error {
 	stdouterrMu.Lock()
 	defer stdouterrMu.Unlock()

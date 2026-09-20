@@ -7,52 +7,52 @@
 
 # Environment variables that control make.bash:
 #
-# GOHOSTARCH: The architecture for host tools (compilers and
+# GKHOSTARCH: The architecture for host tools (compilers and
 # binaries).  Binaries of this type must be executable on the current
 # system, so the only common reason to set this is to set
-# GOHOSTARCH=386 on an amd64 machine.
+# GKHOSTARCH=386 on an amd64 machine.
 #
-# GOARCH: The target architecture for installed packages and tools.
+# GKARCH: The target architecture for installed packages and tools.
 #
-# GOOS: The target operating system for installed packages and tools.
+# GKOS: The target operating system for installed packages and tools.
 #
-# GO_GCFLAGS: Additional go tool compile arguments to use when
+# GK_GCFLAGS: Additional go tool compile arguments to use when
 # building the packages and commands.
 #
-# GO_LDFLAGS: Additional go tool link arguments to use when
+# GK_LDFLAGS: Additional go tool link arguments to use when
 # building the commands.
 #
 # CGO_ENABLED: Controls cgo usage during the build. Set it to 1
 # to include all cgo related files, .c and .go file with "cgo"
 # build directive, in the build. Set it to 0 to ignore them.
 #
-# GO_EXTLINK_ENABLED: Set to 1 to invoke the host linker when building
+# GK_EXTLINK_ENABLED: Set to 1 to invoke the host linker when building
 # packages that use cgo.  Set to 0 to do all linking internally.  This
 # controls the default behavior of the linker's -linkmode option.  The
 # default value depends on the system.
 #
-# GO_LDSO: Sets the default dynamic linker/loader (ld.so) to be used
+# GK_LDSO: Sets the default dynamic linker/loader (ld.so) to be used
 # by the internal linker.
 #
-# CC: Command line to run to compile C code for GOHOSTARCH.
+# CC: Command line to run to compile C code for GKHOSTARCH.
 # Default is "gcc". Also supported: "clang".
 #
-# CC_FOR_TARGET: Command line to run to compile C code for GOARCH.
+# CC_FOR_TARGET: Command line to run to compile C code for GKARCH.
 # This is used by cgo. Default is CC.
 #
-# CC_FOR_${GOOS}_${GOARCH}: Command line to run to compile C code for specified ${GOOS} and ${GOARCH}.
+# CC_FOR_${GKOS}_${GKARCH}: Command line to run to compile C code for specified ${GKOS} and ${GKARCH}.
 # (for example, CC_FOR_linux_arm)
 # If this is not set, the build will use CC_FOR_TARGET if appropriate, or CC.
 #
-# CXX_FOR_TARGET: Command line to run to compile C++ code for GOARCH.
+# CXX_FOR_TARGET: Command line to run to compile C++ code for GKARCH.
 # This is used by cgo. Default is CXX, or, if that is not set,
 # "g++" or "clang++".
 #
-# CXX_FOR_${GOOS}_${GOARCH}: Command line to run to compile C++ code for specified ${GOOS} and ${GOARCH}.
+# CXX_FOR_${GKOS}_${GKARCH}: Command line to run to compile C++ code for specified ${GKOS} and ${GKARCH}.
 # (for example, CXX_FOR_linux_arm)
 # If this is not set, the build will use CXX_FOR_TARGET if appropriate, or CXX.
 #
-# FC: Command line to run to compile Fortran code for GOARCH.
+# FC: Command line to run to compile Fortran code for GKARCH.
 # This is used by cgo. Default is "gfortran".
 #
 # PKG_CONFIG: Path to pkg-config tool. Default is "pkg-config".
@@ -64,8 +64,8 @@
 # timing information to this file. Useful for profiling where the
 # time goes when these scripts run.
 #
-# GOROOT_BOOTSTRAP: A working Go tree >= Go 1.26.0 for bootstrap.
-# If $GOROOT_BOOTSTRAP/bin/go is missing, $(go env GOROOT) is
+# GKROOT_BOOTSTRAP: A working Go tree >= Go 1.26.0 for bootstrap.
+# If $GKROOT_BOOTSTRAP/bin/go is missing, $(go env GKROOT) is
 # tried for all "go" in $PATH. By default, one of $HOME/go1.26.0,
 # $HOME/sdk/go1.26.0, or $HOME/go1.4, whichever exists, in that order.
 # We still check $HOME/go1.4 to allow for build scripts that still hard-code
@@ -76,7 +76,7 @@ bootgo=1.26.0
 set -e
 
 if [[ ! -f run.bash ]]; then
-	echo 'make.bash must be run from $GOROOT/src' 1>&2
+	echo 'make.bash must be run from $GKROOT/src' 1>&2
 	exit 1
 fi
 
@@ -141,57 +141,63 @@ if [[ "$1" == "-v" ]]; then
 	shift
 fi
 
-goroot_bootstrap_set=${GOROOT_BOOTSTRAP+"true"}
-if [[ -z "$GOROOT_BOOTSTRAP" ]]; then
-	GOROOT_BOOTSTRAP="$HOME/go1.4"
+goroot_bootstrap_set=${GKROOT_BOOTSTRAP+"true"}
+if [[ -z "$GKROOT_BOOTSTRAP" ]]; then
+	GKROOT_BOOTSTRAP="$HOME/go1.4"
 	for d in sdk/go$bootgo go$bootgo; do
 		if [[ -d "$HOME/$d" ]]; then
-			GOROOT_BOOTSTRAP="$HOME/$d"
+			GKROOT_BOOTSTRAP="$HOME/$d"
 		fi
 	done
 fi
-export GOROOT_BOOTSTRAP
+export GKROOT_BOOTSTRAP
 
 bootstrapenv() {
-	GOROOT="$GOROOT_BOOTSTRAP" GO111MODULE=off GOENV=off GOOS= GOARCH= GOEXPERIMENT= GOFLAGS= "$@"
+	# The bootstrap toolchain is a standard Go binary (not gecko), so it
+	# only understands the standard GO* environment variable names.
+	# Set both the standard names and the gecko GK* equivalents so that a
+	# gecko binary can also be used as the bootstrap in the future.
+	GOROOT="$GKROOT_BOOTSTRAP" GO111MODULE=off GOENV=off GOOS= GOARCH= GOEXPERIMENT= GOFLAGS= GOTOOLCHAIN=local \
+		GKROOT="$GKROOT_BOOTSTRAP" GK111MODULE=off GKENV=off GKOS= GKARCH= GKEXPERIMENT= GKFLAGS= GKTOOLCHAIN=local "$@"
 }
 
+export GKROOT="$(cd .. && pwd)"
 export GOROOT="$(cd .. && pwd)"
 IFS=$'\n'; for go_exe in $(type -ap go); do
-	if [[ ! -x "$GOROOT_BOOTSTRAP/bin/go" ]]; then
-		goroot_bootstrap=$GOROOT_BOOTSTRAP
-		GOROOT_BOOTSTRAP=""
+	if [[ ! -x "$GKROOT_BOOTSTRAP/bin/go" ]]; then
+		goroot_bootstrap=$GKROOT_BOOTSTRAP
+		GKROOT_BOOTSTRAP=""
 		goroot=$(bootstrapenv "$go_exe" env GOROOT)
-		GOROOT_BOOTSTRAP=$goroot_bootstrap
+		GKROOT_BOOTSTRAP=$goroot_bootstrap
 		if [[ "$goroot" != "$GOROOT" ]]; then
 			if [[ "$goroot_bootstrap_set" == "true" ]]; then
-				printf 'WARNING: %s does not exist, found %s from env\n' "$GOROOT_BOOTSTRAP/bin/go" "$go_exe" >&2
-				printf 'WARNING: set %s as GOROOT_BOOTSTRAP\n' "$goroot" >&2
+				printf 'WARNING: %s does not exist, found %s from env\n' "$GKROOT_BOOTSTRAP/bin/go" "$go_exe" >&2
+				printf 'WARNING: set %s as GKROOT_BOOTSTRAP\n' "$goroot" >&2
 			fi
-			GOROOT_BOOTSTRAP="$goroot"
+			GKROOT_BOOTSTRAP="$goroot"
 		fi
 	fi
 done; unset IFS
-if [[ ! -x "$GOROOT_BOOTSTRAP/bin/go" ]]; then
-	echo "ERROR: Cannot find $GOROOT_BOOTSTRAP/bin/go." >&2
-	echo "Set \$GOROOT_BOOTSTRAP to a working Go tree >= Go $bootgo." >&2
+if [[ ! -x "$GKROOT_BOOTSTRAP/bin/go" ]]; then
+	echo "ERROR: Cannot find $GKROOT_BOOTSTRAP/bin/go." >&2
+	echo "Set \$GKROOT_BOOTSTRAP to a working Go tree >= Go $bootgo." >&2
 	exit 1
 fi
 # Get the exact bootstrap toolchain version to help with debugging.
-# We clear GOOS and GOARCH to avoid an ominous but harmless warning if
+# We clear GKOS and GKARCH to avoid an ominous but harmless warning if
 # the bootstrap doesn't support them.
-GOROOT_BOOTSTRAP_VERSION=$(bootstrapenv "$GOROOT_BOOTSTRAP/bin/go" version | sed 's/go version //')
-echo "Building Go cmd/dist using $GOROOT_BOOTSTRAP. ($GOROOT_BOOTSTRAP_VERSION)"
+GOROOT_BOOTSTRAP_VERSION=$(bootstrapenv "$GKROOT_BOOTSTRAP/bin/go" version | sed 's/go version //')
+echo "Building Go cmd/dist using $GKROOT_BOOTSTRAP. ($GOROOT_BOOTSTRAP_VERSION)"
 if $verbose; then
 	echo cmd/dist
 fi
-if [[ "$GOROOT_BOOTSTRAP" == "$GOROOT" ]]; then
-	echo "ERROR: \$GOROOT_BOOTSTRAP must not be set to \$GOROOT" >&2
-	echo "Set \$GOROOT_BOOTSTRAP to a working Go tree >= Go $bootgo." >&2
+if [[ "$GKROOT_BOOTSTRAP" == "$GKROOT" ]]; then
+	echo "ERROR: \$GKROOT_BOOTSTRAP must not be set to \$GKROOT" >&2
+	echo "Set \$GKROOT_BOOTSTRAP to a working Go tree >= Go $bootgo." >&2
 	exit 1
 fi
 rm -f cmd/dist/dist
-bootstrapenv "$GOROOT_BOOTSTRAP/bin/go" build -o cmd/dist/dist ./cmd/dist
+bootstrapenv "$GKROOT_BOOTSTRAP/bin/go" build -o cmd/dist/dist ./cmd/dist
 
 # -e doesn't propagate out of eval, so check success by hand.
 eval $(./cmd/dist/dist env -p || echo FAIL=true)
@@ -205,11 +211,11 @@ fi
 
 if [[ "$1" == "--dist-tool" ]]; then
 	# Stop after building dist tool.
-	mkdir -p "$GOTOOLDIR"
+	mkdir -p "$GKTOOLDIR"
 	if [[ "$2" != "" ]]; then
 		cp cmd/dist/dist "$2"
 	fi
-	mv cmd/dist/dist "$GOTOOLDIR"/dist
+	mv cmd/dist/dist "$GKTOOLDIR"/dist
 	exit 0
 fi
 

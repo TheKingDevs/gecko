@@ -1,9 +1,9 @@
 [short] skip
 [!exec:hg] skip
 
-env GOPROXY=direct
-env GOSUMDB=off
-env GOMODCACHE=$WORK/modcache
+env GKPROXY=direct
+env GKSUMDB=off
+env GKMODCACHE=$WORK/modcache
 
 # go mod download vcstest/hello/v9 should fail, still print origin info
 # hg uses RepoSum instead of TagSum to describe failure condition.

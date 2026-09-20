@@ -2,7 +2,7 @@ go list -test -f '{{.ImportPath}} {{.DefaultGODEBUG}}'
 stdout 'example.com/foo\.test.*panicnil=1.*'
 
 go test -c
-go version -m ./foo.test$GOEXE
+go version -m ./foo.test$GKEXE
 stdout 'build\tDefaultGODEBUG=.*panicnil=1.*'
 
 -- go.mod --

@@ -26,7 +26,7 @@ stderr '^gecko: example\.net/emptysubdir/subdir/\.\.\.: module example\.net/empt
 # For that case, we emit a "malformed module path" error message,
 # which isn't ideal either.
 
-! go get builtin/...  # in GOROOT/src, but contains no packages
+! go get builtin/...  # in GKROOT/src, but contains no packages
 stderr '^gecko: builtin/...: malformed module path "builtin": missing dot in first path element$'
 
 cd ../subdirmod

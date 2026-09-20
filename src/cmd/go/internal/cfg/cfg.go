@@ -29,8 +29,8 @@ import (
 
 // Global build parameters (used during package load)
 var (
-	Goos   = envOr("GOOS", build.Default.GOOS)
-	Goarch = envOr("GOARCH", build.Default.GOARCH)
+	Goos   = envOr("GKOS", build.Default.GOOS)
+	Goarch = envOr("GKARCH", build.Default.GOARCH)
 
 	ExeSuffix = exeSuffix()
 
@@ -120,7 +120,7 @@ func defaultContext() build.Context {
 
 	// Override defaults computed in go/build with defaults
 	// from go environment configuration file, if known.
-	ctxt.GOPATH, GOPATHChanged = EnvOrAndChanged("GOPATH", gopath(ctxt))
+	ctxt.GOPATH, GOPATHChanged = EnvOrAndChanged("GKPATH", gopath(ctxt))
 	ctxt.GOOS = Goos
 	ctxt.GOARCH = Goarch
 
@@ -209,7 +209,7 @@ func defaultContext() build.Context {
 }
 
 func init() {
-	SetGOROOT(Getenv("GOROOT"), false)
+	SetGOROOT(Getenv("GKROOT"), false)
 }
 
 // ForceHost forces GOOS and GOARCH to runtime.GOOS and runtime.GOARCH.
@@ -233,7 +233,7 @@ func ForceHost() {
 	// set the correct value for ctx.CgoEnabled.
 	BuildContext = defaultContext()
 	// Call SetGOROOT to properly set the GOROOT on the new context.
-	SetGOROOT(Getenv("GOROOT"), false)
+	SetGOROOT(Getenv("GKROOT"), false)
 	// Recompute experiments: the settings determined depend on GOOS and GOARCH.
 	// This will also update the BuildContext's tool tags to include the new
 	// experiment tags.
@@ -292,7 +292,7 @@ func SetGOROOT(goroot string, isTestGo bool) {
 // Experiment configuration.
 var (
 	// RawGOEXPERIMENT is the GOEXPERIMENT value set by the user.
-	RawGOEXPERIMENT = envOr("GOEXPERIMENT", buildcfg.DefaultGOEXPERIMENT)
+	RawGOEXPERIMENT = envOr("GKEXPERIMENT", buildcfg.DefaultGOEXPERIMENT)
 	// CleanGOEXPERIMENT is the minimal GOEXPERIMENT value needed to reproduce the
 	// experiments enabled by RawGOEXPERIMENT.
 	CleanGOEXPERIMENT = RawGOEXPERIMENT
@@ -344,14 +344,15 @@ var envCache struct {
 	goroot map[string]string
 }
 
-// EnvFile returns the name of the Go environment configuration file,
-// and reports whether the effective value differs from the default.
-func EnvFile() (string, bool, error) {
-	if file := os.Getenv("GOENV"); file != "" {
-		if file == "off" {
-			return "", false, fmt.Errorf("GOENV=off")
-		}
-		return file, true, nil
+// GKHOME returns the gecko home directory: the location of gecko's
+// user configuration files, most notably the gecko environment
+// configuration file (see EnvFile).
+//
+// GKHOME can only be set using the OS environment; it defaults to the
+// platform's user-config directory joined with "gecko".
+func GKHOME() (string, bool, error) {
+	if dir := os.Getenv("GKHOME"); dir != "" {
+		return dir, true, nil
 	}
 	dir, err := os.UserConfigDir()
 	if err != nil {
@@ -360,7 +361,23 @@ func EnvFile() (string, bool, error) {
 	if dir == "" {
 		return "", false, fmt.Errorf("missing user-config dir")
 	}
-	return filepath.Join(dir, "go/env"), false, nil
+	return filepath.Join(dir, "gecko"), false, nil
+}
+
+// EnvFile returns the name of the gecko environment configuration file,
+// and reports whether the effective value differs from the default.
+func EnvFile() (string, bool, error) {
+	if file := os.Getenv("GKENV"); file != "" {
+		if file == "off" {
+			return "", false, fmt.Errorf("GKENV=off")
+		}
+		return file, true, nil
+	}
+	dir, changed, err := GKHOME()
+	if err != nil {
+		return "", false, err
+	}
+	return filepath.Join(dir, "env"), changed, nil
 }
 
 func initEnvCache() {
@@ -369,16 +386,16 @@ func initEnvCache() {
 	if file, _, _ := EnvFile(); file != "" {
 		readEnvFile(file, "user")
 	}
-	goroot := findGOROOT(envCache.m["GOROOT"])
+	goroot := findGOROOT(envCache.m["GKROOT"])
 	if goroot != "" {
-		readEnvFile(filepath.Join(goroot, "go.env"), "GOROOT")
+		readEnvFile(filepath.Join(goroot, "gecko.env"), "GKROOT")
 	}
 
 	// Save the goroot for func init calling SetGOROOT,
 	// and also overwrite anything that might have been in go.env.
 	// It makes no sense for GOROOT/go.env to specify
 	// a different GOROOT.
-	envCache.m["GOROOT"] = goroot
+	envCache.m["GKROOT"] = goroot
 }
 
 func readEnvFile(file string, source string) {
@@ -412,7 +429,7 @@ func readEnvFile(file string, source string) {
 		}
 		key, val := line[:i], line[i+1:]
 
-		if source == "GOROOT" {
+		if source == "GKROOT" {
 			envCache.goroot[string(key)] = string(val)
 			// In the GOROOT/go.env file, do not overwrite fields loaded from the user's go/env file.
 			if _, ok := envCache.m[string(key)]; ok {
@@ -465,30 +482,30 @@ var (
 	GOROOTpkg string
 	GOROOTsrc string
 
-	GOBIN, GOBINChanged             = EnvOrAndChanged("GOBIN", "")
-	GOCACHEPROG, GOCACHEPROGChanged = EnvOrAndChanged("GOCACHEPROG", "")
-	GOMODCACHE, GOMODCACHEChanged   = EnvOrAndChanged("GOMODCACHE", gopathDir("pkg/mod"))
+	GOBIN, GOBINChanged             = EnvOrAndChanged("GKBIN", "")
+	GOCACHEPROG, GOCACHEPROGChanged = EnvOrAndChanged("GKCACHEPROG", "")
+	GOMODCACHE, GOMODCACHEChanged   = EnvOrAndChanged("GKMODCACHE", gopathDir("pkg/mod"))
 
 	// Used in envcmd.MkEnv and build ID computations.
-	GOARM64, goARM64Changed     = EnvOrAndChanged("GOARM64", buildcfg.DefaultGOARM64)
-	GOARM, goARMChanged         = EnvOrAndChanged("GOARM", buildcfg.DefaultGOARM)
-	GO386, go386Changed         = EnvOrAndChanged("GO386", buildcfg.DefaultGO386)
-	GOAMD64, goAMD64Changed     = EnvOrAndChanged("GOAMD64", buildcfg.DefaultGOAMD64)
-	GOMIPS, goMIPSChanged       = EnvOrAndChanged("GOMIPS", buildcfg.DefaultGOMIPS)
-	GOMIPS64, goMIPS64Changed   = EnvOrAndChanged("GOMIPS64", buildcfg.DefaultGOMIPS64)
-	GOPPC64, goPPC64Changed     = EnvOrAndChanged("GOPPC64", buildcfg.DefaultGOPPC64)
-	GORISCV64, goRISCV64Changed = EnvOrAndChanged("GORISCV64", buildcfg.DefaultGORISCV64)
-	GOWASM, goWASMChanged       = EnvOrAndChanged("GOWASM", fmt.Sprint(buildcfg.GOWASM))
+	GOARM64, goARM64Changed     = EnvOrAndChanged("GKARM64", buildcfg.DefaultGOARM64)
+	GOARM, goARMChanged         = EnvOrAndChanged("GKARM", buildcfg.DefaultGOARM)
+	GO386, go386Changed         = EnvOrAndChanged("GK386", buildcfg.DefaultGO386)
+	GOAMD64, goAMD64Changed     = EnvOrAndChanged("GKAMD64", buildcfg.DefaultGOAMD64)
+	GOMIPS, goMIPSChanged       = EnvOrAndChanged("GKMIPS", buildcfg.DefaultGOMIPS)
+	GOMIPS64, goMIPS64Changed   = EnvOrAndChanged("GKMIPS64", buildcfg.DefaultGOMIPS64)
+	GOPPC64, goPPC64Changed     = EnvOrAndChanged("GKPPC64", buildcfg.DefaultGOPPC64)
+	GORISCV64, goRISCV64Changed = EnvOrAndChanged("GKRISCV64", buildcfg.DefaultGORISCV64)
+	GOWASM, goWASMChanged       = EnvOrAndChanged("GKWASM", fmt.Sprint(buildcfg.GOWASM))
 
-	GOFIPS140, GOFIPS140Changed = EnvOrAndChanged("GOFIPS140", buildcfg.DefaultGOFIPS140)
-	GOPROXY, GOPROXYChanged     = EnvOrAndChanged("GOPROXY", "")
-	GOSUMDB, GOSUMDBChanged     = EnvOrAndChanged("GOSUMDB", "")
-	GOPRIVATE                   = Getenv("GOPRIVATE")
-	GONOPROXY, GONOPROXYChanged = EnvOrAndChanged("GONOPROXY", GOPRIVATE)
-	GONOSUMDB, GONOSUMDBChanged = EnvOrAndChanged("GONOSUMDB", GOPRIVATE)
-	GOINSECURE                  = Getenv("GOINSECURE")
-	GOVCS                       = Getenv("GOVCS")
-	GOAUTH, GOAUTHChanged       = EnvOrAndChanged("GOAUTH", "netrc")
+	GOFIPS140, GOFIPS140Changed = EnvOrAndChanged("GKFIPS140", buildcfg.DefaultGOFIPS140)
+	GOPROXY, GOPROXYChanged     = EnvOrAndChanged("GKPROXY", "")
+	GOSUMDB, GOSUMDBChanged     = EnvOrAndChanged("GKSUMDB", "")
+	GOPRIVATE                   = Getenv("GKPRIVATE")
+	GONOPROXY, GONOPROXYChanged = EnvOrAndChanged("GKNOPROXY", GOPRIVATE)
+	GONOSUMDB, GONOSUMDBChanged = EnvOrAndChanged("GKNOSUMDB", GOPRIVATE)
+	GOINSECURE                  = Getenv("GKINSECURE")
+	GOVCS                       = Getenv("GKVCS")
+	GOAUTH, GOAUTHChanged       = EnvOrAndChanged("GKAUTH", "netrc")
 )
 
 // EnvOrAndChanged returns the environment variable value
@@ -516,23 +533,23 @@ var SumdbDir = gopathDir("pkg/sumdb")
 func GetArchEnv() (key, val string, changed bool) {
 	switch Goarch {
 	case "arm":
-		return "GOARM", GOARM, goARMChanged
+		return "GKARM", GOARM, goARMChanged
 	case "arm64":
-		return "GOARM64", GOARM64, goARM64Changed
+		return "GKARM64", GOARM64, goARM64Changed
 	case "386":
-		return "GO386", GO386, go386Changed
+		return "GK386", GO386, go386Changed
 	case "amd64":
-		return "GOAMD64", GOAMD64, goAMD64Changed
+		return "GKAMD64", GOAMD64, goAMD64Changed
 	case "mips", "mipsle":
-		return "GOMIPS", GOMIPS, goMIPSChanged
+		return "GKMIPS", GOMIPS, goMIPSChanged
 	case "mips64", "mips64le":
-		return "GOMIPS64", GOMIPS64, goMIPS64Changed
+		return "GKMIPS64", GOMIPS64, goMIPS64Changed
 	case "ppc64", "ppc64le":
-		return "GOPPC64", GOPPC64, goPPC64Changed
+		return "GKPPC64", GOPPC64, goPPC64Changed
 	case "riscv64":
-		return "GORISCV64", GORISCV64, goRISCV64Changed
+		return "GKRISCV64", GORISCV64, goRISCV64Changed
 	case "wasm":
-		return "GOWASM", GOWASM, goWASMChanged
+		return "GKWASM", GOWASM, goWASMChanged
 	}
 	return "", "", false
 }
@@ -561,7 +578,7 @@ func findGOROOT(env string) string {
 		// Not using Getenv because findGOROOT is called
 		// to find the GOROOT/go.env file. initEnvCache
 		// has passed in the setting from the user go/env file.
-		env = os.Getenv("GOROOT")
+		env = os.Getenv("GKROOT")
 	}
 	if env != "" {
 		return filepath.Clean(env)
@@ -664,9 +681,9 @@ func gopath(ctxt build.Context) string {
 		env = "home"
 	}
 	if home := os.Getenv(env); home != "" {
-		def := filepath.Join(home, "go")
+		def := filepath.Join(home, "gecko")
 		if filepath.Clean(def) == filepath.Clean(runtime.GOROOT()) {
-			GoPathError = "cannot set GOROOT as GOPATH"
+			GoPathError = "cannot set GKROOT as GKPATH"
 		}
 		return ""
 	}

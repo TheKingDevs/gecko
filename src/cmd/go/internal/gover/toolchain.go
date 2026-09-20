@@ -71,7 +71,7 @@ type TooNewError struct {
 func (e *TooNewError) Error() string {
 	var explain string
 	if Startup.GOTOOLCHAIN != "" && Startup.GOTOOLCHAIN != "auto" {
-		explain = "; GOTOOLCHAIN=" + Startup.GOTOOLCHAIN
+		explain = "; GKTOOLCHAIN=" + Startup.GOTOOLCHAIN
 	}
 	if Startup.AutoFile != "" && (Startup.AutoGoVersion != "" || Startup.AutoToolchain != "") {
 		explain += fmt.Sprintf("; %s sets ", base.ShortPath(Startup.AutoFile))

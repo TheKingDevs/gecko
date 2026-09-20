@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # Fix for https://github.com/golang/go/issues/28696:
 # go run x/... should not panic when directory x doesn't exist.

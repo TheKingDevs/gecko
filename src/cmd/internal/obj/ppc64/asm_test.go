@@ -24,9 +24,9 @@ import (
 )
 
 var platformEnvs = [][]string{
-	{"GOOS=aix", "GOARCH=ppc64"},
-	{"GOOS=linux", "GOARCH=ppc64"},
-	{"GOOS=linux", "GOARCH=ppc64le"},
+	{"GKOS=aix", "GKARCH=ppc64"},
+	{"GKOS=linux", "GKARCH=ppc64"},
+	{"GKOS=linux", "GKARCH=ppc64le"},
 }
 
 const invalidPCAlignSrc = `
@@ -192,7 +192,7 @@ func TestPfxAlign(t *testing.T) {
 			t.Fatalf("can't write output: %v\n", err)
 		}
 		cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-S", "-o", filepath.Join(dir, "test.o"), tmpfile)
-		cmd.Env = append(os.Environ(), "GOOS=linux", "GOARCH=ppc64le")
+		cmd.Env = append(os.Environ(), "GKOS=linux", "GKARCH=ppc64le")
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Errorf("Failed to compile %v: %v\n", pgm, err)
@@ -343,7 +343,7 @@ func TestPCalign(t *testing.T) {
 
 	// build generated file without errors and assemble it
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "x.o"), "-S", tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=ppc64le", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=ppc64le", "GKOS=linux")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("Build failed: %v, output: %s", err, out)
@@ -383,7 +383,7 @@ func TestPCalign(t *testing.T) {
 
 	// build test with errors and check for messages
 	cmd = testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "xi.o"), "-S", tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=ppc64le", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=ppc64le", "GKOS=linux")
 	out, err = cmd.CombinedOutput()
 	if !strings.Contains(string(out), "Unexpected alignment") {
 		t.Errorf("Invalid alignment not detected for PCALIGN\n")
@@ -604,10 +604,10 @@ func TestTailCallUnsafePoint(t *testing.T) {
 
 	for _, goarch := range []string{"ppc64", "ppc64le"} {
 		cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "x.o"), "-S", tmpfile)
-		cmd.Env = append(os.Environ(), "GOARCH="+goarch, "GOOS=linux")
+		cmd.Env = append(os.Environ(), "GKARCH="+goarch, "GKOS=linux")
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			t.Fatalf("GOARCH=%s: assembly failed: %v, output:\n%s", goarch, err, out)
+			t.Fatalf("GKARCH=%s: assembly failed: %v, output:\n%s", goarch, err, out)
 		}
 
 		// Walk the -S output tracking the current PCDATA_UnsafePoint value.
@@ -620,7 +620,7 @@ func TestTailCallUnsafePoint(t *testing.T) {
 		atBranch := false
 		endFunc := func() {
 			if sym != "" && unsafePoint != abi.UnsafePointSafe {
-				t.Errorf("GOARCH=%s: %s: unsafe point %d at end of function, want %d",
+				t.Errorf("GKARCH=%s: %s: unsafe point %d at end of function, want %d",
 					goarch, sym, unsafePoint, abi.UnsafePointSafe)
 			}
 		}
@@ -639,7 +639,7 @@ func TestTailCallUnsafePoint(t *testing.T) {
 			case len(f) >= 6 && f[3] == "PCDATA" && f[4] == fmt.Sprintf("$%d,", abi.PCDATA_UnsafePoint):
 				v, err := strconv.ParseInt(strings.TrimPrefix(f[5], "$"), 10, 64)
 				if err != nil {
-					t.Fatalf("GOARCH=%s: can't parse %q: %v", goarch, line, err)
+					t.Fatalf("GKARCH=%s: can't parse %q: %v", goarch, line, err)
 				}
 				unsafePoint = v
 			case f[3] == "PCDATA" || f[3] == "FUNCDATA" || f[3] == "TEXT":
@@ -648,20 +648,20 @@ func TestTailCallUnsafePoint(t *testing.T) {
 				branches++
 				atBranch = true
 				if unsafePoint != abi.UnsafePointUnsafe {
-					t.Errorf("GOARCH=%s: %s\n\tbranch through CTR has unsafe point %d, want %d",
+					t.Errorf("GKARCH=%s: %s\n\tbranch through CTR has unsafe point %d, want %d",
 						goarch, strings.TrimSpace(line), unsafePoint, abi.UnsafePointUnsafe)
 				}
 			case atBranch:
 				atBranch = false
 				if unsafePoint != abi.UnsafePointSafe {
-					t.Errorf("GOARCH=%s: %s\n\tinstruction after branch through CTR has unsafe point %d, want %d",
+					t.Errorf("GKARCH=%s: %s\n\tinstruction after branch through CTR has unsafe point %d, want %d",
 						goarch, strings.TrimSpace(line), unsafePoint, abi.UnsafePointSafe)
 				}
 			}
 		}
 		endFunc()
 		if want := strings.Count(tailCallSrc, "RET\t(R3)"); branches != want {
-			t.Errorf("GOARCH=%s: found %d branches through CTR, want %d; output:\n%s", goarch, branches, want, out)
+			t.Errorf("GKARCH=%s: found %d branches through CTR, want %d; output:\n%s", goarch, branches, want, out)
 		}
 	}
 }

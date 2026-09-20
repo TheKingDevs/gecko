@@ -27,7 +27,7 @@ func testMain(m *testing.M) int {
 		log.Panic(err)
 	}
 	defer os.RemoveAll(GOPATH)
-	os.Setenv("GOPATH", GOPATH)
+	os.Setenv("GKPATH", GOPATH)
 
 	// Copy testdata into GOPATH/src/cgostdio, along with a go.mod file
 	// declaring the same path.

@@ -1,7 +1,7 @@
 [!git] skip
 [!git-sha256] skip
 
-env GOPRIVATE=vcs-test.golang.org
+env GKPRIVATE=vcs-test.golang.org
 
 go mod tidy
 stderr 'downloading vcs-test\.golang.org/go/mod/gitrepo-sha256 v1.3.0'

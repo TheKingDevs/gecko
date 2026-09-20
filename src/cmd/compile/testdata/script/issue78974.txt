@@ -1,4 +1,4 @@
-[!GOARCH:amd64] skip
+[!GKARCH:amd64] skip
 
 # Large static offsets are initialized dynamically.
 go tool compile -S -p=p -o ok.o ok.go

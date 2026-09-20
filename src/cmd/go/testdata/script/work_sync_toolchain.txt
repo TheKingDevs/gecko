@@ -26,11 +26,11 @@ env TESTGO_VERSION_SWITCH=switch
 go work edit -go=1.21
 grep '^go 1.21$' go.work
 ! grep toolchain go.work
-env GOTOOLCHAIN=local
+env GKTOOLCHAIN=local
 ! go work sync
-stderr '^gecko: cannot load module m1_22_0 listed in go.work file: m1_22_0'${/}'go.mod requires go >= 1.22.0 \(running go 1.21; GOTOOLCHAIN=local\)$'
-stderr '^gecko: cannot load module m1_22_1 listed in go.work file: m1_22_1'${/}'go.mod requires go >= 1.22.1 \(running go 1.21; GOTOOLCHAIN=local\)$'
-env GOTOOLCHAIN=auto
+stderr '^gecko: cannot load module m1_22_0 listed in go.work file: m1_22_0'${/}'go.mod requires go >= 1.22.0 \(running go 1.21; GKTOOLCHAIN=local\)$'
+stderr '^gecko: cannot load module m1_22_1 listed in go.work file: m1_22_1'${/}'go.mod requires go >= 1.22.1 \(running go 1.21; GKTOOLCHAIN=local\)$'
+env GKTOOLCHAIN=auto
 go work sync
 stderr '^gecko: m1_22_1'${/}'go.mod requires go >= 1.22.1; switching to go1.22.9$'
 grep '^go 1.22.1$' go.work

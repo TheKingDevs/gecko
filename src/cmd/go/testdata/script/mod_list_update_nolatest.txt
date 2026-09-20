@@ -5,9 +5,9 @@
 # Verifies #45305, where proxy.golang.org serves an empty /@v/list (200)
 # but has no /@latest (410) because the go.mod at the tip of the default
 # branch has a different major version suffix.
-env testproxy=$GOPROXY
-env GOPROXY=file:///$WORK/proxy
-env GOSUMDB=off
+env testproxy=$GKPROXY
+env GKPROXY=file:///$WORK/proxy
+env GKSUMDB=off
 
 # If the proxy does not return a list of versions (404/410)
 # or a latest version (404/410), we should see no error.
@@ -24,7 +24,7 @@ go list -m -u example.com/nolatest
 stdout '^example.com/nolatest v0.0.0$'
 
 # If proxy returns an invalid response, we should see an error.
-env GOPROXY=$testproxy/invalid
+env GKPROXY=$testproxy/invalid
 ! go list -m -u example.com/nolatest
 stderr '^gecko: loading module retractions for example.com/nolatest@v0.0.0: invalid response from proxy "[^"]*": invalid character ''i'' looking for beginning of value$'
 

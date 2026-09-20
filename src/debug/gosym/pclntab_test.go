@@ -41,7 +41,7 @@ func dotest(t *testing.T) {
 	pclinetestBinary = filepath.Join(pclineTempDir, "pclinetest")
 	cmd := exec.Command(testenv.GoToolPath(t), "build", "-o", pclinetestBinary)
 	cmd.Dir = "testdata"
-	cmd.Env = append(os.Environ(), "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKOS=linux")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

@@ -53,7 +53,7 @@ ret0:
 // even on single-core devices. The kernel helper takes care of all of
 // this for us.
 
-// Use kernel helper version of memory_barrier, when compiled with GOARM < 7.
+// Use kernel helper version of memory_barrier, when compiled with GKARM < 7.
 TEXT memory_barrier<>(SB),NOSPLIT|NOFRAME,$0
 	MOVW	$0xffff0fa0, R15 // R15 is hardware PC.
 

@@ -13,7 +13,7 @@ stderr 'already exists and is a directory'
 # Verify build -o output correctly local packages
 mkdir $WORK/local
 go build -o $WORK/local ./exec.go
-exists $WORK/local/exec$GOEXE
+exists $WORK/local/exec$GKEXE
 
 -- go.mod --
 module exmod
@@ -39,5 +39,5 @@ package main
 
 func main() {}
 
--- c1$GOEXE/keep.txt --
+-- c1$GKEXE/keep.txt --
 Create c1 directory.

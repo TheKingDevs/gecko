@@ -1,6 +1,6 @@
 cp go.mod go.mod.orig
 
-env oldGOPROXY=$GOPROXY
+env oldGOPROXY=$GKPROXY
 
 # If a wildcard replacement exists for an otherwise-nonexistent module,
 # 'go get' should resolve it to the minimum valid pseudo-version.
@@ -24,9 +24,9 @@ go list -m example.com/x
 stdout '^example.com/x v0.1.0 '
 
 
-# The same should work with GOPROXY=off.
+# The same should work with GKPROXY=off.
 
-env GOPROXY=off
+env GKPROXY=off
 cp go.mod.orig go.mod
 
 go mod edit -replace=example.com/x=./x
@@ -51,7 +51,7 @@ stdout '^example.com/x v0.1.0 '
 # Replacements should also be listed as known versions, and 'go get' should sort
 # them in with ordinary versions.
 
-env GOPROXY=$oldGOPROXY
+env GKPROXY=$oldGOPROXY
 
 cp go.mod.orig go.mod
 go list -versions -m rsc.io/quote

@@ -42,7 +42,7 @@ var (
 var gdb = "gdb"      // Might be "ggdb" on Darwin, because gdb no longer part of XCode
 var debugger = "dlv" // For naming files, etc.
 
-var gogcflags = os.Getenv("GO_GCFLAGS")
+var gogcflags = os.Getenv("GK_GCFLAGS")
 
 // optimizedLibs usually means "not running in a noopt test builder".
 var optimizedLibs = (!strings.Contains(gogcflags, "-N") && !strings.Contains(gogcflags, "-l"))

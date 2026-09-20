@@ -16,10 +16,10 @@ stdout 'Go Gopher'
 # Inject a local repo in place of a remote one, so that we can
 # add commits to the repo partway through the test.
 env GIT_ALLOW_PROTOCOL=file
-env GOPRIVATE=github.com/golang/issue53955
+env GKPRIVATE=github.com/golang/issue53955
 
-[!GOOS:windows] exec git config --global 'url.file://'$WORK'/repo.insteadOf' 'https://github.com/golang/issue53955'
-[GOOS:windows]  exec git config --global 'url.file:///'$WORK'/repo.insteadOf' 'https://github.com/golang/issue53955'
+[!GKOS:windows] exec git config --global 'url.file://'$WORK'/repo.insteadOf' 'https://github.com/golang/issue53955'
+[GKOS:windows]  exec git config --global 'url.file:///'$WORK'/repo.insteadOf' 'https://github.com/golang/issue53955'
 
 cd $WORK/repo
 

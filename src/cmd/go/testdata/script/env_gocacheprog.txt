@@ -1,32 +1,32 @@
-# GOCACHEPROG unset
-env GOCACHEPROG=
+# GKCACHEPROG unset
+env GKCACHEPROG=
 
 go env
-stdout 'GOCACHEPROG=''?''?'
+stdout 'GKCACHEPROG=''?''?'
 
 go env -changed
-! stdout 'GOCACHEPROG'
+! stdout 'GKCACHEPROG'
 
 go env -changed -json
-! stdout 'GOCACHEPROG'
+! stdout 'GKCACHEPROG'
 
-# GOCACHEPROG set
+# GKCACHEPROG set
 
-go build -o cacheprog$GOEXE cacheprog.go
+go build -o cacheprog$GKEXE cacheprog.go
 
-env GOCACHEPROG=$GOPATH/src/cacheprog$GOEXE
+env GKCACHEPROG=$GKPATH/src/cacheprog$GKEXE
 
 go env
-stdout 'GOCACHEPROG=''?'$GOCACHEPROG'''?'
+stdout 'GKCACHEPROG=''?'$GKCACHEPROG'''?'
 
 go env -changed
-stdout 'GOCACHEPROG=''?'$GOCACHEPROG'''?'
+stdout 'GKCACHEPROG=''?'$GKCACHEPROG'''?'
 
 go env -changed -json
-stdout '"GOCACHEPROG": ".*cacheprog'$GOEXE'"'
+stdout '"GKCACHEPROG": ".*cacheprog'$GKEXE'"'
 
 -- cacheprog.go --
-// This is a minimal GOCACHEPROG program that can't actually do anything but exit.
+// This is a minimal GKCACHEPROG program that can't actually do anything but exit.
 package main
 
 import (

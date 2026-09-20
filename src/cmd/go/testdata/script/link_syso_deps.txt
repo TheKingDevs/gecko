@@ -5,7 +5,7 @@
 
 # External linking is not supported on linux/ppc64.
 # See: https://github.com/golang/go/issues/8912
-[GOOS:linux] [GOARCH:ppc64] skip
+[GKOS:linux] [GKARCH:ppc64] skip
 
 cc -c -o syso/x.syso syso/x.c
 cc -c -o syso2/x.syso syso2/x.c

@@ -14,12 +14,12 @@
 # SVN_SSH="ssh -o StrictHostKeyChecking=no" didn't avoid the prompt.
 env SVN_SSH="svn_do_not_use_ssh"
 
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 
 # Attempting to get a module zip using svn should succeed.
 go mod download vcs-test.golang.org/svn/hello.svn@000000000001
-exists $GOPATH/pkg/mod/cache/download/vcs-test.golang.org/svn/hello.svn/@v/v0.0.0-20170922011245-000000000001.zip
+exists $GKPATH/pkg/mod/cache/download/vcs-test.golang.org/svn/hello.svn/@v/v0.0.0-20170922011245-000000000001.zip
 
 # Attempting to get a nonexistent module using svn should fail with a
 # reasonable message instead of a panic.

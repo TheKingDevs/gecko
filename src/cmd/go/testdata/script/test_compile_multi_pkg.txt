@@ -5,12 +5,12 @@
 # run on Unix platforms.
 
 go test -c -o $WORK/some/nonexisting/directory/ ./pkg/...
-exists -exec $WORK/some/nonexisting/directory/pkg1.test$GOEXE
-exists -exec $WORK/some/nonexisting/directory/pkg2.test$GOEXE
+exists -exec $WORK/some/nonexisting/directory/pkg1.test$GKEXE
+exists -exec $WORK/some/nonexisting/directory/pkg2.test$GKEXE
 
 go test -c ./pkg/...
-exists -exec pkg1.test$GOEXE
-exists -exec pkg2.test$GOEXE
+exists -exec pkg1.test$GKEXE
+exists -exec pkg2.test$GKEXE
 
 ! go test -c -o $WORK/bin/test/bin.test.exe ./pkg/...
 stderr '^with multiple packages, -o must refer to a directory or '$devnull
@@ -29,11 +29,11 @@ stderr '^cannot write test binary pkg1.test for multiple packages:\nexample/anot
 
 go test -c -o $devnull ./...
 
-rm pkg1.test$GOEXE
-rm pkg2.test$GOEXE
+rm pkg1.test$GKEXE
+rm pkg2.test$GKEXE
 go test -o . ./pkg/...
-exists -exec pkg1.test$GOEXE
-exists -exec pkg2.test$GOEXE
+exists -exec pkg1.test$GKEXE
+exists -exec pkg2.test$GKEXE
 
 -- go.mod --
 module example

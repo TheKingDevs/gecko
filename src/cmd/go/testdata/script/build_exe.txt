@@ -1,11 +1,11 @@
 # go build with -o and -buildmode=exe should report an error on a non-main package.
 
-! go build -buildmode=exe -o out$GOEXE ./not_main
+! go build -buildmode=exe -o out$GKEXE ./not_main
 stderr '-buildmode=exe requires exactly one main package'
-! exists out$GOEXE
-! go build -buildmode=exe -o out$GOEXE ./main_one ./main_two
+! exists out$GKEXE
+! go build -buildmode=exe -o out$GKEXE ./main_one ./main_two
 stderr '-buildmode=exe requires exactly one main package'
-! exists out$GOEXE
+! exists out$GKEXE
 
 -- go.mod --
 module m

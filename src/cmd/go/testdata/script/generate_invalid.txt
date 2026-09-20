@@ -1,7 +1,7 @@
 # Install an echo command because Windows doesn't have it.
-env GOBIN=$WORK/tmp/bin
+env GKBIN=$WORK/tmp/bin
 go install echo.go
-env PATH=$GOBIN${:}$PATH
+env PATH=$GKBIN${:}$PATH
 
 # Test go generate for directory with no go files
 ! go generate ./nogo

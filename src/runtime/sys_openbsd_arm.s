@@ -84,8 +84,8 @@ TEXT runtime·sigtramp(SB),NOSPLIT|TOPFRAME,$0
 TEXT ·publicationBarrier(SB),NOSPLIT|NOFRAME,$0-0
 	B	runtime·armPublicationBarrier(SB)
 
-// TODO(jsing): OpenBSD only supports GOARM=7 machines... this
-// should not be needed, however the linker still allows GOARM=5
+// TODO(jsing): OpenBSD only supports GKARM=7 machines... this
+// should not be needed, however the linker still allows GKARM=5
 // on this platform.
 TEXT runtime·read_tls_fallback(SB),NOSPLIT|NOFRAME,$0
 	MOVM.WP	[R1, R2, R3, R12], (R13)

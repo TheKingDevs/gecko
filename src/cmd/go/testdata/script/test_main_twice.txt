@@ -1,4 +1,4 @@
-env GOCACHE=$WORK/tmp
+env GKCACHE=$WORK/tmp
 go test -v multimain
 stdout -count=2 notwithstanding # check tests ran twice
 

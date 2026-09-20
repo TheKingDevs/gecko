@@ -860,7 +860,7 @@ func loadPackageData(ld *modload.Loader, ctx context.Context, path, parentPath, 
 	}
 
 	if strings.Contains(path, "@") {
-		return nil, false, errors.New("can only use path@version syntax with 'gecko get' and 'gecko install' in module-aware mode")
+		return nil, false, errors.New("can only use path@version syntax with 'gecko install' in module-aware mode")
 	}
 
 	// Determine canonical package path and directory.
@@ -2521,14 +2521,14 @@ func (p *Package) setBuildInfo(ctx context.Context, f *modfetch.Fetcher, autoVCS
 			appendSetting(name, cfg.Getenv(name))
 		}
 	}
-	appendSetting("GOARCH", cfg.BuildContext.GOARCH)
+	appendSetting("GKARCH", cfg.BuildContext.GOARCH)
 	if cfg.RawGOEXPERIMENT != "" {
-		appendSetting("GOEXPERIMENT", cfg.RawGOEXPERIMENT)
+		appendSetting("GKEXPERIMENT", cfg.RawGOEXPERIMENT)
 	}
 	if fips140.Enabled() {
-		appendSetting("GOFIPS140", fips140.Version())
+		appendSetting("GKFIPS140", fips140.Version())
 	}
-	appendSetting("GOOS", cfg.BuildContext.GOOS)
+	appendSetting("GKOS", cfg.BuildContext.GOOS)
 	if key, val, _ := cfg.GetArchEnv(); key != "" && val != "" {
 		appendSetting(key, val)
 	}
@@ -2561,7 +2561,7 @@ func (p *Package) setBuildInfo(ctx context.Context, f *modfetch.Fetcher, autoVCS
 	}
 
 	if wantVCS && p.Module != nil && p.Module.Version == "" && !p.Standard {
-		if p.Module.Path == "bootstrap" && cfg.GOROOT == os.Getenv("GOROOT_BOOTSTRAP") {
+		if p.Module.Path == "bootstrap" && cfg.GOROOT == os.Getenv("GKROOT_BOOTSTRAP") {
 			// During bootstrapping, the bootstrap toolchain is built in module
 			// "bootstrap" (instead of "std"), with GOROOT set to GOROOT_BOOTSTRAP
 			// (so the bootstrap toolchain packages don't even appear to be in GOROOT).

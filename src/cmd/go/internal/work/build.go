@@ -177,7 +177,7 @@ and test commands:
 		include path must be in the same directory as the Go package they are
 		included from, overlays will not appear when binaries and tests are
 		run through gecko run and gecko test respectively, and files beneath
-		GOMODCACHE may not be replaced.
+		GKMODCACHE may not be replaced.
 	-pgo file
 		specify the file path of a profile for profile-guided optimization (PGO).
 		When the special name "auto" is specified, for each main package in the
@@ -198,7 +198,7 @@ and test commands:
 		remove all file system paths from the resulting executable.
 		Instead of absolute file system paths, the recorded file names
 		will begin either a module path@version (when using modules),
-		or a plain import path (when using the standard library, or GOPATH).
+		or a plain import path (when using the standard library, or GKPATH).
 	-toolexec 'cmd args'
 		a program to use to invoke toolchain programs like vet and asm.
 		For example, instead of running asm, the gecko command will run
@@ -225,18 +225,18 @@ prints the disassembly for fmt and all its dependencies.
 For more about specifying packages, see 'gecko help packages'.
 For more about where binaries are installed, run 'gecko help gopath'.
 For more about calling between Go and C/C++, run 'gecko help c'.
-For more about project organization, run 'gecko help modules'.
+For more about project organization, run 'gpm help'.
 
 Note: gecko build adheres to certain conventions for organizing projects:
-it primarily supports gecko modules (see 'gecko help modules') while
-also supporting an alternative GOPATH mode (see 'gecko help gopath').
+it primarily supports project mode (see 'gpm help') while
+also supporting an alternative GKPATH mode (see 'gecko help gopath').
 Not all projects can follow these conventions,
 however. Installations that have their own conventions or that use
 a separate software build system may choose to use lower-level
 invocations such as 'gecko tool compile' and 'gecko tool link' to avoid
 some of the overheads and design decisions of the build tool.
 
-See also: gecko install, gecko get, gecko clean.
+See also: gecko install, gecko clean.
 	`,
 }
 
@@ -568,11 +568,11 @@ var CmdInstall = &base.Command{
 	Long: `
 Install compiles and installs the packages named by the import paths.
 
-Executables are installed in the directory named by the GOBIN environment
-variable, which defaults to $GOPATH/bin or $HOME/go/bin if the GOPATH
-environment variable is not set. Executables in $GOROOT
-are installed in $GOROOT/bin or $GOTOOLDIR instead of $GOBIN.
-Cross compiled binaries are installed in $GOOS_$GOARCH subdirectories
+Executables are installed in the directory named by the GKBIN environment
+variable, which defaults to $GKPATH/bin or $HOME/go/bin if the GKPATH
+environment variable is not set. Executables in $GKROOT
+are installed in $GKROOT/bin or $GKTOOLDIR instead of $GKBIN.
+Cross compiled binaries are installed in $GOOS_$GKARCH subdirectories
 of the above.
 
 If the arguments have version suffixes (like @latest or @v1.0.0), "gecko install"
@@ -604,26 +604,26 @@ a higher version of itself.
 included in the module zip files downloaded by 'gecko install'.)
 
 If the arguments don't have version suffixes, "gecko install" may run in
-module-aware mode or GOPATH mode, depending on the GO111MODULE environment
-variable and the presence of a go.mod file. See 'gecko help modules' for details.
+module-aware mode or GKPATH mode, depending on the GK111MODULE environment
+variable and the presence of a go.mod file. See 'gecko help gopath' for details.
 If module-aware mode is enabled, "gecko install" runs in the context of the main
 module.
 
 When module-aware mode is disabled, non-main packages are installed in the
-directory $GOPATH/pkg/$GOOS_$GOARCH. When module-aware mode is enabled,
+directory $GKPATH/pkg/$GOOS_$GKARCH. When module-aware mode is enabled,
 non-main packages are built and cached but not installed.
 
 Before Go 1.20, the standard library was installed to
-$GOROOT/pkg/$GOOS_$GOARCH.
+$GKROOT/pkg/$GOOS_$GKARCH.
 Starting in Go 1.20, the standard library is built and cached but not installed.
 Setting GODEBUG=installgoroot=all restores the use of
-$GOROOT/pkg/$GOOS_$GOARCH.
+$GKROOT/pkg/$GOOS_$GKARCH.
 
 For more about build flags, see 'gecko help build'.
 
 For more about specifying packages, see 'gecko help packages'.
 
-See also: gecko build, gecko get, gecko clean.
+See also: gecko build, gecko clean.
 	`,
 }
 
@@ -754,7 +754,7 @@ func InstallPackages(ld *modload.Loader, ctx context.Context, patterns []string,
 	defer span.Done()
 
 	if cfg.GOBIN != "" && !filepath.IsAbs(cfg.GOBIN) {
-		base.Fatalf("cannot install, GOBIN must be an absolute path")
+		base.Fatalf("cannot install, GKBIN must be an absolute path")
 	}
 
 	pkgs = omitTestOnly(pkgsFilter(pkgs))
@@ -774,13 +774,13 @@ func InstallPackages(ld *modload.Loader, ctx context.Context, patterns []string,
 				// A few targets (notably those using cgo) still do need to be installed
 				// in case the user's environment lacks a C compiler.
 			case p.Internal.GobinSubdir:
-				base.Errorf("gecko: cannot install cross-compiled binaries when GOBIN is set")
+				base.Errorf("gecko: cannot install cross-compiled binaries when GKBIN is set")
 			case p.Internal.CmdlineFiles:
-				base.Errorf("gecko: no install location for .gk files listed on command line (GOBIN not set)")
+				base.Errorf("gecko: no install location for .gk files listed on command line (GKBIN not set)")
 			case p.ConflictDir != "":
 				base.Errorf("gecko: no install location for %s: hidden by %s", p.Dir, p.ConflictDir)
 			default:
-				base.Errorf("gecko: no install location for directory %s outside GOPATH\n"+
+				base.Errorf("gecko: no install location for directory %s outside GKPATH\n"+
 					"\tFor more details see: 'gecko help gopath'", p.Dir)
 			}
 		}

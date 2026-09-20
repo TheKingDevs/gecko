@@ -1,5 +1,5 @@
-env GOSUMDB=off
-env GOPROXY=direct
+env GKSUMDB=off
+env GKPROXY=direct
 
 # Server responses should be truncated to some reasonable number of lines.
 # (For now, exactly eight.)

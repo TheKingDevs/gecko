@@ -1,16 +1,16 @@
 [!fuzz] skip
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # This test checks that cached corpus loading properly handles duplicate entries (this can
 # happen when a f.Add value has a duplicate entry in the cached corpus.) Duplicate entries
 # should be discarded, and the rest of the cache should be loaded as normal.
 
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 env GODEBUG=fuzzdebug=1
 
-mkdir -p $GOCACHE/fuzz/fuzztest/FuzzTarget
-go run ./populate $GOCACHE/fuzz/fuzztest/FuzzTarget
+mkdir -p $GKCACHE/fuzz/fuzztest/FuzzTarget
+go run ./populate $GKCACHE/fuzz/fuzztest/FuzzTarget
 
 go test -fuzz=FuzzTarget -fuzztime=10x .
 stdout 'entries: 5'

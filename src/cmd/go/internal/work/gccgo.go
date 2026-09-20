@@ -72,7 +72,7 @@ func (tools gccgoToolchain) gc(b *Builder, a *Action, archive string, importcfg,
 	ofile = objdir + out
 	gcargs := []string{"-g"}
 	gcargs = append(gcargs, b.gccArchArgs()...)
-	gcargs = append(gcargs, "-fdebug-prefix-map="+b.WorkDir+"=/tmp/go-build")
+	gcargs = append(gcargs, "-fdebug-prefix-map="+b.WorkDir+"=/tmp/gecko-build")
 	gcargs = append(gcargs, "-gno-record-gcc-switches")
 	if pkgpath := gccgoPkgpath(p); pkgpath != "" {
 		gcargs = append(gcargs, "-fgo-pkgpath="+pkgpath)
@@ -106,7 +106,7 @@ func (tools gccgoToolchain) gc(b *Builder, a *Action, archive string, importcfg,
 	if b.gccSupportsFlag(args[:1], "-ffile-prefix-map=a=b") {
 		if cfg.BuildTrimpath {
 			args = append(args, "-ffile-prefix-map="+base.Cwd()+"=.")
-			args = append(args, "-ffile-prefix-map="+b.WorkDir+"=/tmp/go-build")
+			args = append(args, "-ffile-prefix-map="+b.WorkDir+"=/tmp/gecko-build")
 		}
 		if fsys.OverlayFile != "" {
 			for _, name := range gofiles {
@@ -561,9 +561,9 @@ func (tools gccgoToolchain) cc(b *Builder, a *Action, ofile, cfile string) error
 	defs = tools.maybePIC(defs)
 	if b.gccSupportsFlag(compiler, "-ffile-prefix-map=a=b") {
 		defs = append(defs, "-ffile-prefix-map="+base.Cwd()+"=.")
-		defs = append(defs, "-ffile-prefix-map="+b.WorkDir+"=/tmp/go-build")
+		defs = append(defs, "-ffile-prefix-map="+b.WorkDir+"=/tmp/gecko-build")
 	} else if b.gccSupportsFlag(compiler, "-fdebug-prefix-map=a=b") {
-		defs = append(defs, "-fdebug-prefix-map="+b.WorkDir+"=/tmp/go-build")
+		defs = append(defs, "-fdebug-prefix-map="+b.WorkDir+"=/tmp/gecko-build")
 	}
 	if b.gccSupportsFlag(compiler, "-gno-record-gcc-switches") {
 		defs = append(defs, "-gno-record-gcc-switches")

@@ -1,4 +1,4 @@
-[!GOOS:linux] skip
+[!GKOS:linux] skip
 [short] skip
 
 # Programs with //go:debug decoratemappings=0 should never see annotations.

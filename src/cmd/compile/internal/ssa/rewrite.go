@@ -1151,7 +1151,7 @@ func LogRule(s string) {
 		// This means, of course, that users need to rm the old log
 		// to get fresh data.
 		// TODO: all.bash runs compilers in parallel. Need to synchronize logging somehow?
-		w, err := os.OpenFile(filepath.Join(os.Getenv("GOROOT"), "src", "rulelog"),
+		w, err := os.OpenFile(filepath.Join(os.Getenv("GKROOT"), "src", "rulelog"),
 			os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
 			panic(err)

@@ -4,16 +4,16 @@
 # This test focuses on 'go run' behavior specific to this mode.
 
 # 'go run pkg@version' works outside a module.
-env GO111MODULE=auto
+env GK111MODULE=auto
 go run example.com/cmd/a@v1.0.0
 stdout '^a@v1.0.0$'
 
 
 # 'go run pkg@version' reports an error if modules are disabled.
-env GO111MODULE=off
+env GK111MODULE=off
 ! go run example.com/cmd/a@v1.0.0
-stderr '^gecko: modules disabled by GO111MODULE=off; see ''gecko help modules''$'
-env GO111MODULE=on
+stderr '^gecko: modules disabled by GK111MODULE=off; see ''gecko help modules''$'
+env GK111MODULE=on
 
 
 # 'go run pkg@version' ignores go.mod in the current directory.
@@ -55,7 +55,7 @@ cmp stderr exclude-err
 # 'go run dir@version' works like a normal 'go run' command if
 # dir is a relative or absolute path.
 go mod download rsc.io/fortune@v1.0.0
-! go run $GOPATH/pkg/mod/rsc.io/fortune@v1.0.0
+! go run $GKPATH/pkg/mod/rsc.io/fortune@v1.0.0
 stderr '^gecko: go\.mod file not found in current directory or any parent directory; see ''gecko help modules''$'
 ! go run ../pkg/mod/rsc.io/fortune@v1.0.0
 stderr '^gecko: go\.mod file not found in current directory or any parent directory; see ''gecko help modules''$'
@@ -63,7 +63,7 @@ mkdir tmp
 cd tmp
 go mod init tmp
 go mod edit -require=rsc.io/fortune@v1.0.0
-! go run -mod=readonly $GOPATH/pkg/mod/rsc.io/fortune@v1.0.0
+! go run -mod=readonly $GKPATH/pkg/mod/rsc.io/fortune@v1.0.0
 stderr '^missing go\.sum entry for module providing package rsc\.io/fortune; to add:\n\tgecko mod download rsc\.io/fortune$'
 ! go run -mod=readonly ../../pkg/mod/rsc.io/fortune@v1.0.0
 stderr '^missing go\.sum entry for module providing package rsc\.io/fortune; to add:\n\tgecko mod download rsc\.io/fortune$'

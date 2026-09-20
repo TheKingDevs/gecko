@@ -181,7 +181,7 @@ func cCompilerCmd(t *testing.T) []string {
 	}
 	testenv.MustHaveExecPath(t, cc[0])
 
-	out := goEnv(t, "GOGCCFLAGS")
+	out := goEnv(t, "GKGCCFLAGS")
 	quote := '\000'
 	start := 0
 	lastSpace := true

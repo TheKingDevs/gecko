@@ -1,6 +1,6 @@
 # Test that we pass -arch flag to C compiler on Darwin (issue 43692).
 
-[!GOOS:darwin] skip
+[!GKOS:darwin] skip
 [!cgo] skip
 
 # clear CC, in case user sets it
@@ -8,11 +8,11 @@ env CC=
 
 env CGO_ENABLED=1
 
-env GOARCH=amd64
+env GKARCH=amd64
 go build -n -x c.go
 stderr 'clang.*-arch x86_64'
 
-env GOARCH=arm64
+env GKARCH=arm64
 go build -n -x c.go
 stderr 'clang.*-arch arm64'
 

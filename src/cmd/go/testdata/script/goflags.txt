@@ -1,63 +1,63 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
-# GOFLAGS sets flags for commands
+# GKFLAGS sets flags for commands
 
-env GOFLAGS='-e -f={{.Dir}} --test.benchtime=1s -count=10'
+env GKFLAGS='-e -f={{.Dir}} --test.benchtime=1s -count=10'
 go list asdfasdfasdf  # succeeds because of -e
 go list runtime
 stdout '[\\/]runtime$'
 
-env GOFLAGS=-race OLDGOARCH=$GOARCH OLDGOOS=$GOOS GOARCH=386 GOOS=linux
+env GKFLAGS=-race OLDGOARCH=$GKARCH OLDGOOS=$GKOS GKARCH=386 GKOS=linux
 ! go list runtime
 stderr 'race is not supported on linux/386'
 
-env GOARCH=$OLDGOARCH GOOS=$OLDGOOS
+env GKARCH=$OLDGOARCH GKOS=$OLDGOOS
 
 # go env succeeds even though -f={{.Dir}} is inappropriate
 go env
 
 # bad flags are diagnosed
-env GOFLAGS=-typoflag
+env GKFLAGS=-typoflag
 ! go list runtime
 stderr 'unknown flag -typoflag'
 
-env GOFLAGS=-
+env GKFLAGS=-
 ! go list runtime
-stderr '^gecko: parsing \$GOFLAGS: non-flag "-"'
+stderr '^gecko: parsing \$GKFLAGS: non-flag "-"'
 
-env GOFLAGS=--
+env GKFLAGS=--
 ! go list runtime
-stderr '^gecko: parsing \$GOFLAGS: non-flag "--"'
+stderr '^gecko: parsing \$GKFLAGS: non-flag "--"'
 
-env GOFLAGS=---oops
+env GKFLAGS=---oops
 ! go list runtime
-stderr '^gecko: parsing \$GOFLAGS: non-flag "---oops"'
+stderr '^gecko: parsing \$GKFLAGS: non-flag "---oops"'
 
-env GOFLAGS=-=noname
+env GKFLAGS=-=noname
 ! go list runtime
-stderr '^gecko: parsing \$GOFLAGS: non-flag "-=noname"'
+stderr '^gecko: parsing \$GKFLAGS: non-flag "-=noname"'
 
-env GOFLAGS=-f
+env GKFLAGS=-f
 ! go list runtime
-stderr '^gecko: flag needs an argument: -f \(from (\$GOFLAGS|%GOFLAGS%)\)$'
+stderr '^gecko: flag needs an argument: -f \(from (\$GKFLAGS|%GKFLAGS%)\)$'
 
-env GOFLAGS=-e=asdf
+env GKFLAGS=-e=asdf
 ! go list runtime
-stderr '^gecko: invalid boolean value \"asdf\" for flag -e \(from (\$GOFLAGS|%GOFLAGS%)\)'
+stderr '^gecko: invalid boolean value \"asdf\" for flag -e \(from (\$GKFLAGS|%GKFLAGS%)\)'
 
 # except in go bug (untested) and go env
 go env
-stdout GOFLAGS
+stdout GKFLAGS
 
-# Flags listed in GOFLAGS should be safe to duplicate on the command line.
-env GOFLAGS=-tags=magic
+# Flags listed in GKFLAGS should be safe to duplicate on the command line.
+env GKFLAGS=-tags=magic
 go list -tags=magic
 go test -tags=magic -c -o $devnull
 go vet -tags=magic
 
-# GOFLAGS uses the same quoting rules (quoted.Split) as the rest of
+# GKFLAGS uses the same quoting rules (quoted.Split) as the rest of
 # the go command env variables
-env GOFLAGS='"-tags=magic wizardry"'
+env GKFLAGS='"-tags=magic wizardry"'
 go list
 
 -- foo_test.go --

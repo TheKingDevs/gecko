@@ -89,8 +89,8 @@ func Test(t *testing.T) {
 		if !ok {
 			t.Fatalf("bad -target flag %q, expected goos/goarch", *target)
 		}
-		t.Setenv("GOOS", goos)
-		t.Setenv("GOARCH", goarch)
+		t.Setenv("GKOS", goos)
+		t.Setenv("GKARCH", goarch)
 	}
 
 	goTool = testenv.GoToolPath(t)
@@ -132,7 +132,7 @@ func Test(t *testing.T) {
 	// suppress false-positive skips.
 	if _, err := os.Stat(common.gorootTestDir); os.IsNotExist(err) {
 		if _, err := os.Stat(filepath.Join(testenv.GOROOT(t), "VERSION")); err == nil {
-			t.Skipf("skipping: GOROOT/test not present")
+			t.Skipf("skipping: GKROOT/test not present")
 		}
 	}
 
@@ -217,7 +217,7 @@ func compileInDir(runcmd runCmd, dir string, flags []string, importcfg string, p
 
 var stdlibImportcfg = sync.OnceValue(func() string {
 	cmd := exec.Command(goTool, "list", "-export", "-f", "{{if .Export}}packagefile {{.ImportPath}}={{.Export}}{{end}}", "std")
-	cmd.Env = append(os.Environ(), "GOENV=off", "GOFLAGS=")
+	cmd.Env = append(os.Environ(), "GKENV=off", "GKFLAGS=")
 	output, err := cmd.Output()
 	if err, ok := err.(*exec.ExitError); ok && len(err.Stderr) != 0 {
 		log.Fatalf("'go list' failed: %v: %s", err, err.Stderr)
@@ -401,7 +401,7 @@ func shouldTest(src string, goos, goarch string) (ok bool, whyNot string) {
 			allGOARCH = true
 		}
 		if expr, err := constraint.Parse(line); err == nil {
-			gcFlags := os.Getenv("GO_GCFLAGS")
+			gcFlags := os.Getenv("GK_GCFLAGS")
 			ctxt := &context{
 				GOOS:       goos,
 				GOARCH:     goarch,
@@ -472,11 +472,11 @@ func (ctxt *context) match(name string) bool {
 // or else the commands will rebuild any needed packages (like runtime)
 // over and over.
 func (test) goGcflags() string {
-	return "-gcflags=all=" + os.Getenv("GO_GCFLAGS")
+	return "-gcflags=all=" + os.Getenv("GK_GCFLAGS")
 }
 
 func (test) goGcflagsIsEmpty() bool {
-	return "" == os.Getenv("GO_GCFLAGS")
+	return "" == os.Getenv("GK_GCFLAGS")
 }
 
 var errTimeout = errors.New("command exceeded time limit")
@@ -511,7 +511,7 @@ func (t test) run() error {
 		action = strings.TrimSpace(strings.TrimPrefix(line, "//"))
 	}
 	if action == "" {
-		t.Fatalf("execution recipe not found in GOROOT/test/%s", t.goFileName())
+		t.Fatalf("execution recipe not found in GKROOT/test/%s", t.goFileName())
 	}
 
 	// Check for build constraints only up to the actual code.
@@ -591,7 +591,7 @@ func (t test) run() error {
 				goexp += ","
 			}
 			goexp += args[0]
-			runenv = append(runenv, "GOEXPERIMENT="+goexp)
+			runenv = append(runenv, "GKEXPERIMENT="+goexp)
 
 		case "-godebug": // set GODEBUG environment
 			args = args[1:]
@@ -644,7 +644,7 @@ func (t test) run() error {
 		var buf bytes.Buffer
 		cmd.Stdout = &buf
 		cmd.Stderr = &buf
-		cmd.Env = append(os.Environ(), "GOENV=off", "GOFLAGS=")
+		cmd.Env = append(os.Environ(), "GKENV=off", "GKFLAGS=")
 		if runInDir != "" {
 			cmd.Dir = runInDir
 			// Set PWD to match Dir to speed up os.Getwd in the child process.
@@ -656,7 +656,7 @@ func (t test) run() error {
 			cmd.Env = append(cmd.Env, "PWD="+cmd.Dir)
 		}
 		if tempDirIsGOPATH {
-			cmd.Env = append(cmd.Env, "GOPATH="+tempDir)
+			cmd.Env = append(cmd.Env, "GKPATH="+tempDir)
 		}
 		cmd.Env = append(cmd.Env, "STDLIB_IMPORTCFG="+stdlibImportcfgFile())
 		cmd.Env = append(cmd.Env, runenv...)
@@ -1534,19 +1534,19 @@ var (
 	// value[0] is the variant-changing environment variable, and values[1:]
 	// are the supported variants.
 	archVariants = map[string][]string{
-		"386":     {"GO386", "sse2", "softfloat"},
-		"amd64":   {"GOAMD64", "v1", "v2", "v3", "v4"},
-		"arm":     {"GOARM", "5", "6", "7", "7,softfloat"},
-		"arm64":   {"GOARM64", "v8.0", "v8.1"},
+		"386":     {"GK386", "sse2", "softfloat"},
+		"amd64":   {"GKAMD64", "v1", "v2", "v3", "v4"},
+		"arm":     {"GKARM", "5", "6", "7", "7,softfloat"},
+		"arm64":   {"GKARM64", "v8.0", "v8.1"},
 		"loong64": {},
-		"mips":    {"GOMIPS", "hardfloat", "softfloat"},
-		"mips64":  {"GOMIPS64", "hardfloat", "softfloat"},
-		"ppc64":   {"GOPPC64", "power8", "power9", "power10"},
-		"ppc64le": {"GOPPC64", "power8", "power9", "power10"},
+		"mips":    {"GKMIPS", "hardfloat", "softfloat"},
+		"mips64":  {"GKMIPS64", "hardfloat", "softfloat"},
+		"ppc64":   {"GKPPC64", "power8", "power9", "power10"},
+		"ppc64le": {"GKPPC64", "power8", "power9", "power10"},
 		"ppc64x":  {}, // A pseudo-arch representing both ppc64 and ppc64le
 		"s390x":   {},
 		"wasm":    {},
-		"riscv64": {"GORISCV64", "rva20u64", "rva22u64", "rva23u64"},
+		"riscv64": {"GKRISCV64", "rva20u64", "rva22u64", "rva23u64"},
 	}
 )
 
@@ -1572,7 +1572,7 @@ func (b buildEnv) Environ() []string {
 	if len(fields) != 3 {
 		panic("invalid buildEnv string: " + string(b))
 	}
-	env := []string{"GOOS=" + fields[0], "GOARCH=" + fields[1]}
+	env := []string{"GKOS=" + fields[0], "GKARCH=" + fields[1]}
 	if fields[2] != "" {
 		env = append(env, archVariants[fields[1]][0]+"="+fields[2])
 	}

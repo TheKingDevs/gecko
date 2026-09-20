@@ -1,29 +1,29 @@
 [compiler:gccgo] skip 'gccgo does not support -ldflags -X'
-env GO111MODULE=off
+env GK111MODULE=off
 go build run_go.go
 
-# Apply identity function to GOPATH
-exec ./run_go$GOEXE $GOPATH/src/my.pkg/main $GOPATH IDENTITY build -o $WORK/tmp/a.exe -ldflags -X=my.pkg.Text=linkXworked
+# Apply identity function to GKPATH
+exec ./run_go$GKEXE $GKPATH/src/my.pkg/main $GKPATH IDENTITY build -o $WORK/tmp/a.exe -ldflags -X=my.pkg.Text=linkXworked
 exec $WORK/tmp/a.exe
 stderr 'linkXworked'
 rm $WORK/tmp/a.exe
 
-[!GOOS:windows] stop 'rest of the tests only apply to Windows'
+[!GKOS:windows] stop 'rest of the tests only apply to Windows'
 
-# Replace '\' with '/' in GOPATH
-exec ./run_go$GOEXE $GOPATH/src/my.pkg/main $GOPATH REPLACE_SLASH build -o $WORK/tmp/a.exe -ldflags -X=my.pkg.Text=linkXworked
+# Replace '\' with '/' in GKPATH
+exec ./run_go$GKEXE $GKPATH/src/my.pkg/main $GKPATH REPLACE_SLASH build -o $WORK/tmp/a.exe -ldflags -X=my.pkg.Text=linkXworked
 exec $WORK/tmp/a.exe
 stderr 'linkXworked'
 rm $WORK/tmp/a.exe
 
-# Apply identity function to GOPATH
-exec ./run_go$GOEXE $GOPATH/src/my.pkg/main $GOPATH UPPER build -o $WORK/tmp/a.exe -ldflags -X=my.pkg.Text=linkXworked
+# Apply identity function to GKPATH
+exec ./run_go$GKEXE $GKPATH/src/my.pkg/main $GKPATH UPPER build -o $WORK/tmp/a.exe -ldflags -X=my.pkg.Text=linkXworked
 exec $WORK/tmp/a.exe
 stderr 'linkXworked'
 rm $WORK/tmp/a.exe
 
-# Apply identity function to GOPATH
-exec ./run_go$GOEXE $GOPATH/src/my.pkg/main $GOPATH LOWER build -o $WORK/tmp/a.exe -ldflags -X=my.pkg.Text=linkXworked
+# Apply identity function to GKPATH
+exec ./run_go$GKEXE $GKPATH/src/my.pkg/main $GKPATH LOWER build -o $WORK/tmp/a.exe -ldflags -X=my.pkg.Text=linkXworked
 exec $WORK/tmp/a.exe
 stderr 'linkXworked'
 rm $WORK/tmp/a.exe
@@ -50,7 +50,7 @@ func main() {
 	}
 	cmd := exec.Command("go", os.Args[4:]...)
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GOPATH="+gopath)
+	cmd.Env = append(os.Environ(), "GKPATH="+gopath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

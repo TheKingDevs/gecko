@@ -76,9 +76,9 @@ text in the file.
 
 Go generate sets several variables when it runs the generator:
 
-	$GOARCH
+	$GKARCH
 		The execution architecture (arm, amd64, etc.)
-	$GOOS
+	$GKOS
 		The execution operating system (linux, windows, etc.)
 	$GOFILE
 		The base name of the file.
@@ -86,13 +86,13 @@ Go generate sets several variables when it runs the generator:
 		The line number of the directive in the source file.
 	$GOPACKAGE
 		The name of the package of the file containing the directive.
-	$GOROOT
-		The GOROOT directory for the 'gecko' command that invoked the
+	$GKROOT
+		The GKROOT directory for the 'gecko' command that invoked the
 		generator, containing the Go toolchain and standard library.
 	$DOLLAR
 		A dollar sign.
 	$PATH
-		The $PATH of the parent process, with $GOROOT/bin
+		The $PATH of the parent process, with $GKROOT/bin
 		placed at the beginning. This causes generators
 		that execute 'gecko' commands to use the same 'gecko'
 		as the parent 'gecko generate' command.
@@ -366,9 +366,9 @@ func isGoGenerate(buf []byte) bool {
 // single go:generate command.
 func (g *Generator) setEnv() {
 	env := []string{
-		"GOROOT=" + cfg.GOROOT,
-		"GOARCH=" + cfg.BuildContext.GOARCH,
-		"GOOS=" + cfg.BuildContext.GOOS,
+		"GKROOT=" + cfg.GOROOT,
+		"GKARCH=" + cfg.BuildContext.GOARCH,
+		"GKOS=" + cfg.BuildContext.GOOS,
 		"GOFILE=" + g.file,
 		"GOLINE=" + strconv.Itoa(g.lineNum),
 		"GOPACKAGE=" + g.pkg,

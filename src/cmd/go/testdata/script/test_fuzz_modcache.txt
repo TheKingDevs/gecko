@@ -7,7 +7,7 @@
 # module cache is writable. (For example, on some platforms it can always be
 # written if the user is running as root.) At one point, a failing fuzz test
 # in a writable module cache would corrupt module checksums in the cache.
-env GOFLAGS=-modcacherw
+env GKFLAGS=-modcacherw
 
 
 # When the upstream module has no test corpus, running 'go test' should succeed,
@@ -41,7 +41,7 @@ stderr '^cannot use -fuzz flag on package outside the main module$'
 go mod verify
 
 
-# Packages in 'std' cannot be fuzzed when the corresponding GOROOT module is not
+# Packages in 'std' cannot be fuzzed when the corresponding GKROOT module is not
 # the main module — either the failures would not be recorded or the behavior of
 # the 'std' tests would change globally.
 

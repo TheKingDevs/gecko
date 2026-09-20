@@ -1,23 +1,23 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 cd mycmd
 go build mycmd
 
-# cross-compile install with implicit GOBIN=$GOPATH/bin can make subdirectory
-env GOARCH=386
-[GOARCH:386] env GOARCH=amd64
-env GOOS=linux
+# cross-compile install with implicit GKBIN=$GKPATH/bin can make subdirectory
+env GKARCH=386
+[GKARCH:386] env GKARCH=amd64
+env GKOS=linux
 go install mycmd
-exists $GOPATH/bin/linux_$GOARCH/mycmd
+exists $GKPATH/bin/linux_$GKARCH/mycmd
 
-# cross-compile install with explicit GOBIN cannot make subdirectory
-env GOBIN=$WORK/bin
+# cross-compile install with explicit GKBIN cannot make subdirectory
+env GKBIN=$WORK/bin
 ! go install mycmd
-! exists $GOBIN/linux_$GOARCH
+! exists $GKBIN/linux_$GKARCH
 
-# The install directory for a cross-compiled standard command should include GOARCH.
+# The install directory for a cross-compiled standard command should include GKARCH.
 go list -f '{{.Target}}'  cmd/pack
-stdout ${GOROOT}[/\\]pkg[/\\]tool[/\\]${GOOS}_${GOARCH}[/\\]pack$
+stdout ${GKROOT}[/\\]pkg[/\\]tool[/\\]${GKOS}_${GKARCH}[/\\]pack$
 
 -- mycmd/x.go --
 package main

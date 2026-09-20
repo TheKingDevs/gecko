@@ -59,7 +59,7 @@ func Supported() error {
 	}
 
 	if boringEnabled {
-		return errors.New("FIPS 140-3 mode is incompatible with GOEXPERIMENT=boringcrypto")
+		return errors.New("FIPS 140-3 mode is incompatible with GKEXPERIMENT=boringcrypto")
 	}
 
 	return nil

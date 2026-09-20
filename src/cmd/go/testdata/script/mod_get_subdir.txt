@@ -7,16 +7,16 @@
 
 [!git] skip
 
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 
 # Get the module without having to specify the subdir.
 cd a
 cp go.mod go.mod.orig
 go get vcs-test.golang.org/go/gitreposubdir@v1.2.3
-exists $GOPATH/pkg/mod/vcs-test.golang.org/go/gitreposubdir@v1.2.3
+exists $GKPATH/pkg/mod/vcs-test.golang.org/go/gitreposubdir@v1.2.3
 go get vcs-test.golang.org/go/gitreposubdirv2/v2@v2.0.0
-exists $GOPATH/pkg/mod/vcs-test.golang.org/go/gitreposubdirv2/v2@v2.0.0
+exists $GKPATH/pkg/mod/vcs-test.golang.org/go/gitreposubdirv2/v2@v2.0.0
 
 # Import the module without having to specify the subdir.
 cp go.mod.orig go.mod

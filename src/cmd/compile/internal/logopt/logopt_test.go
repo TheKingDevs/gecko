@@ -243,7 +243,7 @@ func testCopy(t *testing.T, dir, goarch, goos, src, outfile string) (string, err
 	t.Log(run)
 	cmd := testenv.Command(t, run[0], run[1:]...)
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GOARCH="+goarch, "GOOS="+goos)
+	cmd.Env = append(os.Environ(), "GKARCH="+goarch, "GKOS="+goos)
 	out, err := cmd.CombinedOutput()
 	t.Logf("%s", out)
 	return string(out), err

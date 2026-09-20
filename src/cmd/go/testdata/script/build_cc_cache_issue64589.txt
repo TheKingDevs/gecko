@@ -19,9 +19,9 @@ cp stdout $WORK/.realclang
 
 # Build a fake clang and ensure that it is the one in $PATH.
 mkdir $WORK/bin
-go build -o $WORK/bin/clang$GOEXE ./fakeclang
-[!GOOS:plan9] env PATH=$WORK${/}bin
-[GOOS:plan9] env path=$WORK${/}bin
+go build -o $WORK/bin/clang$GKEXE ./fakeclang
+[!GKOS:plan9] env PATH=$WORK${/}bin
+[GKOS:plan9] env path=$WORK${/}bin
 
 # Force CGO_ENABLED=1 so that the following commands should error
 # out if the fake clang doesn't work.
@@ -33,8 +33,8 @@ env CGO_ENABLED=1
 # if we change the way caching works, we want the test to fail
 # instead of accidentally reusing the cached information from a
 # previous test run.
-env GOCACHE=$WORK${/}.cache
-mkdir $GOCACHE
+env GKCACHE=$WORK${/}.cache
+mkdir $GKCACHE
 
 go build -x runtime/cgo
 

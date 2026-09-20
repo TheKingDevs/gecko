@@ -28,8 +28,8 @@ func main() {
 	}
 	s := string(b)
 
-	goarch := os.Getenv("GOARCH")
-	goos := os.Getenv("GOOS")
+	goarch := os.Getenv("GKARCH")
+	goos := os.Getenv("GKOS")
 	switch {
 	case goarch == "s390x" && goos == "linux":
 		// Export the types of PtraceRegs fields.

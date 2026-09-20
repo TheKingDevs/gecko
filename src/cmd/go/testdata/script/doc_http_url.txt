@@ -13,8 +13,8 @@ grep '/example.com/m/v5' $TEST_GODOC_URL_FILE
 go doc -http .
 grep '/example.com/m/v5' $TEST_GODOC_URL_FILE
 
-# In GOPATH mode, we should use the location in the GOPATH.
-env GO111MODULE=off
+# In GKPATH mode, we should use the location in the GKPATH.
+env GK111MODULE=off
 go doc -http
 grep '/std' $TEST_GODOC_URL_FILE
 # TODO(matloob): This should probably this be the same as 'go doc -http .'

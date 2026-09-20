@@ -17,7 +17,7 @@
 #   -e: stop at first failure
 
 if [ ! -f run.bash ]; then
-	echo 'buildall.bash must be run from $GOROOT/src' 1>&2
+	echo 'buildall.bash must be run from $GKROOT/src' 1>&2
 	exit 1
 fi
 
@@ -37,7 +37,7 @@ if [ "$pattern" = "" ]; then
 fi
 
 ./make.bash || exit 1
-GOROOT="$(cd .. && pwd)"
+GKROOT="$(cd .. && pwd)"
 
 gettargets() {
 	../bin/gecko tool dist list | sed -e 's|/|-|' |
@@ -66,18 +66,18 @@ for target in $targets
 do
 	echo ""
 	echo "### Building $target"
-	export GOOS=$(echo $target | sed 's/-.*//')
-	export GOARCH=$(echo $target | sed 's/.*-//')
-	unset GOARM
-	if [ "$GOARCH" = "arm5" ]; then
-		export GOARCH=arm
-		export GOARM=5
+	export GKOS=$(echo $target | sed 's/-.*//')
+	export GKARCH=$(echo $target | sed 's/.*-//')
+	unset GKARM
+	if [ "$GKARCH" = "arm5" ]; then
+		export GKARCH=arm
+		export GKARM=5
 	fi
 
 	# Build and vet everything.
 	# cmd/go/internal/work/exec.go enables the same vet flags during go test of std cmd
 	# and should be kept in sync with any vet flag changes here.
-	if ! "$GOROOT/bin/gecko" build std cmd || ! "$GOROOT/bin/gecko" vet -unsafeptr=false std cmd; then
+	if ! "$GKROOT/bin/gecko" build std cmd || ! "$GKROOT/bin/gecko" vet -unsafeptr=false std cmd; then
 		failed=true
 		if $sete; then
 			exit 1

@@ -1,10 +1,10 @@
-# Test that [GOEXPERIMENT:x] is accepted.
+# Test that [GKEXPERIMENT:x] is accepted.
 # Here fieldtrack is picked arbitrarily.
 
-[GOEXPERIMENT:nofieldtrack] env
+[GKEXPERIMENT:nofieldtrack] env
 
-[GOEXPERIMENT:fieldtrack] env
+[GKEXPERIMENT:fieldtrack] env
 
-#[GOEXPERIMENT:crashme] env
+#[GKEXPERIMENT:crashme] env
 
 

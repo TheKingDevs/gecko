@@ -1,26 +1,26 @@
-# go.dev/issue/78805: 'go get' was following plain-HTTP URLs even without GOINSECURE.
+# go.dev/issue/78805: 'go get' was following plain-HTTP URLs even without GKINSECURE.
 
-env GOPROXY=direct
-env GONOSUMDB=vcs-test.golang.org
+env GKPROXY=direct
+env GKNOSUMDB=vcs-test.golang.org
 
 # By default it should get rejected due to an insecure schema.
 ! go get vcs-test.golang.org/go/insecure/insecure2
-stderr 'unrecognized import path "vcs-test.golang.org/go/insecure/insecure2": go-import meta tag specifies repository URL "http://vcs-test.golang.org/insecure" with insecure scheme, but module path "vcs-test.golang.org/go/insecure/insecure2" is not matched by the GOINSECURE environment variable; see ''gecko help environment'''
+stderr 'unrecognized import path "vcs-test.golang.org/go/insecure/insecure2": go-import meta tag specifies repository URL "http://vcs-test.golang.org/insecure" with insecure scheme, but module path "vcs-test.golang.org/go/insecure/insecure2" is not matched by the GKINSECURE environment variable; see ''gecko help environment'''
 ! stderr 'Not Found'
 ! stderr '@v/list'
 
-# Setting a mismatching GOINSECURE shouldn't make a difference.
-env GOINSECURE=vcs-test.golang.org/*/*/insecure2not
+# Setting a mismatching GKINSECURE shouldn't make a difference.
+env GKINSECURE=vcs-test.golang.org/*/*/insecure2not
 ! go get vcs-test.golang.org/go/insecure/insecure2
-stderr 'unrecognized import path "vcs-test.golang.org/go/insecure/insecure2": go-import meta tag specifies repository URL "http://vcs-test.golang.org/insecure" with insecure scheme, but module path "vcs-test.golang.org/go/insecure/insecure2" is not matched by the GOINSECURE environment variable; see ''gecko help environment'''
+stderr 'unrecognized import path "vcs-test.golang.org/go/insecure/insecure2": go-import meta tag specifies repository URL "http://vcs-test.golang.org/insecure" with insecure scheme, but module path "vcs-test.golang.org/go/insecure/insecure2" is not matched by the GKINSECURE environment variable; see ''gecko help environment'''
 ! stderr 'Not Found'
 ! stderr '@v/list'
 
-# Setting a matching GOINSECURE should make it try and fetch the module.
+# Setting a matching GKINSECURE should make it try and fetch the module.
 # (Though its source doesn't exist, so just confirm it fails in the expected way.)
-env GOINSECURE=vcs-test.golang.org/*/*/insecure2
+env GKINSECURE=vcs-test.golang.org/*/*/insecure2
 ! go get vcs-test.golang.org/go/insecure/insecure2
-! stderr GOINSECURE
+! stderr GKINSECURE
 stderr 'Not Found'
 stderr '@v/list'
 

@@ -1,7 +1,7 @@
 # Check that task scheduling does not affect compiler output.
 # If it does, reproducible builds will not work very well.
 [short] skip
-[GOOS:aix] env CGO_ENABLED=0  # go.dev/issue/56896
+[GKOS:aix] env CGO_ENABLED=0  # go.dev/issue/56896
 env GOMAXPROCS=16
 go build -a -o http16.o net/http
 env GOMAXPROCS=17

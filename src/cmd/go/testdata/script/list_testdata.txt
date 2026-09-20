@@ -1,4 +1,4 @@
-# Issue 65406. The testdata directory in GOROOT/src
+# Issue 65406. The testdata directory in GKROOT/src
 # shouldn't be treated as a standard package.
 
 go list -f '{{.ImportPath}} {{.Dir}}' testdata

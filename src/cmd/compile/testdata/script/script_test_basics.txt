@@ -4,7 +4,7 @@
 go build
 [!cgo] skip
 cc -c testdata/mumble.c
-[GOEXPERIMENT:fieldtrack] help exec
+[GKEXPERIMENT:fieldtrack] help exec
 
 -- go.mod --
 module main

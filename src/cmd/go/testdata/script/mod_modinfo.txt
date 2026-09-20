@@ -10,7 +10,7 @@ go mod tidy # populate go.sum
 # Build a binary and ensure that it can output its own debug info.
 # The debug info should be accessible before main starts (golang.org/issue/29628).
 go build
-exec ./x$GOEXE
+exec ./x$GKEXE
 stdout 'mod\s+x\s+\(devel\)'
 stdout 'dep\s+rsc.io/quote\s+v1.5.2\s+'
 stdout '=>\s+rsc.io/quote\s+v1.0.0\s+h1:'
@@ -21,7 +21,7 @@ stdout 'Hello, world.'
 # The debug info should still be present (golang.org/issue/28753).
 cd unused
 go build
-exec ./unused$GOEXE
+exec ./unused$GKEXE
 
 -- x/go.mod --
 module x

@@ -69,7 +69,7 @@ to -f '{{.ImportPath}}'. The struct being passed to the template is:
         Stale          bool     // would 'gecko install' do anything for this package?
         StaleReason    string   // explanation for Stale==true
         Root           string   // Go root or Go path dir containing this package
-        ConflictDir    string   // this directory shadows Dir in $GOPATH
+        ConflictDir    string   // this directory shadows Dir in $GKPATH
         BinaryOnly     bool     // binary-only package (no longer supported)
         ForTest        string   // package is only for use in named test
         Export         string   // file containing export data (when using -export)
@@ -150,10 +150,10 @@ The template function "json" marshals its arguments to JSON.
 The template function "context" returns the build context, defined as:
 
     type Context struct {
-        GOARCH        string   // target architecture
-        GOOS          string   // target operating system
-        GOROOT        string   // Go root
-        GOPATH        string   // Go path
+        GKARCH        string   // target architecture
+        GKOS          string   // target operating system
+        GKROOT        string   // Go root
+        GKPATH        string   // Go path
         CgoEnabled    bool     // whether cgo can be used
         UseAllFiles   bool     // use files regardless of //go:build lines, file names
         Compiler      string   // compiler to assume when computing target paths
@@ -326,7 +326,6 @@ A pattern containing "..." specifies the active modules whose
 module paths match the pattern.
 A query of the form path@version specifies the result of that query,
 which is not limited to active modules.
-See 'gecko help modules' for more about module queries.
 
 The template function "module" takes a single string argument
 that must be a module path or query and returns the specified
@@ -547,7 +546,7 @@ func runList(ctx context.Context, cmd *base.Command, args []string) {
 		}
 
 		if modload.Init(moduleLoader); !moduleLoader.Enabled() {
-			base.Fatalf("gecko: list -m cannot be used with GO111MODULE=off")
+			base.Fatalf("gecko: list -m cannot be used with GK111MODULE=off")
 		}
 
 		modload.LoadModFile(moduleLoader, ctx) // Sets cfg.BuildMod as a side-effect.

@@ -22,7 +22,7 @@ cmp go.mod go.mod.good
 
 # With a clean (and empty) module cache, 'go list -mod=vendor' should not download modules.
 go clean -modcache
-env GOPROXY=off
+env GKPROXY=off
 ! go list ...
 go list -mod=vendor ...
 

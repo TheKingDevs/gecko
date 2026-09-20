@@ -3795,7 +3795,7 @@ func testRequestBodyReadCloseRace(t *testing.T) {
 
 func TestIssue20704Race(t *testing.T) { synctest.Test(t, testIssue20704Race) }
 func testIssue20704Race(t *testing.T) {
-	if testing.Short() && os.Getenv("GO_BUILDER_NAME") == "" {
+	if testing.Short() && os.Getenv("GK_BUILDER_NAME") == "" {
 		t.Skip("skipping in short mode")
 	}
 	const (

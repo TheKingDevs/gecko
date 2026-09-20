@@ -30,7 +30,7 @@ DATA indexbytevbperm<>+8(SB)/8, $0x4048505860687078
 GLOBL indexbytevbperm<>+0(SB), RODATA, $16
 #endif
 
-// Some operations are endian specific, choose the correct opcode base on GOARCH.
+// Some operations are endian specific, choose the correct opcode base on GKARCH.
 // Note, _VCZBEBB is only available on power9 and newer.
 #ifdef GOARCH_ppc64le
 #define _LDBEX	MOVDBR

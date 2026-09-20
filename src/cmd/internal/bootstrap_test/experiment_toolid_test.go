@@ -28,7 +28,7 @@ func TestExperimentToolID(t *testing.T) {
 	}
 	switch runtime.GOOS {
 	case "android", "ios", "js", "wasip1":
-		t.Skipf("skipping because the toolchain does not have to bootstrap on GOOS=%s", runtime.GOOS)
+		t.Skipf("skipping because the toolchain does not have to bootstrap on GKOS=%s", runtime.GOOS)
 	}
 
 	realGoroot := testenv.GOROOT(t)
@@ -46,11 +46,11 @@ func TestExperimentToolID(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(goroot, "VERSION"), []byte("go1.999"), 0666); err != nil {
 		t.Fatal(err)
 	}
-	env := append(os.Environ(), "GOROOT=", "GOROOT_BOOTSTRAP="+realGoroot)
+	env := append(os.Environ(), "GKROOT=", "GKROOT_BOOTSTRAP="+realGoroot)
 
 	// Use a clean cache.
 	gocache := t.TempDir()
-	env = append(env, "GOCACHE="+gocache)
+	env = append(env, "GKCACHE="+gocache)
 
 	// Build the toolchain without GOEXPERIMENT.
 	var makeScript string
@@ -77,7 +77,7 @@ func TestExperimentToolID(t *testing.T) {
 	runCmd(t, gorootSrc, env, goCmdPath, "build", "-race", "archive/tar")
 
 	// Rebuild the toolchain with GOEXPERIMENT.
-	env = append(env, "GOEXPERIMENT=fieldtrack")
+	env = append(env, "GKEXPERIMENT=fieldtrack")
 	runCmd(t, gorootSrc, env, makeScriptPath)
 
 	// Verify compiler version string.

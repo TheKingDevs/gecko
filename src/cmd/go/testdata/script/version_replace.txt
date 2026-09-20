@@ -5,8 +5,8 @@ go install example.com/printversion
 go run example.com/printversion
 cmp stdout out.txt
 
-go version -m $GOPATH/bin/printversion$GOEXE
-stdout '^.*[/\\]bin[/\\]printversion'$GOEXE': .*$'
+go version -m $GKPATH/bin/printversion$GKEXE
+stdout '^.*[/\\]bin[/\\]printversion'$GKEXE': .*$'
 stdout '^	path	example.com/printversion$'
 stdout '^	mod	example.com/printversion	v0.1.0$'
 stdout '^	=>	example.com/printversion	v1.0.0	h1:.*$'

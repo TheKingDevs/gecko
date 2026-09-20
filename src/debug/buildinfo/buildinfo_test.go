@@ -23,7 +23,7 @@ import (
 	"testing"
 )
 
-var flagAll = flag.Bool("all", false, "test all supported GOOS/GOARCH platforms, instead of only the current platform")
+var flagAll = flag.Bool("all", false, "test all supported GKOS/GKARCH platforms, instead of only the current platform")
 
 // TestReadFile confirms that ReadFile can read build information from binaries
 // on supported target platforms. It builds a trivial binary on the current
@@ -82,7 +82,7 @@ func TestReadFile(t *testing.T) {
 		outPath := filepath.Join(dir, path.Base(t.Name()))
 		cmd := exec.Command(testenv.GoToolPath(t), "build", "-o="+outPath, "-buildmode="+buildmode)
 		cmd.Dir = dir
-		cmd.Env = append(os.Environ(), "GO111MODULE=on", "GOOS="+goos, "GOARCH="+goarch)
+		cmd.Env = append(os.Environ(), "GK111MODULE=on", "GKOS="+goos, "GKARCH="+goarch)
 		stderr := &strings.Builder{}
 		cmd.Stderr = stderr
 		if err := cmd.Run(); err != nil {
@@ -108,7 +108,7 @@ func TestReadFile(t *testing.T) {
 		outPath := filepath.Join(gopathDir, path.Base(t.Name()))
 		cmd := exec.Command(testenv.GoToolPath(t), "build", "-o="+outPath, "-buildmode="+buildmode)
 		cmd.Dir = pkgDir
-		cmd.Env = append(os.Environ(), "GO111MODULE=off", "GOPATH="+gopathDir, "GOOS="+goos, "GOARCH="+goarch)
+		cmd.Env = append(os.Environ(), "GK111MODULE=off", "GKPATH="+gopathDir, "GKOS="+goos, "GKARCH="+goarch)
 		stderr := &strings.Builder{}
 		cmd.Stderr = stderr
 		if err := cmd.Run(); err != nil {

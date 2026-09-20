@@ -1,17 +1,17 @@
-env GOSUMDB=off
+env GKSUMDB=off
 
 go mod download example.com/join@v1.1.0
 
 # If the proxy serves a bogus result for the @latest version,
 # reading that version should cause 'go get' to fail.
-env GOPROXY=file:///$WORK/badproxy
+env GKPROXY=file:///$WORK/badproxy
 cp go.mod.orig go.mod
 ! go get example.com/join/subpkg
 stderr 'gecko: example.com/join/subpkg@v0.0.0-20190624000000-123456abcdef: .*'
 
 # If @v/list is empty, the 'go' command should still try to resolve
 # other module paths.
-env GOPROXY=file:///$WORK/emptysub
+env GKPROXY=file:///$WORK/emptysub
 cp go.mod.orig go.mod
 go get example.com/join/subpkg
 go list -m example.com/join/...
@@ -20,7 +20,7 @@ stdout 'example.com/join v1.1.0'
 
 # If @v/list includes a version that the proxy does not actually serve,
 # that version is treated as nonexistent.
-env GOPROXY=file:///$WORK/notfound
+env GKPROXY=file:///$WORK/notfound
 cp go.mod.orig go.mod
 go get example.com/join/subpkg
 go list -m example.com/join/...
@@ -35,7 +35,7 @@ stdout 'example.com/join v1.1.0'
 # Depending on how the specific platform enforces permissions, the 'go get' may
 # fail either due to the intended permission error or due to a parse error.
 # We accept either failure message.
-env GOPROXY=file:///$WORK/gatekeeper
+env GKPROXY=file:///$WORK/gatekeeper
 chmod 0000 $WORK/gatekeeper/example.com/join/subpkg/@latest
 cp go.mod.orig go.mod
 ! go get example.com/join/subpkg

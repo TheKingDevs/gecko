@@ -1,28 +1,28 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # This script tests that running go mod with
-# GO111MODULE=off when outside of GOPATH will fatal
+# GK111MODULE=off when outside of GKPATH will fatal
 # with an error message, even with some source code in the directory and a go.mod.
 ! go mod init
-stderr 'gecko: modules disabled by GO111MODULE=off; see ''gecko help modules'''
+stderr 'gecko: modules disabled by GK111MODULE=off; see ''gecko help modules'''
 ! go mod graph
-stderr 'gecko: modules disabled by GO111MODULE=off; see ''gecko help modules'''
+stderr 'gecko: modules disabled by GK111MODULE=off; see ''gecko help modules'''
 ! go mod verify
-stderr 'gecko: modules disabled by GO111MODULE=off; see ''gecko help modules'''
+stderr 'gecko: modules disabled by GK111MODULE=off; see ''gecko help modules'''
 ! go mod download
-stderr 'gecko: modules disabled by GO111MODULE=off; see ''gecko help modules'''
+stderr 'gecko: modules disabled by GK111MODULE=off; see ''gecko help modules'''
 
 # Same result in an empty directory
 mkdir z
 cd z
 ! go mod init
-stderr 'gecko: modules disabled by GO111MODULE=off; see ''gecko help modules'''
+stderr 'gecko: modules disabled by GK111MODULE=off; see ''gecko help modules'''
 ! go mod graph
-stderr 'gecko: modules disabled by GO111MODULE=off; see ''gecko help modules'''
+stderr 'gecko: modules disabled by GK111MODULE=off; see ''gecko help modules'''
 ! go mod verify
-stderr 'gecko: modules disabled by GO111MODULE=off; see ''gecko help modules'''
+stderr 'gecko: modules disabled by GK111MODULE=off; see ''gecko help modules'''
 ! go mod download
-stderr 'gecko: modules disabled by GO111MODULE=off; see ''gecko help modules'''
+stderr 'gecko: modules disabled by GK111MODULE=off; see ''gecko help modules'''
 
 -- sample.go --
 package sample

@@ -52,7 +52,7 @@ func runSync(ctx context.Context, cmd *base.Command, args []string) {
 	moduleLoader.ForceUseModules = true
 	moduleLoader.InitWorkfile()
 	if modload.WorkFilePath(moduleLoader) == "" {
-		base.Fatalf("gecko: no go.work file found\n\t(run 'gecko work init' first or specify path using GOWORK environment variable)")
+		base.Fatalf("gecko: no go.work file found\n\t(run 'gecko work init' first or specify path using GKWORK environment variable)")
 	}
 
 	_, err := modload.LoadModGraph(moduleLoader, ctx, "")
@@ -107,7 +107,7 @@ func runSync(ctx context.Context, cmd *base.Command, args []string) {
 		// Use EnterModule to make a loader with a single work module.
 		loader := modload.NewForModroot(ctx, mms.ModRoot(m))
 
-		// Edit the build list in the same way that 'gecko get' would if we
+		// Edit the build list in the same way that gpm would if we
 		// requested the relevant module versions explicitly.
 		// TODO(#57001): Do we need a toolchain.SwitchOrFatal here,
 		// and do we need to pass a toolchain.Switcher in LoadPackages?

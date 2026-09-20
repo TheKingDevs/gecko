@@ -4,14 +4,14 @@
 # running a go list (creating index and output cache entries for
 # the module index) and then removing just the output entries.
 
-go build -o roe$GOEXE ./remove_output_entries.go
+go build -o roe$GKEXE ./remove_output_entries.go
 
 # populate new cache
-env GOCACHE=$WORK/newcache
+env GKCACHE=$WORK/newcache
 go list runtime
 
 # remove output entries and check the panic doesn't happen
-exec ./roe$GOEXE $WORK/newcache
+exec ./roe$GKEXE $WORK/newcache
 go list runtime
 
 -- remove_output_entries.go --

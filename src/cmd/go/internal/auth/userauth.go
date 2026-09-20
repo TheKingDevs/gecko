@@ -21,7 +21,7 @@ import (
 // res is used for the GOAUTH command's stdin.
 func runAuthCommand(command string, url string, res *http.Response) (map[string]http.Header, error) {
 	if command == "" {
-		panic("GOAUTH invoked an empty authenticator command:" + command) // This should be caught earlier.
+		panic("GKAUTH invoked an empty authenticator command:" + command) // This should be caught earlier.
 	}
 	cmd, err := buildCommand(command)
 	if err != nil {
@@ -40,7 +40,7 @@ func runAuthCommand(command string, url string, res *http.Response) (map[string]
 	}
 	credentials, err := parseUserAuth(string(out))
 	if err != nil {
-		return nil, fmt.Errorf("cannot parse output of GOAUTH command %s: %v", command, err)
+		return nil, fmt.Errorf("cannot parse output of GKAUTH command %s: %v", command, err)
 	}
 	return credentials, nil
 }
@@ -107,7 +107,7 @@ func mapHeadersToPrefixes(prefixes []string, header http.Header) map[string]http
 func buildCommand(command string) (*exec.Cmd, error) {
 	words, err := quoted.Split(command)
 	if err != nil {
-		return nil, fmt.Errorf("cannot parse GOAUTH command %s: %v", command, err)
+		return nil, fmt.Errorf("cannot parse GKAUTH command %s: %v", command, err)
 	}
 	cmd := exec.Command(words[0], words[1:]...)
 	return cmd, nil

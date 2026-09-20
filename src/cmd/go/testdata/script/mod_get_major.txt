@@ -1,7 +1,7 @@
 [!git] skip
 
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 
 # golang.org/issue/34383: if a module path ends in a major-version suffix,
 # ensure that 'direct' mode can resolve the package to a module.

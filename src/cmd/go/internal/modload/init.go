@@ -380,14 +380,14 @@ func (ld *Loader) FindGoWork(wd string) string {
 		return ""
 	}
 
-	switch gowork := cfg.Getenv("GOWORK"); gowork {
+	switch gowork := cfg.Getenv("GKWORK"); gowork {
 	case "off":
 		return ""
 	case "", "auto":
 		return findWorkspaceFile(wd)
 	default:
 		if !filepath.IsAbs(gowork) {
-			base.Fatalf("gecko: invalid GOWORK: not an absolute path")
+			base.Fatalf("gecko: invalid GKWORK: not an absolute path")
 		}
 		return gowork
 	}
@@ -533,17 +533,17 @@ func Init(ld *Loader) {
 	// there are lots of diagnostics and side effects, so we can't use
 	// WillBeEnabled directly.
 	var mustUseModules bool
-	env := cfg.Getenv("GO111MODULE")
+	env := cfg.Getenv("GK111MODULE")
 	switch env {
 	default:
-		base.Fatalf("gecko: unknown environment setting GO111MODULE=%s", env)
+		base.Fatalf("gecko: unknown environment setting GK111MODULE=%s", env)
 	case "auto":
 		mustUseModules = ld.ForceUseModules
 	case "on", "":
 		mustUseModules = true
 	case "off":
 		if ld.ForceUseModules {
-			base.Fatalf("gecko: modules disabled by GO111MODULE=off; see 'gecko help modules'")
+			base.Fatalf("gecko: modules disabled by GK111MODULE=off")
 		}
 		mustUseModules = false
 		return
@@ -629,7 +629,7 @@ func Init(ld *Loader) {
 	if len(list) > 0 && list[0] != "" {
 		gopath = list[0]
 		if _, err := fsys.Stat(filepath.Join(gopath, "go.mod")); err == nil {
-			fmt.Fprintf(os.Stderr, "gecko: warning: ignoring go.mod in $GOPATH %v\n", gopath)
+			fmt.Fprintf(os.Stderr, "gecko: warning: ignoring go.mod in $GKPATH %v\n", gopath)
 			if ld.RootMode == NeedRoot {
 				base.Fatal(NewNoMainModulesError(ld))
 			}
@@ -661,7 +661,7 @@ func (ld *Loader) WillBeEnabled() bool {
 
 	// Keep in sync with Init. Init does extra validation and prints warnings or
 	// exits, so it can't call this function directly.
-	env := cfg.Getenv("GO111MODULE")
+	env := cfg.Getenv("GK111MODULE")
 	switch env {
 	case "on", "":
 		return true
@@ -786,8 +786,8 @@ func modFilePath(modRoot string) string {
 }
 
 func die(ld *Loader) {
-	if cfg.Getenv("GO111MODULE") == "off" {
-		base.Fatalf("gecko: modules disabled by GO111MODULE=off; see 'gecko help modules'")
+	if cfg.Getenv("GK111MODULE") == "off" {
+		base.Fatalf("gecko: modules disabled by GK111MODULE=off")
 	}
 	if !ld.inWorkspaceMode() {
 		if dir, name := findAltConfig(base.Cwd()); dir != "" {
@@ -1274,9 +1274,9 @@ func CreateModFile(ld *Loader, ctx context.Context, modPath string) {
 	// imported all the correct requirements above, we're probably missing
 	// some sums, so the next build command in -mod=readonly will likely fail.
 	//
-// We look for non-hidden .go/.gk files or subdirectories to determine whether
-// this is an existing project. Walking the tree for packages would be more
-// accurate, but could take much longer.
+	// We look for non-hidden .go/.gk files or subdirectories to determine whether
+	// this is an existing project. Walking the tree for packages would be more
+	// accurate, but could take much longer.
 	empty := true
 	files, _ := os.ReadDir(modRoot)
 	for _, f := range files {
@@ -1608,7 +1608,7 @@ func setDefaultBuildMod(ld *Loader) {
 			default:
 				base.Fatalf("gecko: -mod may only be set to readonly or vendor when in workspace mode, but it is set to %q"+
 					"\n\tRemove the -mod flag to use the default readonly value, "+
-					"\n\tor set GOWORK=off to disable workspace mode.", cfg.BuildMod)
+					"\n\tor set GKWORK=off to disable workspace mode.", cfg.BuildMod)
 			}
 		}
 		// Don't override an explicit '-mod=' argument.
@@ -1877,19 +1877,15 @@ func findModulePath(dir string) (string, error) {
 		}
 	}
 
-	reason := "outside GOPATH, module path must be specified"
+	reason := "outside GKPATH, module path must be specified"
 	if badPathErr != nil {
 		// return a different error message if the module was in GOPATH, but
 		// the module path determined above would be an invalid path.
-		reason = fmt.Sprintf("bad module path inferred from directory in GOPATH: %v", badPathErr)
+		reason = fmt.Sprintf("bad module path inferred from directory in GKPATH: %v", badPathErr)
 	}
 	msg := `cannot determine module path for source directory %s (%s)
 
-Example usage:
-	'gecko mod init example.com/m' to initialize a v0 or v1 module
-	'gecko mod init example.com/m/v2' to initialize a v2 module
-
-Run 'gecko help mod init' for more information.
+gecko does not use modules; initialize a project with 'gpm init' instead.
 `
 	return "", fmt.Errorf(msg, dir, reason)
 }

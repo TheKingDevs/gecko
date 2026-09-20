@@ -7,15 +7,15 @@ go list -f '{{with .Module}}{{.Path}}@{{.Version}}{{end}}' all
 cmp stdout want_versions
 
 go list -f '{{.Dir}}' example.com/q
-stdout $GOPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]q
+stdout $GKPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]q
 go list -f '{{.Dir}}' example.com/b
-stdout $GOPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]b
+stdout $GKPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]b
 go list -f '{{.Dir}}' example.com/w
-stdout $GOPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]w
+stdout $GKPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]w
 go list -f '{{.Dir}}' example.com/z
-stdout $GOPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]z
+stdout $GKPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]z
 
-cmp $GOPATH/src/vendor/example.com/q/q.go q1_1_0/q.go
+cmp $GKPATH/src/vendor/example.com/q/q.go q1_1_0/q.go
 
 -- modules.txt.want --
 ## workspace

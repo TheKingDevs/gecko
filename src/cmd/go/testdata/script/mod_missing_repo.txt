@@ -4,8 +4,8 @@
 
 [!git] skip
 
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 
 ! go mod download vcs-test.golang.org/go/missingrepo/missingrepo-git@latest
 stderr 'vcs-test.golang.org/go/missingrepo/missingrepo-git: git ls-remote .*: exit status .*'

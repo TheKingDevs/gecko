@@ -5,7 +5,7 @@ stderr '^gecko: malformed module path "appengine": missing dot in first path ele
 stderr 'malformed module path "x/y.z": missing dot in first path element'
 
 
-# 'go list -m' should report errors about module names, never GOROOT.
+# 'go list -m' should report errors about module names, never GKROOT.
 ! go list -m -versions appengine
 stderr 'malformed module path "appengine": missing dot in first path element'
 ! go list -m -versions x/y.z

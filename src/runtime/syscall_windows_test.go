@@ -832,7 +832,7 @@ func TestFloatArgs(t *testing.T) {
 		t.Skip("skipping test: gcc is missing")
 	}
 	if runtime.GOARCH != "amd64" {
-		t.Skipf("skipping test: GOARCH=%s", runtime.GOARCH)
+		t.Skipf("skipping test: GKARCH=%s", runtime.GOARCH)
 	}
 
 	const src = `
@@ -883,7 +883,7 @@ func TestFloatReturn(t *testing.T) {
 		t.Skip("skipping test: gcc is missing")
 	}
 	if runtime.GOARCH != "amd64" {
-		t.Skipf("skipping test: GOARCH=%s", runtime.GOARCH)
+		t.Skipf("skipping test: GKARCH=%s", runtime.GOARCH)
 	}
 
 	const src = `

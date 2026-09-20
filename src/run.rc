@@ -6,12 +6,12 @@
 rfork e
 
 if(! test -f ../bin/gecko){
-	echo 'run.rc must be run from $GOROOT/src after installing cmd/go' >[1=2]
+	echo 'run.rc must be run from $GKROOT/src after installing cmd/go' >[1=2]
 	exit wrongdir
 }
 
-GOENV=off
+GKENV=off
 eval `{../bin/gecko tool dist env}
 
-GOPATH=/nonexist-gopath
+GKPATH=/nonexist-gopath
 exec ../bin/gecko tool dist test -rebuild $*

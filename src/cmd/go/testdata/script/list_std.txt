@@ -1,9 +1,9 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 [!compiler:gc] skip
 
-# Listing GOROOT should only find standard packages.
-cd $GOROOT/src
+# Listing GKROOT should only find standard packages.
+cd $GKROOT/src
 go list -f '{{if not .Standard}}{{.ImportPath}}{{end}}' ./...
 ! stdout .
 
@@ -13,7 +13,7 @@ stdout cmd/compile
 ! stdout vendor/golang.org
 ! stdout cmd/vendor
 
-# In GOPATH mode, packages vendored into GOROOT should be reported as standard.
+# In GKPATH mode, packages vendored into GKROOT should be reported as standard.
 go list -f '{{if .Standard}}{{.ImportPath}}{{end}}' std cmd
 stdout golang.org/x/net/http2/hpack
 stdout cmd/vendor/golang\.org/x/arch/x86/x86asm

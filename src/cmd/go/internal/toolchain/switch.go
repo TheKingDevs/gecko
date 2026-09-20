@@ -235,12 +235,12 @@ func newerToolchain(need string, list []string) (string, error) {
 
 // HasAuto reports whether the GOTOOLCHAIN setting allows "auto" upgrades.
 func HasAuto() bool {
-	env := cfg.Getenv("GOTOOLCHAIN")
+	env := cfg.Getenv("GKTOOLCHAIN")
 	return env == "auto" || strings.HasSuffix(env, "+auto")
 }
 
 // HasPath reports whether the GOTOOLCHAIN setting allows "path" upgrades.
 func HasPath() bool {
-	env := cfg.Getenv("GOTOOLCHAIN")
+	env := cfg.Getenv("GKTOOLCHAIN")
 	return env == "path" || strings.HasSuffix(env, "+path")
 }

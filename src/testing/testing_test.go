@@ -160,7 +160,7 @@ func TestTempDirGOTMPDIR(t *testing.T) {
 	}
 	defer os.RemoveAll(customTmpDir)
 
-	t.Setenv("GOTMPDIR", customTmpDir)
+	t.Setenv("GKTMPDIR", customTmpDir)
 
 	dir := t.TempDir()
 	if dir == "" {
@@ -168,7 +168,7 @@ func TestTempDirGOTMPDIR(t *testing.T) {
 	}
 
 	if !strings.HasPrefix(dir, customTmpDir) {
-		t.Errorf("TempDir did not use GOTMPDIR: got %q, want prefix %q", dir, customTmpDir)
+		t.Errorf("TempDir did not use GKTMPDIR: got %q, want prefix %q", dir, customTmpDir)
 	}
 
 	fi, err := os.Stat(dir)

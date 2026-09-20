@@ -28,10 +28,10 @@
 
 #-----------------------
 
-# Use a fresh GOCACHE for these next steps, so as to have the real
+# Use a fresh GKCACHE for these next steps, so as to have the real
 # actions for the runtime/cgo package appear in the "-n -x" output.
-env GOCACHE=$WORK/gocache
-mkdir $GOCACHE
+env GKCACHE=$WORK/gocache
+mkdir $GKCACHE
 
 # First build: there is no CGO in use, so no token should be present regardless
 # of weird CGO flags.

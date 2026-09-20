@@ -1,6 +1,6 @@
-env GOBIN=.
+env GKBIN=.
 ! go install
-stderr 'cannot install, GOBIN must be an absolute path'
+stderr 'cannot install, GKBIN must be an absolute path'
 
 -- go.mod --
 module triv

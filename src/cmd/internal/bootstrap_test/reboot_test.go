@@ -25,7 +25,7 @@ func TestRepeatBootstrap(t *testing.T) {
 	}
 	switch runtime.GOOS {
 	case "android", "ios", "js", "wasip1":
-		t.Skipf("skipping because the toolchain does not have to bootstrap on GOOS=%s", runtime.GOOS)
+		t.Skipf("skipping because the toolchain does not have to bootstrap on GKOS=%s", runtime.GOOS)
 	}
 
 	realGoroot := testenv.GOROOT(t)
@@ -56,7 +56,7 @@ func TestRepeatBootstrap(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Logf("GOROOT overlay set up in %s", time.Since(overlayStart))
+	t.Logf("GKROOT overlay set up in %s", time.Since(overlayStart))
 
 	if err := os.WriteFile(filepath.Join(goroot, "VERSION"), []byte(runtime.Version()), 0666); err != nil {
 		t.Fatal(err)
@@ -75,7 +75,7 @@ func TestRepeatBootstrap(t *testing.T) {
 	var stdout strings.Builder
 	cmd := exec.Command(filepath.Join(goroot, "src", makeScript))
 	cmd.Dir = gorootSrc
-	cmd.Env = append(cmd.Environ(), "GOROOT=", "GOROOT_BOOTSTRAP="+realGoroot)
+	cmd.Env = append(cmd.Environ(), "GKROOT=", "GKROOT_BOOTSTRAP="+realGoroot)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = io.MultiWriter(os.Stdout, &stdout)
 	if err := cmd.Run(); err != nil {

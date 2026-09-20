@@ -1,4 +1,4 @@
-env GOTOOLCHAIN=auto
+env GKTOOLCHAIN=auto
 env TESTGO_VERSION=go1.21.1
 
 # Basic switch should work.

@@ -294,7 +294,7 @@ func NewBuilder(workDir string, getVendorDir func() string) *Builder {
 		if !buildInitStarted {
 			panic("internal error: NewBuilder called before BuildInit")
 		}
-		tmp, err := os.MkdirTemp(cfg.Getenv("GOTMPDIR"), "go-build")
+		tmp, err := os.MkdirTemp(cfg.Getenv("GKTMPDIR"), "gecko-build")
 		if err != nil {
 			base.Fatalf("gecko: creating work dir: %v", err)
 		}
@@ -374,7 +374,7 @@ func closeBuilders() {
 
 func CheckGOOSARCHPair(goos, goarch string) error {
 	if !platform.BuildModeSupported(cfg.BuildContext.Compiler, "default", goos, goarch) {
-		return fmt.Errorf("unsupported GOOS/GOARCH pair %s/%s", goos, goarch)
+		return fmt.Errorf("unsupported GKOS/GKARCH pair %s/%s", goos, goarch)
 	}
 	return nil
 }

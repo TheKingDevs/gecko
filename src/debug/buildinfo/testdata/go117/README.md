@@ -6,7 +6,7 @@ Go 1.17 is inherently insecure.
 
 Generate go117.base64 with:
 
-$ GOTOOLCHAIN=go1.17 GOOS=linux GOARCH=amd64 go build -trimpath
+$ GKTOOLCHAIN=go1.17 GKOS=linux GKARCH=amd64 go build -trimpath
 $ base64 go117 > go117.base64
 $ rm go117
 

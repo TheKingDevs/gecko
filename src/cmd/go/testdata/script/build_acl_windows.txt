@@ -1,4 +1,4 @@
-[!GOOS:windows] stop
+[!GKOS:windows] stop
 [!exec:icacls] skip
 [!exec:powershell] skip
 

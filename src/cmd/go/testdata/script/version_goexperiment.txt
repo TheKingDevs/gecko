@@ -1,10 +1,10 @@
 # Test that experiments appear in "go version <binary>"
 
-env GOEXPERIMENT=fieldtrack
-go build -o main$GOEXE version.go
-go version main$GOEXE
+env GKEXPERIMENT=fieldtrack
+go build -o main$GKEXE version.go
+go version main$GKEXE
 stdout 'X:fieldtrack$'
-exec ./main$GOEXE
+exec ./main$GKEXE
 stderr 'X:fieldtrack$'
 
 -- version.go --

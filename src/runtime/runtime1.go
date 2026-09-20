@@ -566,7 +566,7 @@ func parsegodebug(godebug string, seen map[string]bool) {
 	}
 
 	if debug.cgocheck > 1 {
-		throw("cgocheck > 1 mode is no longer supported at runtime. Use GOEXPERIMENT=cgocheck2 at build time instead.")
+		throw("cgocheck > 1 mode is no longer supported at runtime. Use GKEXPERIMENT=cgocheck2 at build time instead.")
 	}
 }
 

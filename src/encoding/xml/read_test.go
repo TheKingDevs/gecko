@@ -1146,7 +1146,7 @@ func (n *recursiveNode) UnmarshalXML(d *Decoder, start StartElement) error {
 func TestDecodeElementRecursion(t *testing.T) {
 	// The wazero builder is unable to build the test binary due to its small
 	// stack size.
-	builder := os.Getenv("GO_BUILDER_NAME")
+	builder := os.Getenv("GK_BUILDER_NAME")
 	if testing.Short() || strings.Contains(builder, "wazero") {
 		t.Skip("test requires significant memory")
 	}

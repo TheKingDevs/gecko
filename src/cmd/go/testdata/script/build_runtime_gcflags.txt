@@ -1,8 +1,8 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
-# Set up fresh GOCACHE.
-env GOCACHE=$WORK/gocache
-mkdir $GOCACHE
+# Set up fresh GKCACHE.
+env GKCACHE=$WORK/gocache
+mkdir $GKCACHE
 
 # Verify the standard library (specifically internal/runtime/atomic) can be
 # built with -gcflags when -n is given. See golang.org/issue/29346.

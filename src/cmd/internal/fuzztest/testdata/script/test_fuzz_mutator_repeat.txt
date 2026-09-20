@@ -1,12 +1,12 @@
 # TODO(jayconrod): support shared memory on more platforms.
-[!GOOS:darwin] [!GOOS:linux] [!GOOS:windows] skip
+[!GKOS:darwin] [!GKOS:linux] [!GKOS:windows] skip
 
 # Verify that the fuzzing engine records the actual crashing input, even when
 # a worker process terminates without communicating the crashing input back
 # to the coordinator.
 
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # Start fuzzing. The worker crashes after 100 iterations.
 # The fuzz function writes the crashing input to "want" before exiting.

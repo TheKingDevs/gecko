@@ -1,9 +1,9 @@
 # Reset all experiments so fieldtrack is definitely off.
-env GOEXPERIMENT=none
+env GKEXPERIMENT=none
 go run m
 stdout 'fieldtrack off'
 # Turn fieldtrack on.
-env GOEXPERIMENT=none,fieldtrack
+env GKEXPERIMENT=none,fieldtrack
 go run m
 stdout 'fieldtrack on'
 

@@ -1573,7 +1573,7 @@ func (ctxt *Link) hostlink() {
 	if ctxt.IsPPC64() && ctxt.IsElf() && buildcfg.GOPPC64 >= 10 {
 		if !linkerFlagSupported(ctxt.Arch, argv[0], "", "-mcpu=power10") {
 			Exitf("The external toolchain does not support -mcpu=power10. " +
-				" This is required to externally link GOPPC64 >= power10")
+				" This is required to externally link GKPPC64 >= power10")
 		}
 	}
 

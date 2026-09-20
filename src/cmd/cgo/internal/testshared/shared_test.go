@@ -97,7 +97,7 @@ func goCmd(t *testing.T, args ...string) string {
 // TestMain calls testMain so that the latter can use defer (TestMain exits with os.Exit).
 func testMain(m *testing.M) (int, error) {
 	if testing.Short() && testenv.Builder() == "" {
-		globalSkip = func(t testing.TB) { t.Skip("short mode and $GO_BUILDER_NAME not set") }
+		globalSkip = func(t testing.TB) { t.Skip("short mode and $GK_BUILDER_NAME not set") }
 		return m.Run(), nil
 	}
 	if !platform.BuildModeSupported(runtime.Compiler, "shared", runtime.GOOS, runtime.GOARCH) {
@@ -133,7 +133,7 @@ func testMain(m *testing.M) (int, error) {
 	// but first need to figure out a replacement that covers the small subset
 	// of use-cases where -buildmode=shared still works today.
 	// For now, run the tests in GOPATH mode only.
-	os.Setenv("GO111MODULE", "off")
+	os.Setenv("GK111MODULE", "off")
 
 	// Some tests need to edit the source in GOPATH, so copy this directory to a
 	// temporary directory and chdir to that.
@@ -143,12 +143,12 @@ func testMain(m *testing.M) (int, error) {
 		return 0, err
 	}
 	if testing.Verbose() {
-		fmt.Printf("+ export GOPATH=%s\n", gopath)
+		fmt.Printf("+ export GKPATH=%s\n", gopath)
 		fmt.Printf("+ cd %s\n", modRoot)
 	}
-	os.Setenv("GOPATH", gopath)
+	os.Setenv("GKPATH", gopath)
 	// Explicitly override GOBIN as well, in case it was set through a GOENV file.
-	os.Setenv("GOBIN", filepath.Join(gopath, "bin"))
+	os.Setenv("GKBIN", filepath.Join(gopath, "bin"))
 	os.Chdir(modRoot)
 	os.Setenv("PWD", modRoot)
 
@@ -162,9 +162,9 @@ func testMain(m *testing.M) (int, error) {
 		return 0, err
 	}
 	if testing.Verbose() {
-		fmt.Fprintf(os.Stderr, "+ export GOROOT=%s\n", goroot)
+		fmt.Fprintf(os.Stderr, "+ export GKROOT=%s\n", goroot)
 	}
-	os.Setenv("GOROOT", goroot)
+	os.Setenv("GKROOT", goroot)
 
 	myContext := build.Default
 	myContext.GOROOT = goroot
@@ -590,7 +590,7 @@ func TestGopathShlib(t *testing.T) {
 	AssertHasRPath(t, "../../bin/exe", gorootInstallDir)
 	AssertHasRPath(t, "../../bin/exe", filepath.Dir(gopathInstallDir))
 	// And check it runs.
-	run(t, "executable linked to GOPATH library", "../../bin/exe")
+	run(t, "executable linked to GKPATH library", "../../bin/exe")
 }
 
 // The shared library contains a note listing the packages it contains in a section
@@ -719,7 +719,7 @@ func TestTwoGopathShlibs(t *testing.T) {
 	goCmd(t, "install", "-buildmode=shared", "-linkshared", "./depBase")
 	goCmd(t, "install", "-buildmode=shared", "-linkshared", "./dep2")
 	goCmd(t, "install", "-linkshared", "./exe2")
-	run(t, "executable linked to GOPATH library", "../../bin/exe2")
+	run(t, "executable linked to GKPATH library", "../../bin/exe2")
 }
 
 func TestThreeGopathShlibs(t *testing.T) {
@@ -728,7 +728,7 @@ func TestThreeGopathShlibs(t *testing.T) {
 	goCmd(t, "install", "-buildmode=shared", "-linkshared", "./dep2")
 	goCmd(t, "install", "-buildmode=shared", "-linkshared", "./dep3")
 	goCmd(t, "install", "-linkshared", "./exe3")
-	run(t, "executable linked to GOPATH library", "../../bin/exe3")
+	run(t, "executable linked to GKPATH library", "../../bin/exe3")
 }
 
 // If gccgo is not available or not new enough, call t.Skip.
@@ -1175,10 +1175,10 @@ func TestStd(t *testing.T) {
 	tmpDir := t.TempDir()
 	// Use a temporary pkgdir to not interfere with other tests, and not write to GOROOT.
 	// Cannot use goCmd as it runs with cloned GOROOT which is incomplete.
-	runWithEnv(t, "building std", []string{"GOROOT=" + oldGOROOT, "GOEXPERIMENT=nosimd"},
+	runWithEnv(t, "building std", []string{"GKROOT=" + oldGOROOT, "GKEXPERIMENT=nosimd"},
 		filepath.Join(oldGOROOT, "bin", "gecko"), "install", "-buildmode=shared", "-pkgdir="+tmpDir, "std")
 
 	// Issue #58966.
-	runWithEnv(t, "testing issue #58966", []string{"GOROOT=" + oldGOROOT, "GOEXPERIMENT=nosimd"},
+	runWithEnv(t, "testing issue #58966", []string{"GKROOT=" + oldGOROOT, "GKEXPERIMENT=nosimd"},
 		filepath.Join(oldGOROOT, "bin", "gecko"), "run", "-linkshared", "-pkgdir="+tmpDir, "./issue58966/main.go")
 }

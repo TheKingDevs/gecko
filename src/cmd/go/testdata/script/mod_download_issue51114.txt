@@ -1,6 +1,6 @@
 [!git] skip
 
-env GOPROXY=direct
+env GKPROXY=direct
 
 ! go mod download
 stderr '^gecko: vcs-test.golang.org/notexist.git/subdir@v0.1.0: reading vcs-test\.golang\.org/notexist.git/subdir/go\.mod at revision subdir/v0\.1\.0: '

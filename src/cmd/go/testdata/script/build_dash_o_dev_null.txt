@@ -1,7 +1,7 @@
 # Issue #25579
 
 go build -o $devnull hello.go
-! exists 'hello'$GOEXE
+! exists 'hello'$GKEXE
 
 -- hello.go --
 package main

@@ -1,14 +1,14 @@
 go get rsc.io/fortune/v2
 
-# The default executable name shouldn't be v2$GOEXE
+# The default executable name shouldn't be v2$GKEXE
 go build rsc.io/fortune/v2
-! exists v2$GOEXE
-exists fortune$GOEXE
+! exists v2$GKEXE
+exists fortune$GKEXE
 
-# The default test binary name shouldn't be v2.test$GOEXE
+# The default test binary name shouldn't be v2.test$GKEXE
 go test -c rsc.io/fortune/v2
-! exists v2.test$GOEXE
-exists fortune.test$GOEXE
+! exists v2.test$GKEXE
+exists fortune.test$GKEXE
 
 -- go.mod --
 module scratch

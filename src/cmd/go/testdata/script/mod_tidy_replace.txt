@@ -1,4 +1,4 @@
-env GOFLAGS=-mod=mod
+env GKFLAGS=-mod=mod
 
 # golang.org/issue/30166: 'go mod tidy' should not crash if a replaced module is
 # involved in a cycle.

@@ -113,14 +113,14 @@ As an example, run_hello.txt says:
 Each script runs in a fresh temporary work directory tree, available to scripts as $WORK.
 Scripts also have access to other environment variables, including:
 
-	GOARCH=<target GOARCH>
-	GOCACHE=<actual GOCACHE being used outside the test>
-	GOEXE=<executable file suffix: .exe on Windows, empty on other systems>
-	GOOS=<target GOOS>
-	GOPATH=$WORK/gopath
-	GOPROXY=<local module proxy serving from cmd/go/testdata/mod>
-	GOROOT=<actual GOROOT>
-	TESTGO_GOROOT=<GOROOT used to build cmd/go, for use in tests that may change GOROOT>
+	GKARCH=<target GKARCH>
+	GKCACHE=<actual GKCACHE being used outside the test>
+	GKEXE=<executable file suffix: .exe on Windows, empty on other systems>
+	GKOS=<target GKOS>
+	GKPATH=$WORK/gopath
+	GKPROXY=<local module proxy serving from cmd/go/testdata/mod>
+	GKROOT=<actual GKROOT>
+	TESTGO_GOROOT=<GKROOT used to build cmd/go, for use in tests that may change GKROOT>
 	HOME=/no-home
 	PATH=<actual PATH>
 	TMPDIR=$WORK/tmp
@@ -135,9 +135,9 @@ $HOME and $TMPDIR.
 The lines at the top of the script are a sequence of commands to be executed by
 a small script engine configured in ../../script_test.go (not the system shell).
 
-The scripts' supporting files are unpacked relative to $GOPATH/src
+The scripts' supporting files are unpacked relative to $GKPATH/src
 (aka $WORK/gopath/src) and then the script begins execution in that directory as
-well. Thus the example above runs in $WORK/gopath/src with GOPATH=$WORK/gopath
+well. Thus the example above runs in $WORK/gopath/src with GKPATH=$WORK/gopath
 and $WORK/gopath/src/hello.go containing the listed contents.
 
 {{.Language}}
@@ -147,8 +147,8 @@ the execution of the most recent phase of the script (since the last # comment)
 and only shows the # comments for earlier phases. For example, here is a
 multi-phase script with a bug in it:
 
-	# GOPATH with p1 in d2, p2 in d2
-	env GOPATH=$WORK${/}d1${:}$WORK${/}d2
+	# GKPATH with p1 in d2, p2 in d2
+	env GKPATH=$WORK${/}d1${:}$WORK${/}d2
 
 	# build & install p1
 	env
@@ -183,15 +183,15 @@ The bug is that the final phase installs p11 instead of p1. The test failure loo
 	--- FAIL: TestScript (3.75s)
 	    --- FAIL: TestScript/install_rebuild_gopath (0.16s)
 	        script_test.go:223:
-	            # GOPATH with p1 in d2, p2 in d2 (0.000s)
+	            # GKPATH with p1 in d2, p2 in d2 (0.000s)
 	            # build & install p1 (0.087s)
 	            # modify p2 - p1 should appear stale (0.029s)
 	            # build & install p1 again (0.022s)
 	            > go install -i p11
 	            [stderr]
 	            can't load package: package p11: cannot find package "p11" in any of:
-	            	/Users/rsc/go/src/p11 (from $GOROOT)
-	            	$WORK/d1/src/p11 (from $GOPATH)
+	            	/Users/rsc/go/src/p11 (from $GKROOT)
+	            	$WORK/d1/src/p11 (from $GKPATH)
 	            	$WORK/d2/src/p11
 	            [exit status 1]
 	            FAIL: unexpected go command failure
@@ -221,24 +221,24 @@ for manual debugging of failing tests:
 	    --- FAIL: TestScript/install_rebuild_gopath (0.16s)
 	        script_test.go:223:
 	            WORK=/tmp/cmd-go-test-745953508/script-install_rebuild_gopath
-	            GOARCH=
-	            GOCACHE=/Users/rsc/Library/Caches/go-build
-	            GOOS=
-	            GOPATH=$WORK/gopath
-	            GOROOT=/Users/rsc/go
+	            GKARCH=
+	            GKCACHE=/Users/rsc/Library/Caches/gecko-build
+	            GKOS=
+	            GKPATH=$WORK/gopath
+	            GKROOT=/Users/rsc/go
 	            HOME=/no-home
 	            TMPDIR=$WORK/tmp
 	            exe=
 
-	            # GOPATH with p1 in d2, p2 in d2 (0.000s)
+	            # GKPATH with p1 in d2, p2 in d2 (0.000s)
 	            # build & install p1 (0.085s)
 	            # modify p2 - p1 should appear stale (0.030s)
 	            # build & install p1 again (0.019s)
 	            > go install -i p11
 	            [stderr]
 	            can't load package: package p11: cannot find package "p11" in any of:
-	            	/Users/rsc/go/src/p11 (from $GOROOT)
-	            	$WORK/d1/src/p11 (from $GOPATH)
+	            	/Users/rsc/go/src/p11 (from $GKROOT)
+	            	$WORK/d1/src/p11 (from $GKPATH)
 	            	$WORK/d2/src/p11
 	            [exit status 1]
 	            FAIL: unexpected go command failure

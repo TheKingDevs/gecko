@@ -507,11 +507,11 @@ func main() {
 // gcc with the additional arguments specified in args.
 func newPackage(args []string) *Package {
 	goarch = runtime.GOARCH
-	if s := os.Getenv("GOARCH"); s != "" {
+	if s := os.Getenv("GKARCH"); s != "" {
 		goarch = s
 	}
 	goos = runtime.GOOS
-	if s := os.Getenv("GOOS"); s != "" {
+	if s := os.Getenv("GKOS"); s != "" {
 		goos = s
 	}
 	buildcfg.Check()
@@ -519,11 +519,11 @@ func newPackage(args []string) *Package {
 	gomips64 = buildcfg.GOMIPS64
 	ptrSize := ptrSizeMap[goarch]
 	if ptrSize == 0 {
-		fatalf("unknown ptrSize for $GOARCH %q", goarch)
+		fatalf("unknown ptrSize for $GKARCH %q", goarch)
 	}
 	intSize := intSizeMap[goarch]
 	if intSize == 0 {
-		fatalf("unknown intSize for $GOARCH %q", goarch)
+		fatalf("unknown intSize for $GKARCH %q", goarch)
 	}
 
 	// Reset locale variables so gcc emits English errors [sic].

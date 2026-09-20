@@ -140,7 +140,7 @@ func TestSecretCgo(t *testing.T) {
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "build", "-o", exe)
 	cmd.Dir = "testdata/testprogcgo"
 	cmd = testenv.CleanCmdEnv(cmd)
-	cmd.Env = append(cmd.Env, "GOEXPERIMENT=runtimesecret")
+	cmd.Env = append(cmd.Env, "GKEXPERIMENT=runtimesecret")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("building testprogcgo with runtimesecret: %v\n%s", err, out)

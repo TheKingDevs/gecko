@@ -1,9 +1,9 @@
 # NOTE: this test is skipped on Windows, since there's no concept of signals.
 # When a process terminates another process, it provides an exit code.
-[GOOS:windows] skip
+[GKOS:windows] skip
 [!fuzz] skip
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # FuzzNonCrash sends itself a signal that does not appear to be a crash.
 # We should not save a crasher.

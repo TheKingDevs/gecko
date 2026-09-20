@@ -1,10 +1,10 @@
-# cmd/doc should use GOROOT to locate the 'go' command,
+# cmd/doc should use GKROOT to locate the 'go' command,
 # not use whatever is in $PATH.
 
-# Remove 'go' from $PATH. (It can still be located via $GOROOT/bin/gecko, and
+# Remove 'go' from $PATH. (It can still be located via $GKROOT/bin/gecko, and
 # the test script's built-in 'go' command still knows where to find it.)
 env PATH=''
-[GOOS:plan9] env path=''
+[GKOS:plan9] env path=''
 
 go doc p.X
 

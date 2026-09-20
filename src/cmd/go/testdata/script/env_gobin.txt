@@ -1,40 +1,40 @@
 
-go env GOBIN
+go env GKBIN
 stdout $WORK${/}gopath${/}bin
-go env -changed GOBIN
+go env -changed GKBIN
 ! stdout $WORK
 
 # report explicit settings
-env GOBIN=/tmp/gobin
-go env GOBIN
+env GKBIN=/tmp/gobin
+go env GKBIN
 stdout /tmp/gobin
-go env -changed GOBIN
+go env -changed GKBIN
 stdout /tmp/gobin
 
 # reset
-env GOBIN=
-go env -changed GOBIN
+env GKBIN=
+go env -changed GKBIN
 ! stdout $WORK
 
-# In GOPATH mode
-# the default install directory depends on the GOPATH
+# In GKPATH mode
+# the default install directory depends on the GKPATH
 # technically it also depends on the install target
 # but that's not something we can report.
-env GO111MODULE=off
-env GOPATH=$WORK${/}a${:}$WORK${/}b
+env GK111MODULE=off
+env GKPATH=$WORK${/}a${:}$WORK${/}b
 
-# report GOPATH[0]/bin outside of GOPATH
+# report GKPATH[0]/bin outside of GKPATH
 cd $WORK
-go env GOBIN
+go env GKBIN
 stdout $WORK${/}a${/}bin
 
-# report the current GOPATH/bin inside of a GOPATH
+# report the current GKPATH/bin inside of a GKPATH
 cd $WORK/a/src/example1.com
-go env GOBIN
+go env GKBIN
 stdout $WORK${/}a${/}bin
 
 cd $WORK/b/src/example2.com
-go env GOBIN
+go env GKBIN
 stdout $WORK${/}b${/}bin
 
 -- $WORK/a/src/example1.com/main.go --

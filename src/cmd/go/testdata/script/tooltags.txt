@@ -1,77 +1,77 @@
-env GOOS=linux
+env GKOS=linux
 
-env GOARCH=amd64
-env GOAMD64=v3
+env GKARCH=amd64
+env GKAMD64=v3
 go list -f '{{context.ToolTags}}'
 stdout 'amd64.v1 amd64.v2 amd64.v3'
 
-env GOARCH=arm
-env GOARM=6
+env GKARCH=arm
+env GKARM=6
 go list -f '{{context.ToolTags}}'
 stdout 'arm.5 arm.6'
 
-env GOARCH=mips
-env GOMIPS=hardfloat
+env GKARCH=mips
+env GKMIPS=hardfloat
 go list -f '{{context.ToolTags}}'
 stdout 'mips.hardfloat'
 
-env GOARCH=mips64
-env GOMIPS=hardfloat
+env GKARCH=mips64
+env GKMIPS=hardfloat
 go list -f '{{context.ToolTags}}'
 stdout 'mips64.hardfloat'
 
-env GOARCH=ppc64
-env GOPPC64=power9
+env GKARCH=ppc64
+env GKPPC64=power9
 go list -f '{{context.ToolTags}}'
 stdout 'ppc64.power8 ppc64.power9'
 
-env GOARCH=ppc64
-env GOPPC64=power10
+env GKARCH=ppc64
+env GKPPC64=power10
 go list -f '{{context.ToolTags}}'
 stdout 'ppc64.power8 ppc64.power9 ppc64.power10'
 
-env GOARCH=ppc64le
-env GOPPC64=power9
+env GKARCH=ppc64le
+env GKPPC64=power9
 go list -f '{{context.ToolTags}}'
 stdout 'ppc64le.power8 ppc64le.power9'
 
-env GOARCH=ppc64le
-env GOPPC64=power10
+env GKARCH=ppc64le
+env GKPPC64=power10
 go list -f '{{context.ToolTags}}'
 stdout 'ppc64le.power8 ppc64le.power9 ppc64le.power10'
 
-env GOARCH=riscv64
-env GORISCV64=rva20u64
+env GKARCH=riscv64
+env GKRISCV64=rva20u64
 go list -f '{{context.ToolTags}}'
 stdout 'riscv64.rva20u64'
 
-env GOARCH=riscv64
-env GORISCV64=rva22u64
+env GKARCH=riscv64
+env GKRISCV64=rva22u64
 go list -f '{{context.ToolTags}}'
 stdout 'riscv64.rva20u64 riscv64.rva22u64'
 
-env GOARCH=riscv64
-env GORISCV64=rva23u64
+env GKARCH=riscv64
+env GKRISCV64=rva23u64
 go list -f '{{context.ToolTags}}'
 stdout 'riscv64.rva20u64 riscv64.rva22u64 riscv64.rva23u64'
 
-env GOARCH=riscv64
-env GORISCV64=rva22
+env GKARCH=riscv64
+env GKRISCV64=rva22
 ! go list -f '{{context.ToolTags}}'
-stderr 'gecko: invalid GORISCV64: must be rva20u64, rva22u64, rva23u64'
+stderr 'gecko: invalid GKRISCV64: must be rva20u64, rva22u64, rva23u64'
 
-env GOARCH=riscv64
-env GORISCV64=
+env GKARCH=riscv64
+env GKRISCV64=
 go list -f '{{context.ToolTags}}'
 stdout 'riscv64.rva20u64'
 
-env GOARCH=386
-env GO386=sse2
+env GKARCH=386
+env GK386=sse2
 go list -f '{{context.ToolTags}}'
 stdout '386.sse2'
 
-env GOARCH=wasm
-env GOWASM=satconv
+env GKARCH=wasm
+env GKWASM=satconv
 go list -f '{{context.ToolTags}}'
 stdout 'wasm.satconv'
 

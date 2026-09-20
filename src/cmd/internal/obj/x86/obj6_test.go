@@ -98,7 +98,7 @@ func asmOutput(t *testing.T, s string) []byte {
 		"-o", filepath.Join(tmpdir, "output.6"), tmpfile.Name())
 
 	cmd.Env = append(os.Environ(),
-		"GOARCH=amd64", "GOOS=linux", "GOPATH="+filepath.Join(tmpdir, "_gopath"))
+		"GKARCH=amd64", "GKOS=linux", "GKPATH="+filepath.Join(tmpdir, "_gopath"))
 	asmout, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("error %s output %s", err, asmout)
@@ -136,11 +136,11 @@ func parseOutput(t *testing.T, td *ParsedTestData, asmout []byte) {
 func TestDynlink(t *testing.T) {
 	testenv.MustHaveGoBuild(t)
 
-	if os.Getenv("GOHOSTARCH") != "" {
+	if os.Getenv("GKHOSTARCH") != "" {
 		// TODO: make this work? It was failing due to the
 		// GOARCH= filtering above and skipping is easiest for
 		// now.
-		t.Skip("skipping when GOHOSTARCH is set")
+		t.Skip("skipping when GKHOSTARCH is set")
 	}
 
 	testdata := parseTestData(t)

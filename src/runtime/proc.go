@@ -2709,7 +2709,7 @@ func dropm() {
 //go:nowritebarrierrec
 func cgoBindM() {
 	if GOOS == "windows" || GOOS == "plan9" {
-		fatal("bindm in unexpected GOOS")
+		fatal("bindm in unexpected GKOS")
 	}
 	g := getg()
 	if g.m.g0 != g {

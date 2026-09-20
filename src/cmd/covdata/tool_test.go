@@ -302,7 +302,7 @@ func testDump(t *testing.T, s state) {
 	}{
 		{
 			"args",
-			regexp.MustCompile(`^data file .+ GOOS=.+ GOARCH=.+ program args: .+$`),
+			regexp.MustCompile(`^data file .+ GKOS=.+ GKARCH=.+ program args: .+$`),
 		},
 		{
 			"main package",

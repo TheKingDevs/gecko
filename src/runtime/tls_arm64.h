@@ -45,7 +45,7 @@
 #endif
 
 // Define something that will break the build if
-// the GOOS is unknown.
+// the GKOS is unknown.
 #ifndef MRS_TPIDR_R0
 #define MRS_TPIDR_R0 unknown_TLS_implementation_in_tls_arm64_h
 #endif

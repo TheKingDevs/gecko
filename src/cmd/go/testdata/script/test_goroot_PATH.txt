@@ -1,15 +1,15 @@
 # https://go.dev/issue/51473: to avoid the need for tests to rely on
-# runtime.GOROOT, 'go test' should run the test with its own GOROOT/bin
+# runtime.GOROOT, 'go test' should run the test with its own GKROOT/bin
 # at the beginning of $PATH.
 
-[GOEXPERIMENT:boringcrypto] skip 'requires gcc in path'
+[GKEXPERIMENT:boringcrypto] skip 'requires gcc in path'
 
-[!GOOS:plan9] env PATH=
-[GOOS:plan9] env path=
+[!GKOS:plan9] env PATH=
+[GKOS:plan9] env path=
 go test .
 
-[!GOOS:plan9] env PATH=$WORK${/}bin
-[GOOS:plan9] env path=$WORK${/}bin
+[!GKOS:plan9] env PATH=$WORK${/}bin
+[GKOS:plan9] env path=$WORK${/}bin
 go test .
 
 -- go.mod --
@@ -32,7 +32,7 @@ func TestGoCommandExists(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := filepath.Join(os.Getenv("GOROOT"), "bin", "gecko" + os.Getenv("GOEXE"))
+	want := filepath.Join(os.Getenv("GKROOT"), "bin", "gecko" + os.Getenv("GKEXE"))
 	if got != want {
 		t.Fatalf(`exec.LookPath("gecko") = %q; want %q`, got, want)
 	}

@@ -152,7 +152,7 @@ func runEditwork(ctx context.Context, cmd *base.Command, args []string) {
 		gowork = modload.WorkFilePath(moduleLoader)
 	}
 	if gowork == "" {
-		base.Fatalf("gecko: no go.work file found\n\t(run 'gecko work init' first or specify path using GOWORK environment variable)")
+		base.Fatalf("gecko: no go.work file found\n\t(run 'gecko work init' first or specify path using GKWORK environment variable)")
 	}
 
 	if *editGo != "" && *editGo != "none" {

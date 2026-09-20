@@ -1,20 +1,20 @@
-env sumdb=$GOSUMDB
-env proxy=$GOPROXY
-env GOPRIVATE GOPROXY GONOPROXY GOSUMDB GONOSUMDB
+env sumdb=$GKSUMDB
+env proxy=$GKPROXY
+env GKPRIVATE GKPROXY GKNOPROXY GKSUMDB GKNOSUMDB
 env dbname=localhost.localdev/sumdb
 
 # disagree with sumdb fails
 cp go.mod.orig go.mod
-env GOSUMDB=$sumdb' '$proxy/sumdb-wrong
+env GKSUMDB=$sumdb' '$proxy/sumdb-wrong
 ! go get rsc.io/quote
 stderr 'SECURITY ERROR'
 
-# GONOSUMDB bypasses sumdb, for rsc.io/quote, rsc.io/sampler, golang.org/x/text
-env GONOSUMDB='*/quote,*/*mple*,golang.org/x'
+# GKNOSUMDB bypasses sumdb, for rsc.io/quote, rsc.io/sampler, golang.org/x/text
+env GKNOSUMDB='*/quote,*/*mple*,golang.org/x'
 go get rsc.io/quote
 rm go.sum
-env GOPRIVATE='*/quote,*/*mple*,golang.org/x'
-env GONOPROXY=none # that is, proxy all despite GOPRIVATE
+env GKPRIVATE='*/quote,*/*mple*,golang.org/x'
+env GKNOPROXY=none # that is, proxy all despite GKPRIVATE
 go get rsc.io/quote
 
 # Download .info files needed for 'go list -m all' later.
@@ -23,29 +23,29 @@ go get rsc.io/quote
 go list -m all
 stdout '^golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c$'
 
-# When GOPROXY is not empty but contains no entries, an error should be reported.
-env GOPROXY=','
+# When GKPROXY is not empty but contains no entries, an error should be reported.
+env GKPROXY=','
 ! go get golang.org/x/text
-stderr '^gecko: golang.org/x/text: GOPROXY list is not the empty string, but contains no entries$'
+stderr '^gecko: golang.org/x/text: GKPROXY list is not the empty string, but contains no entries$'
 
-# When GOPROXY=off, fetching modules not matched by GONOPROXY fails.
-env GONOPROXY=*/fortune
-env GOPROXY=off
+# When GKPROXY=off, fetching modules not matched by GKNOPROXY fails.
+env GKNOPROXY=*/fortune
+env GKPROXY=off
 ! go get golang.org/x/text
-stderr '^gecko: golang.org/x/text: module lookup disabled by GOPROXY=off$'
+stderr '^gecko: golang.org/x/text: module lookup disabled by GKPROXY=off$'
 
-# GONOPROXY bypasses proxy
+# GKNOPROXY bypasses proxy
 [!git] skip
-env GOPROXY=$proxy
-env GOSUMDB=$sumdb
-env GOPRIVATE=none
-env GONOPROXY='*/git/proxyonly.git'
+env GKPROXY=$proxy
+env GKSUMDB=$sumdb
+env GKPRIVATE=none
+env GKNOPROXY='*/git/proxyonly.git'
 ! go get vcs-test.golang.org/git/proxyonly.git  # does not exist in vcstest, only on test proxy
 stderr 'git ls-remote'
 
-env GOSUMDB=off
-env GONOPROXY=
-env GOPRIVATE='*/git/tagtests.git'
+env GKSUMDB=off
+env GKNOPROXY=
+env GKPRIVATE='*/git/tagtests.git'
 go get vcs-test.golang.org/git/tagtests.git
 go list -m all
 stdout '^vcs-test.golang.org/git/tagtests.git v0.2.2$'

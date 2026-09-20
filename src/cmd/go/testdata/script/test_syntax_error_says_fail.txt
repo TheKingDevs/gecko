@@ -1,12 +1,12 @@
 # Test that the error message for a syntax error in a test go file
 # says FAIL.
 
-env GO111MODULE=off
+env GK111MODULE=off
 ! go test syntaxerror
 stderr 'x_test.go:' # check that the error is diagnosed
 stdout 'FAIL' # check that go test says FAIL
 
-env GO111MODULE=on
+env GK111MODULE=on
 cd syntaxerror
 ! go test syntaxerror
 stderr 'x_test.go:' # check that the error is diagnosed

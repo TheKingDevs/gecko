@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # issue 26880: list with tests has wrong variant in imports
 go list -test -f '{{.ImportPath}}:{{with .Imports}} {{join . ", "}}{{end}}' a b

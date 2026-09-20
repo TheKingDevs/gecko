@@ -41,7 +41,7 @@ func scriptConditions(t *testing.T) map[string]script.Cond {
 
 	add("abscc", script.Condition("default $CC path is absolute and exists", defaultCCIsAbsolute))
 	add("case-sensitive", script.OnceCondition("$WORK filesystem is case-sensitive", isCaseSensitive))
-	add("cc", script.PrefixCondition("gecko env CC = <suffix> (ignoring the go/env file)", ccIs))
+	add("cc", script.PrefixCondition("gecko env CC = <suffix> (ignoring the gecko/env file)", ccIs))
 	add("git", lazyBool("the 'git' executable exists and provides the standard CLI", hasWorkingGit))
 	add("git-sha256", script.OnceCondition("the local 'git' version is recent enough to support sha256 object/commit hashes", gitSupportsSHA256))
 	add("trimpath", script.OnceCondition("test binary was built with -trimpath", isTrimpath))
@@ -52,8 +52,8 @@ func scriptConditions(t *testing.T) map[string]script.Cond {
 }
 
 func defaultCCIsAbsolute(s *script.State) (bool, error) {
-	GOOS, _ := s.LookupEnv("GOOS")
-	GOARCH, _ := s.LookupEnv("GOARCH")
+	GOOS, _ := s.LookupEnv("GKOS")
+	GOARCH, _ := s.LookupEnv("GKARCH")
 	defaultCC := cfg.DefaultCC(GOOS, GOARCH)
 	if filepath.IsAbs(defaultCC) {
 		if _, err := exec.LookPath(defaultCC); err == nil {
@@ -68,8 +68,8 @@ func ccIs(s *script.State, want string) (bool, error) {
 	if CC != "" {
 		return CC == want, nil
 	}
-	GOOS, _ := s.LookupEnv("GOOS")
-	GOARCH, _ := s.LookupEnv("GOARCH")
+	GOOS, _ := s.LookupEnv("GKOS")
+	GOARCH, _ := s.LookupEnv("GKARCH")
 	return cfg.DefaultCC(GOOS, GOARCH) == want, nil
 }
 
@@ -158,7 +158,7 @@ func defaultCgo() bool {
 // the default with -race on windows). Scripts that build with -race must not rely
 // on this condition.
 func defaultPIE(s *script.State) (bool, error) {
-	GOOS, _ := s.LookupEnv("GOOS")
-	GOARCH, _ := s.LookupEnv("GOARCH")
+	GOOS, _ := s.LookupEnv("GKOS")
+	GOARCH, _ := s.LookupEnv("GKARCH")
 	return platform.DefaultPIE(GOOS, GOARCH, false), nil
 }

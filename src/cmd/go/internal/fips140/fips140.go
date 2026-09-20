@@ -124,10 +124,10 @@ func Init() {
 	// toolchain selection, as the GOEXPERIMENT may be valid for the
 	// selected toolchain version.
 	if cfg.ExperimentErr == nil && cfg.Experiment.BoringCrypto && Enabled() {
-		base.Fatalf("gecko: cannot use GOFIPS140 with GOEXPERIMENT=boringcrypto")
+		base.Fatalf("gecko: cannot use GKFIPS140 with GKEXPERIMENT=boringcrypto")
 	}
 	if slices.Contains(cfg.BuildContext.BuildTags, "purego") && Enabled() {
-		base.Fatalf("gecko: cannot use GOFIPS140 with the purego build tag")
+		base.Fatalf("gecko: cannot use GKFIPS140 with the purego build tag")
 	}
 }
 
@@ -182,10 +182,10 @@ func initVersion() {
 	// a .zip (a source snapshot like v1.2.0.zip)
 	// or a .txt (a redirect like inprocess.txt, containing a version number).
 	if strings.Contains(v, "/") || strings.Contains(v, `\`) || strings.Contains(v, "..") {
-		base.Fatalf("gecko: malformed GOFIPS140 version %q", cfg.GOFIPS140)
+		base.Fatalf("gecko: malformed GKFIPS140 version %q", cfg.GOFIPS140)
 	}
 	if cfg.GOROOT == "" {
-		base.Fatalf("gecko: missing GOROOT for GOFIPS140")
+		base.Fatalf("gecko: missing GKROOT for GKFIPS140")
 	}
 
 	file := filepath.Join(cfg.GOROOT, "lib", "fips140", v)
@@ -193,7 +193,7 @@ func initVersion() {
 		v = strings.TrimSpace(string(data))
 		file = filepath.Join(cfg.GOROOT, "lib", "fips140", v)
 		if _, err := os.Stat(file + ".zip"); err != nil {
-			base.Fatalf("gecko: unknown GOFIPS140 version %q (from %q)", v, cfg.GOFIPS140)
+			base.Fatalf("gecko: unknown GKFIPS140 version %q (from %q)", v, cfg.GOFIPS140)
 		}
 	}
 
@@ -204,7 +204,7 @@ func initVersion() {
 		return
 	}
 
-	base.Fatalf("gecko: unknown GOFIPS140 version %q", v)
+	base.Fatalf("gecko: unknown GKFIPS140 version %q", v)
 }
 
 // Dir reports the directory containing the crypto/internal/fips140 source code.
@@ -235,13 +235,13 @@ func initDir() {
 	if _, err := modfetch.DownloadDir(ctx, mod); err != nil {
 		sumfile := filepath.Join(cfg.GOROOT, "lib/fips140/fips140.sum")
 		if err := verifyZipSum(file, sumfile); err != nil {
-			base.Fatalf("gecko: verifying GOFIPS140=%v: %v", v, err)
+			base.Fatalf("gecko: verifying GKFIPS140=%v: %v", v, err)
 		}
 	}
 
 	zdir, err := modfetch.NewFetcher().Unzip(ctx, mod, file)
 	if err != nil {
-		base.Fatalf("gecko: unpacking GOFIPS140=%v: %v", v, err)
+		base.Fatalf("gecko: unpacking GKFIPS140=%v: %v", v, err)
 	}
 	dir = filepath.Join(zdir, "fips140")
 }

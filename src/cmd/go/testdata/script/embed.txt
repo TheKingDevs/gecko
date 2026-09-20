@@ -102,16 +102,16 @@ cp x.txt photos/subdir/foo.jpg
 cp x.txt 'photos/subdir/2022-07-22T15''02''45Z.jpg'
 ! go build -x
 stderr '^x.go:5:12: pattern photos/\*: cannot embed file photos/subdir/2022-07-22T15''02''45Z.jpg: invalid name 2022-07-22T15''02''45Z.jpg$'
-[!GOOS:windows] mv 'photos/subdir/2022-07-22T15''02''45Z.jpg' photos/subdir/2022-07-22T15:02:45Z.jpg
-[!GOOS:windows] ! go build -x
-[!GOOS:windows] stderr '^x.go:5:12: pattern photos/\*: cannot embed file photos/subdir/2022-07-22T15:02:45Z.jpg: invalid name 2022-07-22T15:02:45Z.jpg$'
+[!GKOS:windows] mv 'photos/subdir/2022-07-22T15''02''45Z.jpg' photos/subdir/2022-07-22T15:02:45Z.jpg
+[!GKOS:windows] ! go build -x
+[!GKOS:windows] stderr '^x.go:5:12: pattern photos/\*: cannot embed file photos/subdir/2022-07-22T15:02:45Z.jpg: invalid name 2022-07-22T15:02:45Z.jpg$'
 rm photos
 
 # build ignores hidden names in subdirectories with invalid punctuation
 cp x.go6 x.go
 mkdir photos/subdir
-[!GOOS:windows] cp x.txt photos/subdir/.2022-07-22T15:02:45Z.jpg
-[!GOOS:windows] cp x.txt photos/subdir/_2022-07-22T15:02:45Z.jpg
+[!GKOS:windows] cp x.txt photos/subdir/.2022-07-22T15:02:45Z.jpg
+[!GKOS:windows] cp x.txt photos/subdir/_2022-07-22T15:02:45Z.jpg
 cp x.txt 'photos/subdir/.2022-07-22T15''02''45Z.jpg'
 cp x.txt 'photos/subdir/_2022-07-22T15''02''45Z.jpg'
 cp x.txt photos/subdir/foo.jpg

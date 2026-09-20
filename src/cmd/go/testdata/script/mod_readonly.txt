@@ -1,5 +1,5 @@
 # -mod=readonly must not resolve missing modules nor update go.mod
-env GOFLAGS=-mod=readonly
+env GKFLAGS=-mod=readonly
 go mod edit -fmt
 cp go.mod go.mod.empty
 ! go list all
@@ -8,12 +8,12 @@ stderr '^x.go:2:8: cannot find module providing package rsc\.io/quote: import lo
 cmp go.mod go.mod.empty
 
 # -mod=readonly should be set by default.
-env GOFLAGS=
+env GKFLAGS=
 ! go list all
 stderr '^x.go:2:8: no required module provides package rsc\.io/quote; to add it:\n\tgecko get rsc\.io/quote$'
 cmp go.mod go.mod.empty
 
-env GOFLAGS=-mod=readonly
+env GKFLAGS=-mod=readonly
 
 # update go.mod - go get allowed
 go get rsc.io/quote
@@ -46,7 +46,7 @@ stderr 'gecko: updates to go.mod needed, disabled by -mod=readonly'
 cmp go.mod go.mod.inconsistent
 
 # We get a different message when -mod=readonly is used by default.
-env GOFLAGS=
+env GKFLAGS=
 ! go list
 stderr '^gecko: updates to go.mod needed; to update it:\n\tgecko mod tidy'
 

@@ -81,15 +81,15 @@ func main() {
 	// Load context.
 	goroot = runtime.GOROOT()
 	if goroot == "" {
-		log.Fatalf("missing $GOROOT")
+		log.Fatalf("missing $GKROOT")
 	}
 	gohostos = runtime.GOOS
 	gohostarch = runtime.GOARCH
-	goos = os.Getenv("GOOS")
+	goos = os.Getenv("GKOS")
 	if goos == "" {
 		goos = gohostos
 	}
-	goarch = os.Getenv("GOARCH")
+	goarch = os.Getenv("GKARCH")
 	if goarch == "" {
 		goarch = gohostarch
 	}

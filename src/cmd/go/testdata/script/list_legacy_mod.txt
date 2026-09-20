@@ -1,6 +1,6 @@
-# In GOPATH mode, module legacy support does path rewriting very similar to vendoring.
+# In GKPATH mode, module legacy support does path rewriting very similar to vendoring.
 
-env GO111MODULE=off
+env GK111MODULE=off
 
 go list -f '{{range .Imports}}{{.}}{{"\n"}}{{end}}' old/p1
 stdout ^new/p1$

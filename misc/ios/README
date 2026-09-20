@@ -5,22 +5,22 @@ To run the standard library tests, run all.bash as usual, but with the compiler
 set to the clang wrapper that invokes clang for iOS. For example, this command runs
  all.bash on the iOS emulator:
 
-	GOOS=ios GOARCH=amd64 CGO_ENABLED=1 CC_FOR_TARGET=$(pwd)/../misc/ios/clangwrap.sh ./all.bash
+	GKOS=ios GKARCH=amd64 CGO_ENABLED=1 CC_FOR_TARGET=$(pwd)/../misc/ios/clangwrap.sh ./all.bash
 
 If CC_FOR_TARGET is not set when the toolchain is built (make.bash or all.bash), CC
 can be set on the command line. For example,
 
-	GOOS=ios GOARCH=amd64 CGO_ENABLED=1 CC=$(go env GOROOT)/misc/ios/clangwrap.sh go build
+	GKOS=ios GKARCH=amd64 CGO_ENABLED=1 CC=$(go env GKROOT)/misc/ios/clangwrap.sh go build
 
 Setting CC is not necessary if the toolchain is built with CC_FOR_TARGET set.
 
-To use the go tool to run individual programs and tests, put $GOROOT/bin into PATH to ensure
+To use the go tool to run individual programs and tests, put $GKROOT/bin into PATH to ensure
 the go_ios_$GOARCH_exec wrapper is found. For example, to run the archive/tar tests:
 
-	export PATH=$GOROOT/bin:$PATH
-	GOOS=ios GOARCH=amd64 CGO_ENABLED=1 go test archive/tar
+	export PATH=$GKROOT/bin:$PATH
+	GKOS=ios GKARCH=amd64 CGO_ENABLED=1 go test archive/tar
 
-The go_ios_exec wrapper uses GOARCH to select the emulator (amd64) or the device (arm64).
+The go_ios_exec wrapper uses GKARCH to select the emulator (amd64) or the device (arm64).
 However, further setup is required to run tests or programs directly on a device.
 
 First make sure you have a valid developer certificate and have setup your device properly
@@ -43,10 +43,10 @@ which will output something similar to
 	export GOIOS_TEAM_ID=ZZZZZZZZ
 
 If you have multiple devices connected, specify the device UDID with the GOIOS_DEVICE_ID
-variable. Use `idevice_id -l` to list all available UDIDs. Then, setting GOARCH to arm64
+variable. Use `idevice_id -l` to list all available UDIDs. Then, setting GKARCH to arm64
 will select the device:
 
-	GOOS=ios GOARCH=arm64 CGO_ENABLED=1 CC_FOR_TARGET=$(pwd)/../misc/ios/clangwrap.sh ./all.bash
+	GKOS=ios GKARCH=arm64 CGO_ENABLED=1 CC_FOR_TARGET=$(pwd)/../misc/ios/clangwrap.sh ./all.bash
 
 Note that the go_darwin_$GOARCH_exec wrapper uninstalls any existing app identified by
 the bundle id before installing a new app. If the uninstalled app is the last app by

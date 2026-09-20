@@ -5,7 +5,7 @@
 
 [!git] skip
 
-env GOPRIVATE=vcs-test.golang.org
+env GKPRIVATE=vcs-test.golang.org
 
 # If we request a package in a subdirectory of a module by commit hash, we
 # successfully resolve it to a pseudo-version derived from a tag on the parent

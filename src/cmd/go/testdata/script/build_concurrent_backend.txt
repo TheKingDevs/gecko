@@ -3,7 +3,7 @@
 
 # Reset all experiments, since one of them can disable
 # concurrent compilation, e.g: fieldtrack.
-env GOEXPERIMENT=none
+env GKEXPERIMENT=none
 
 env GOMAXPROCS=4
 go build -n -x -a fmt

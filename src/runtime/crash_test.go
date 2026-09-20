@@ -142,7 +142,7 @@ func buildTestProg(t *testing.T, binary string, flags ...string) (string, error)
 
 	testprog.Lock()
 	if testprog.dir == "" {
-		dir, err := os.MkdirTemp("", "go-build")
+		dir, err := os.MkdirTemp("", "gecko-build")
 		if err != nil {
 			t.Fatalf("failed to create temp directory: %v", err)
 		}

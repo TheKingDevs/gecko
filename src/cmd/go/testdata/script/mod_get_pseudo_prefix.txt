@@ -1,5 +1,5 @@
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 
 # Testing that a pseudo-version is based on the semantically-latest
 # prefixed tag in any commit that is a parent of the commit supplied

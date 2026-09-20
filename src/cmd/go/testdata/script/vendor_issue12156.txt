@@ -1,7 +1,7 @@
 # Tests issue #12156, a former index out of range panic.
 
-env GO111MODULE=off
-env GOPATH=$WORK/gopath/src/testvendor2 # vendor/x is directly in $GOPATH, not in $GOPATH/src
+env GK111MODULE=off
+env GKPATH=$WORK/gopath/src/testvendor2 # vendor/x is directly in $GKPATH, not in $GKPATH/src
 cd $WORK/gopath/src/testvendor2/src/p
 
 ! go build p.go

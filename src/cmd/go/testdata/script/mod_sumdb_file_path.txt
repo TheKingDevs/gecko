@@ -1,5 +1,5 @@
-env TESTPROXY=$GOPROXY
-env GOPATH=$WORK/gopath1
+env TESTPROXY=$GKPROXY
+env GKPATH=$WORK/gopath1
 
 mkdir $WORK/sumproxy/sumdb/$TESTGO_SUMDB
 cp supported $WORK/sumproxy/sumdb/$TESTGO_SUMDB/supported
@@ -10,24 +10,24 @@ cp supported $WORK/sumproxy/sumdb/$TESTGO_SUMDB/supported
 #
 # TODO(bcmills): The error message here is a bit redundant.
 # It comes from the sumweb package, which isn't yet producing structured errors.
-[GOOS:windows] env GOPROXY=file:///$WORK/sumproxy,$TESTPROXY
-[!GOOS:windows] env GOPROXY=file://$WORK/sumproxy,$TESTPROXY
+[GKOS:windows] env GKPROXY=file:///$WORK/sumproxy,$TESTPROXY
+[!GKOS:windows] env GKPROXY=file://$WORK/sumproxy,$TESTPROXY
 ! go get rsc.io/quote@v1.5.2
 stderr '^gecko: rsc.io/quote@v1.5.2: verifying module: rsc.io/quote@v1.5.2: reading file://.*/sumdb/.*/lookup/rsc.io/quote@v1.5.2: (no such file or directory|.*cannot find the path specified.*)'
 
 # If the proxy does not claim to support the database,
 # checksum verification should fall through to the next proxy,
 # and downloading should succeed.
-[GOOS:windows] env GOPROXY=file:///$WORK/emptyproxy,$TESTPROXY
-[!GOOS:windows] env GOPROXY=file://$WORK/emptyproxy,$TESTPROXY
+[GKOS:windows] env GKPROXY=file:///$WORK/emptyproxy,$TESTPROXY
+[!GKOS:windows] env GKPROXY=file://$WORK/emptyproxy,$TESTPROXY
 go get rsc.io/quote@v1.5.2
 
 # After a successful sumdb lookup, the lookup can be repeated
 # using the download cache as a proxy.
-cp supported $GOPATH/pkg/mod/cache/download/sumdb/$TESTGO_SUMDB/supported
-[GOOS:windows] env GOPROXY=file:///$WORK/gopath1/pkg/mod/cache/download,file:///$WORK/sumproxy
-[!GOOS:windows] env GOPROXY=file://$WORK/gopath1/pkg/mod/cache/download,file://$WORK/sumproxy
-env GOPATH=$WORK/gopath2
+cp supported $GKPATH/pkg/mod/cache/download/sumdb/$TESTGO_SUMDB/supported
+[GKOS:windows] env GKPROXY=file:///$WORK/gopath1/pkg/mod/cache/download,file:///$WORK/sumproxy
+[!GKOS:windows] env GKPROXY=file://$WORK/gopath1/pkg/mod/cache/download,file://$WORK/sumproxy
+env GKPATH=$WORK/gopath2
 rm go.sum
 go get -x -v rsc.io/quote@v1.5.2
 
@@ -35,12 +35,12 @@ go get -x -v rsc.io/quote@v1.5.2
 # an empty file-based sumdb can be used in conjunction with
 # a fallback module mirror.
 grep rsc.io/quote go.sum
-env GOPATH=$WORK/gopath3
-[GOOS:windows] env GOPROXY=file:///$WORK/sumproxy
-[!GOOS:windows] env GOPROXY=file://$WORK/sumproxy
+env GKPATH=$WORK/gopath3
+[GKOS:windows] env GKPROXY=file:///$WORK/sumproxy
+[!GKOS:windows] env GKPROXY=file://$WORK/sumproxy
 ! go get rsc.io/quote@v1.5.2
-[GOOS:windows] env GOPROXY=file:///$WORK/sumproxy,$TESTPROXY
-[!GOOS:windows] env GOPROXY=file://$WORK/sumproxy,$TESTPROXY
+[GKOS:windows] env GKPROXY=file:///$WORK/sumproxy,$TESTPROXY
+[!GKOS:windows] env GKPROXY=file://$WORK/sumproxy,$TESTPROXY
 go get rsc.io/quote@v1.5.2
 
 -- supported --

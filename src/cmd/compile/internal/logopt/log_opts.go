@@ -422,10 +422,10 @@ func uprootedPath(filename string) string {
 	if filename == "" {
 		return "__unnamed__"
 	}
-	if buildcfg.GOROOT == "" || !strings.HasPrefix(filename, "$GOROOT/") {
+	if buildcfg.GOROOT == "" || !strings.HasPrefix(filename, "$GKROOT/") {
 		return filename
 	}
-	return buildcfg.GOROOT + filename[len("$GOROOT"):]
+	return buildcfg.GOROOT + filename[len("$GKROOT"):]
 }
 
 // FlushLoggedOpts flushes all the accumulated optimization log entries.

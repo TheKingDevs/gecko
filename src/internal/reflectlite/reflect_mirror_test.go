@@ -88,7 +88,7 @@ func TestMirrorWithReflect(t *testing.T) {
 	if _, err := os.Stat(reflectDir); os.IsNotExist(err) {
 		// On some mobile builders, the test binary executes on a machine without a
 		// complete GOROOT source tree.
-		t.Skipf("GOROOT source not present")
+		t.Skipf("GKROOT source not present")
 	}
 
 	var wg sync.WaitGroup

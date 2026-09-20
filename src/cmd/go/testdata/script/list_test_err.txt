@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # issue 28491: errors in test source files should not prevent
 # "go list -test" from returning useful information.

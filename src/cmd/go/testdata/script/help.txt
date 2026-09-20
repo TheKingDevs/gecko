@@ -1,8 +1,8 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # go help shows overview.
 go help
-stdout 'Go is a tool'
+stdout 'Gecko is a tool'
 stdout 'bug.*start a bug report'
 
 # go help bug shows usage for bug
@@ -13,19 +13,6 @@ stdout 'bug report'
 # go bug help is an error (bug takes no arguments)
 ! go bug help
 stderr 'bug takes no arguments'
-
-# go help mod shows mod subcommands
-go help mod
-stdout 'gecko mod <command>'
-stdout tidy
-
-# go help mod tidy explains tidy
-go help mod tidy
-stdout 'usage: gecko mod tidy'
-
-# go mod help tidy does too
-go mod help tidy
-stdout 'usage: gecko mod tidy'
 
 # Earlier versions of Go printed the same as 'go -h' here.
 # Also make sure we print the short help line.
@@ -40,8 +27,3 @@ stderr 'Run ''gecko tool vet -help'' for an overview.'
 ! go test -h
 stderr 'usage: gecko test'
 stderr 'Run ''gecko help test'' and ''gecko help testflag'' for details.'
-
-# go help get shows usage for get
-go help get
-stdout 'usage: gecko get'
-stdout 'specific module versions'

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Define features that are guaranteed to be supported by setting the GORISCV64 variable.
+// Define features that are guaranteed to be supported by setting the GKRISCV64 variable.
 // If a feature is supported, there's no need to check it at runtime every time.
 
 #ifdef GORISCV64_rva22u64

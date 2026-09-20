@@ -291,9 +291,9 @@ func (lookupDisabledError) Error() string {
 var errLookupDisabled error = lookupDisabledError{}
 
 var (
-	errProxyOff       = notExistErrorf("module lookup disabled by GOPROXY=off")
-	errNoproxy  error = notExistErrorf("disabled by GOPRIVATE/GONOPROXY")
-	errUseProxy error = notExistErrorf("path does not match GOPRIVATE/GONOPROXY")
+	errProxyOff       = notExistErrorf("module lookup disabled by GKPROXY=off")
+	errNoproxy  error = notExistErrorf("disabled by GKPRIVATE/GKNOPROXY")
+	errUseProxy error = notExistErrorf("path does not match GKPRIVATE/GKNOPROXY")
 )
 
 func lookupDirect(ctx context.Context, path string) (Repo, error) {

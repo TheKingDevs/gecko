@@ -67,7 +67,7 @@ func TestNonblock(t *testing.T) {
 
 			subProcess := exec.Command(testenv.GoToolPath(t), args...)
 
-			subProcess.Env = append(os.Environ(), "GOOS=wasip1", "GOARCH=wasm")
+			subProcess.Env = append(os.Environ(), "GKOS=wasip1", "GKARCH=wasm")
 
 			pr, pw := io.Pipe()
 			defer pw.Close()

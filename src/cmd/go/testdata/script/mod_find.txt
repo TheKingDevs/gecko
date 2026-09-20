@@ -10,9 +10,9 @@ replace '\n' '\r\n' x.go
 go mod init
 stderr 'module x'
 
-# Derive module path from location inside GOPATH.
+# Derive module path from location inside GKPATH.
 # 'go mod init' should succeed if modules are not explicitly disabled.
-cd $GOPATH/src/example.com/x/y
+cd $GKPATH/src/example.com/x/y
 go mod init
 stderr 'module example.com/x/y$'
 rm go.mod
@@ -22,16 +22,16 @@ cp $devnull go.mod # can't use touch to create it because Windows
 ! go mod init
 stderr 'go.mod already exists'
 
-# Empty directory outside GOPATH fails.
+# Empty directory outside GKPATH fails.
 mkdir $WORK/empty
 cd $WORK/empty
 ! go mod init
 stderr 'cannot determine module path for source directory'
 rm go.mod
 
-# Empty directory inside GOPATH/src uses location inside GOPATH.
-mkdir $GOPATH/src/empty
-cd $GOPATH/src/empty
+# Empty directory inside GKPATH/src uses location inside GKPATH.
+mkdir $GKPATH/src/empty
+cd $GKPATH/src/empty
 go mod init
 stderr 'empty'
 rm go.mod
@@ -45,32 +45,32 @@ stderr '^gecko: go.mod file not found in current directory or any parent directo
 
 [!symlink] stop
 
-# gplink1/src/empty where gopathlink -> GOPATH
+# gplink1/src/empty where gopathlink -> GKPATH
 symlink $WORK/gopathlink -> gopath
 cd $WORK/gopathlink/src/empty
 go mod init
 rm go.mod
 
-# GOPATH/src/link where link -> out of GOPATH
-symlink $GOPATH/src/link -> $WORK/empty
+# GKPATH/src/link where link -> out of GKPATH
+symlink $GKPATH/src/link -> $WORK/empty
 cd $WORK/empty
 ! go mod init
-cd $GOPATH/src/link
+cd $GKPATH/src/link
 go mod init
 stderr link
 rm go.mod
 
-# GOPATH/src/empty where GOPATH itself is a symlink
-env GOPATH=$WORK/gopathlink
-cd $GOPATH/src/empty
+# GKPATH/src/empty where GKPATH itself is a symlink
+env GKPATH=$WORK/gopathlink
+cd $GKPATH/src/empty
 go mod init
 rm go.mod
 cd $WORK/gopath/src/empty
 go mod init
 rm go.mod
 
-# GOPATH/src/link where GOPATH and link are both symlinks
-cd $GOPATH/src/link
+# GKPATH/src/link where GKPATH and link are both symlinks
+cd $GKPATH/src/link
 go mod init
 stderr link
 rm go.mod
@@ -83,11 +83,11 @@ rm go.mod
 -- $WORK/x/x.go --
 package x // import "x"
 
--- $GOPATH/src/example.com/x/y/y.go --
+-- $GKPATH/src/example.com/x/y/y.go --
 package y
--- $GOPATH/src/example.com/x/y/z/z.go --
+-- $GKPATH/src/example.com/x/y/z/z.go --
 package z
--- $GOPATH/src/example.com/x/y/z/Godeps/Godeps.json --
+-- $GKPATH/src/example.com/x/y/z/Godeps/Godeps.json --
 {"ImportPath": "unexpected.com/z"}
 
 -- $WORK/gomoddir/go.mod/README.txt --

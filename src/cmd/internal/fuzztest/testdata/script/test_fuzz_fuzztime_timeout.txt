@@ -4,7 +4,7 @@
 
 [!fuzz] skip
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 go test -c -o $devnull
 

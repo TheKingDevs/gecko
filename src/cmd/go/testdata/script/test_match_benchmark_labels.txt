@@ -1,11 +1,11 @@
 # Benchmark labels, file outside gopath
 # TODO(matloob): This test was called TestBenchmarkLabelsOutsideGOPATH
-# why "OutsideGOPATH"? Does the go command need to be run outside GOPATH?
-# Do the files need to exist outside GOPATH?
-cp $GOPATH/src/standalone_benchmark_test.go $WORK/tmp/standalone_benchmark_test.go
+# why "OutsideGOPATH"? Does the go command need to be run outside GKPATH?
+# Do the files need to exist outside GKPATH?
+cp $GKPATH/src/standalone_benchmark_test.go $WORK/tmp/standalone_benchmark_test.go
 go test -run '^$' -bench . $WORK/tmp/standalone_benchmark_test.go
-stdout '^goos: '$GOOS
-stdout '^goarch: '$GOARCH
+stdout '^goos: '$GKOS
+stdout '^goarch: '$GKARCH
 ! stdout '^pkg:'
 ! stderr '^pkg:'
 

@@ -1,11 +1,11 @@
 ! go work init doesnotexist
 stderr 'gecko: directory doesnotexist does not exist'
-go env GOWORK
+go env GKWORK
 ! stdout .
 
 go work init ./a ./b
 cmpenv go.work go.work.want
-go env GOWORK
+go env GKWORK
 stdout '^'$WORK'(\\|/)gopath(\\|/)src(\\|/)go.work$'
 
 ! go run  example.com/b
@@ -14,7 +14,7 @@ cd a
 go get rsc.io/quote
 cat go.mod
 go env GOMOD # go env GOMOD reports the module in a single module context
-stdout $GOPATH(\\|/)src(\\|/)a(\\|/)go.mod
+stdout $GKPATH(\\|/)src(\\|/)a(\\|/)go.mod
 cd ..
 go run example.com/b
 stdout 'Hello, world.'
@@ -23,7 +23,7 @@ stdout 'Hello, world.'
 cd c
 go run  example.com/b
 stdout 'Hello, world.'
-cd $GOPATH/src
+cd $GKPATH/src
 
 go list all # all includes both modules
 stdout 'example.com/a'
@@ -33,9 +33,9 @@ stdout 'example.com/b'
 go list -mod=readonly all
 ! go list -mod=mod all
 stderr '^gecko: -mod may only be set to readonly or vendor when in workspace mode'
-env GOWORK=off
+env GKWORK=off
 go list -mod=mod all
-env GOWORK=
+env GKWORK=
 
 # Test that duplicates in the use list return an error
 cp go.work go.work.backup
@@ -58,9 +58,9 @@ go run example.com/d
 # This exercises the code that determines which module command-line-arguments
 # belongs to.
 go list ./b/main.go
-env GOWORK=off
+env GKWORK=off
 go build -n -o foo foo.go
-env GOWORK=
+env GKWORK=
 go build -n -o foo foo.go
 
 -- go.work.dup --

@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # Issue 23882
 
@@ -7,7 +7,7 @@ stdout ok[\s\S]+?coverage
 
 [!race] stop
 
-[GOARCH:loong64] skip 'broken on loong64: #78219'
+[GKARCH:loong64] skip 'broken on loong64: #78219'
 
 go test -coverpkg=all -race x
 stdout ok[\s\S]+?coverage

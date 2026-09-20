@@ -55,7 +55,7 @@ func x() uint64
 
 	// Assemble generated file.
 	cmd := exec.Command(testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "x.o"), "-S", tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("Failed to assemble: %v\n%s", err, out)
@@ -73,7 +73,7 @@ func x() uint64
 	// Build generated files.
 	cmd = testenv.Command(t, testenv.GoToolPath(t), "build", "-o", "x.exe", "-ldflags=-linkmode=internal")
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("Build failed: %v, output: %s", err, out)
@@ -147,7 +147,7 @@ func y() uint64
 
 	// Assemble generated file.
 	cmd := exec.Command(testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "x.o"), "-S", tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("Failed to assemble: %v\n%s", err, out)
@@ -164,7 +164,7 @@ func y() uint64
 	// Build generated files.
 	cmd = testenv.Command(t, testenv.GoToolPath(t), "build", "-o", "x.exe", "-ldflags=-linkmode=internal")
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("Build failed: %v, output: %s", err, out)
@@ -184,7 +184,7 @@ func y() uint64
 	if runtime.GOARCH == "riscv64" && testenv.HasCGO() {
 		cmd := testenv.Command(t, testenv.GoToolPath(t), "build", "-o", "x.exe", "-ldflags=-linkmode=external")
 		cmd.Dir = dir
-		cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+		cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Errorf("Build failed: %v, output: %s", err, out)
@@ -260,7 +260,7 @@ func x() uint64
 
 	// Assemble generated file.
 	cmd := exec.Command(testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "x.o"), "-S", tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("Failed to assemble: %v\n%s", err, out)
@@ -278,7 +278,7 @@ func x() uint64
 	// Build generated files.
 	cmd = testenv.Command(t, testenv.GoToolPath(t), "build", "-o", "x.exe")
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("Build failed: %v, output: %s", err, out)
@@ -319,7 +319,7 @@ func TestNoRet(t *testing.T) {
 		t.Fatal(err)
 	}
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "x.o"), tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Errorf("%v\n%s", err, out)
 	}
@@ -369,7 +369,7 @@ TEXT _stub(SB),$0-0
 		t.Fatal(err)
 	}
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "x.o"), tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Errorf("%v\n%s", err, out)
 	}
@@ -417,7 +417,7 @@ TEXT _stub(SB),$0-0
 		t.Fatal(err)
 	}
 	cmd := exec.Command(testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "x.o"), "-S", tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("Failed to assemble: %v\n%s", err, out)

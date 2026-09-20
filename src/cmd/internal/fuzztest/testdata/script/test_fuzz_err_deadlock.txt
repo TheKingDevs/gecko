@@ -1,7 +1,7 @@
 [short] skip
 [!fuzz-instrumented] skip
 
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 ! go test -fuzz=FuzzDead -v
 # This is a somewhat inexact check, but since we don't prefix the error with anything
 # and as the error suffix is platform dependent, this is the best we can do. In the
@@ -24,7 +24,7 @@ import (
 
 func FuzzDead(f *testing.F) {
 	go func() {
-		c := filepath.Join(os.Getenv("GOCACHE"), "fuzz", "test", "FuzzDead")
+		c := filepath.Join(os.Getenv("GKCACHE"), "fuzz", "test", "FuzzDead")
 		t := time.NewTicker(time.Second)
 		for range t.C {
 			files, _ := os.ReadDir(c)

@@ -3,8 +3,8 @@
 # Verifies golang.org/issue/41700.
 
 [!git] skip
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 go mod init m
 
 # Control: check that v1.0.0 is the only version and is retracted.

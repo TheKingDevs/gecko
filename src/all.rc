@@ -6,11 +6,11 @@
 rfork n
 
 if(! test -f make.rc){
-	echo 'all.rc must be run from $GOROOT/src' >[1=2]
+	echo 'all.rc must be run from $GKROOT/src' >[1=2]
 	exit wrongdir
 }
 
 . ./make.rc --no-banner $*
-bind -b $GOROOT/bin /bin
+bind -b $GKROOT/bin /bin
 ./run.rc --no-rebuild
 ../bin/gecko tool dist banner # print build info

@@ -716,7 +716,7 @@ func localPackagePath(ld *Loader, ctx context.Context, absDir string, rs *Requir
 
 var (
 	errDirectoryNotFound = errors.New("directory not found")
-	errPkgIsGorootSrc    = errors.New("GOROOT/src is not an importable package")
+	errPkgIsGorootSrc    = errors.New("GKROOT/src is not an importable package")
 	errPkgIsBuiltin      = errors.New(`"builtin" is a pseudo-package, not an importable package`)
 )
 

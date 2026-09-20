@@ -3,7 +3,7 @@
 # can create warnings in sibling directories, and it's nice if those
 # can be trimmed like subdirectory paths are.
 
-env GOEXPERIMENT=loopvar
+env GKEXPERIMENT=loopvar
 go build -gcflags=inlines/a=-d=loopvar=2 .
 stderr ^\.[\\/]b[\\/]b\.go:12:6:.*loop.inlined.into.a[\\/]a\.go
 stderr ^\.[\\/]b[\\/]b\.go:12:9:.*loop.inlined.into.a[\\/]a\.go

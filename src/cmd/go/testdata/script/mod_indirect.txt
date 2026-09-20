@@ -1,7 +1,7 @@
 # golang.org/issue/31248: required modules imposed by dependency versions
 # older than the selected version must still be taken into account.
 
-env GOFLAGS=-mod=readonly
+env GKFLAGS=-mod=readonly
 
 # Indirect dependencies required via older-than-selected versions must exist in
 # the module graph, but do not need to be listed explicitly in the go.mod file

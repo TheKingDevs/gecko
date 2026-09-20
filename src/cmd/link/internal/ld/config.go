@@ -196,10 +196,10 @@ func determineLinkMode(ctxt *Link) {
 		switch buildcfg.Getgoextlinkenabled() {
 		case "0":
 			ctxt.LinkMode = LinkInternal
-			via = "via GO_EXTLINK_ENABLED "
+			via = "via GK_EXTLINK_ENABLED "
 		case "1":
 			ctxt.LinkMode = LinkExternal
-			via = "via GO_EXTLINK_ENABLED "
+			via = "via GK_EXTLINK_ENABLED "
 		default:
 			preferExternal := len(preferlinkext) != 0
 			if preferExternal && ctxt.Debugvlog > 0 {

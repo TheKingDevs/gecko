@@ -353,7 +353,7 @@ func testFreegc[T comparable](noscan bool) func(*testing.T) {
 			if SizeSpecializedMallocEnabled && !noscan {
 				// TODO(thepudds): skip at this point in the stack for size-specialized malloc
 				// with !noscan. Additional integration with sizespecializedmalloc is in a later CL.
-				t.Skip("temporarily skipping alloc tests for GOEXPERIMENT=sizespecializedmalloc for pointer types")
+				t.Skip("temporarily skipping alloc tests for GKEXPERIMENT=sizespecializedmalloc for pointer types")
 			}
 			if !RuntimeFreegcEnabled {
 				t.Skip("skipping alloc tests with runtime.freegc disabled")
@@ -376,7 +376,7 @@ func testFreegc[T comparable](noscan bool) func(*testing.T) {
 			if SizeSpecializedMallocEnabled && !noscan {
 				// TODO(thepudds): skip at this point in the stack for size-specialized malloc
 				// with !noscan. Additional integration with sizespecializedmalloc is in a later CL.
-				t.Skip("temporarily skipping alloc tests for GOEXPERIMENT=sizespecializedmalloc for pointer types")
+				t.Skip("temporarily skipping alloc tests for GKEXPERIMENT=sizespecializedmalloc for pointer types")
 			}
 			if !RuntimeFreegcEnabled {
 				t.Skip("skipping alloc tests with runtime.freegc disabled")
@@ -522,7 +522,7 @@ func testFreegc[T comparable](noscan bool) func(*testing.T) {
 			if SizeSpecializedMallocEnabled && !noscan {
 				// TODO(thepudds): skip this test at this point in the stack; later CL has
 				// integration with sizespecializedmalloc.
-				t.Skip("temporarily skip assist credit tests for GOEXPERIMENT=sizespecializedmalloc for pointer types")
+				t.Skip("temporarily skip assist credit tests for GKEXPERIMENT=sizespecializedmalloc for pointer types")
 			}
 			if !RuntimeFreegcEnabled {
 				t.Skip("skipping assist credit test with runtime.freegc disabled")

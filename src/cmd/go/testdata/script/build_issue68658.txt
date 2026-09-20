@@ -1,7 +1,7 @@
-# Test for issue #68658: In GOPATH mode, files with a //go:build fileVersion
+# Test for issue #68658: In GKPATH mode, files with a //go:build fileVersion
 # earlier than go1.21 should downgrade to go1.21 and no further.
 
-env GO111MODULE=off
+env GK111MODULE=off
 go build foo bar
 
 -- foo/main.go --

@@ -3,7 +3,7 @@
 ! go list -m -modfile=./a/go.alt.mod
 stderr 'gecko: -modfile cannot be used in workspace mode'
 
-env GOFLAGS=-modfile=./a/go.alt.mod
+env GKFLAGS=-modfile=./a/go.alt.mod
 ! go list -m
 stderr 'gecko: -modfile cannot be used in workspace mode'
 

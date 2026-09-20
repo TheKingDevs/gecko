@@ -1,11 +1,11 @@
-# This test exercises the GOAUTH mechanism for specifying
+# This test exercises the GKAUTH mechanism for specifying
 # credentials passed in HTTPS requests to VCS servers.
 # See golang.org/issue/26232
 
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 
-# GOAUTH should default to netrc behavior.
+# GKAUTH should default to netrc behavior.
 # Without credentials, downloading a module from a path that requires HTTPS
 # basic auth should fail.
 # Override default location of $HOME/.netrc
@@ -17,28 +17,28 @@ stderr '^\tserver response: ACCESS DENIED, buddy$'
 env NETRC=$WORK/netrc
 go get vcs-test.golang.org/auth/or401
 
-# GOAUTH=off should result in failures.
-env GOAUTH='off'
+# GKAUTH=off should result in failures.
+env GKAUTH='off'
 # Without credentials, downloading a module from a path that requires HTTPS
 # basic auth should fail.
 env NETRC=$WORK/empty
 ! go get vcs-test.golang.org/auth/or401
 stderr '^\tserver response: ACCESS DENIED, buddy$'
 
-# GOAUTH='off' should ignore credentials from a valid netrc file.
-env GOAUTH='off'
+# GKAUTH='off' should ignore credentials from a valid netrc file.
+env GKAUTH='off'
 env NETRC=$WORK/netrc
 ! go get vcs-test.golang.org/auth/or401
 stderr '^\tserver response: ACCESS DENIED, buddy$'
 
-# GOAUTH=off cannot be combined with other authentication commands
-env GOAUTH='off; netrc'
+# GKAUTH=off cannot be combined with other authentication commands
+env GKAUTH='off; netrc'
 env NETRC=$WORK/netrc
 ! go get vcs-test.golang.org/auth/or401
-stderr 'GOAUTH=off cannot be combined with other authentication commands \(GOAUTH=off; netrc\)'
+stderr 'GKAUTH=off cannot be combined with other authentication commands \(GKAUTH=off; netrc\)'
 
-# An unset GOAUTH should default to netrc.
-env GOAUTH=
+# An unset GKAUTH should default to netrc.
+env GKAUTH=
 # Without credentials, downloading a module from a path that requires HTTPS
 # basic auth should fail.
 env NETRC=$WORK/empty
@@ -61,9 +61,9 @@ env HOME=
 env USERPROFILE=
 env home=
 go get -x vcs-test.golang.org/git/emptytest.git
-[!GOOS:windows] [!GOOS:plan9] stderr 'GOAUTH=netrc: \$HOME is not defined'
-[GOOS:windows] stderr 'GOAUTH=netrc: \%userprofile\% is not defined'
-[GOOS:plan9] stderr 'GOAUTH=netrc: \$home is not defined'
+[!GKOS:windows] [!GKOS:plan9] stderr 'GKAUTH=netrc: \$HOME is not defined'
+[GKOS:windows] stderr 'GKAUTH=netrc: \%userprofile\% is not defined'
+[GKOS:plan9] stderr 'GKAUTH=netrc: \$home is not defined'
 
 -- go.mod --
 module private.example.com

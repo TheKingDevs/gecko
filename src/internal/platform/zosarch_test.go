@@ -23,13 +23,13 @@ var flagFix = flag.Bool("fix", false, "if true, fix out-of-date generated files"
 func TestGenerated(t *testing.T) {
 	testenv.MustHaveGoRun(t)
 
-	// Here we use 'go run cmd/dist' instead of 'go tool dist' in case the
-	// installed cmd/dist is stale or missing. We don't want to miss a
+	// Here we use 'gecko run cmd/dist' instead of 'gecko tool dist' in case
+	// the installed cmd/dist is stale or missing. We don't want to miss a
 	// skew in the data due to a stale binary.
-	cmd := testenv.Command(t, "go", "run", "cmd/dist", "list", "-json", "-broken")
+	cmd := testenv.Command(t, "gecko", "run", "cmd/dist", "list", "-json", "-broken")
 
-	// cmd/dist requires GOROOT to be set explicitly in the environment.
-	cmd.Env = append(cmd.Environ(), "GOROOT="+testenv.GOROOT(t))
+	// cmd/dist requires GKROOT to be set explicitly in the environment.
+	cmd.Env = append(cmd.Environ(), "GKROOT="+testenv.GOROOT(t))
 
 	out, err := cmd.Output()
 	if err != nil {
@@ -57,7 +57,7 @@ func TestGenerated(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cmd = testenv.Command(t, "gofmt")
+	cmd = testenv.Command(t, "fmt")
 	cmd.Stdin = bytes.NewReader(tmplOut.Bytes())
 	want, err := cmd.Output()
 	if err != nil {

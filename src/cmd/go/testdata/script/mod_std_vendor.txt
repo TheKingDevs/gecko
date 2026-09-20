@@ -1,4 +1,4 @@
-env GOPROXY=off
+env GKPROXY=off
 
 [!compiler:gc] skip
 
@@ -8,7 +8,7 @@ stdout net/http # from .TestImports
 
 # 'go list' should find standard-vendored packages.
 go list -f '{{.Dir}}' vendor/golang.org/x/net/http2/hpack
-stdout $GOROOT[/\\]src[/\\]vendor
+stdout $GKROOT[/\\]src[/\\]vendor
 
 # 'go list -test' should report vendored transitive dependencies of _test.go
 # imports in the Deps field.
@@ -35,7 +35,7 @@ stderr 'use of vendored package'
 
 # When run within the 'std' module, 'go list -test' should report vendored
 # transitive dependencies at their vendored paths.
-cd $GOROOT/src
+cd $GKROOT/src
 go list -test -f '{{range .Deps}}{{.}}{{"\n"}}{{end}}' net/http
 ! stdout ^golang.org/x/net/http2/hpack
 stdout ^vendor/golang.org/x/net/http2/hpack

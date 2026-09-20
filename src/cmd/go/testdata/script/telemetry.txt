@@ -13,13 +13,13 @@ env TEST_TELEMETRY_DIR=
 # The telemetry dir is determined using that.
 mkdir $WORK/userconfig
 env AppData=$WORK\userconfig # windows
-[GOOS:windows] env userconfig=$AppData
+[GKOS:windows] env userconfig=$AppData
 env HOME=$WORK/userconfig # darwin,unix,ios
-[GOOS:darwin] env userconfig=$HOME'/Library/Application Support'
-[GOOS:ios] env userconfig=$HOME'/Library/Application Support'
-[!GOOS:windows] [!GOOS:darwin] [!GOOS:ios] [!GOOS:plan9] env userconfig=$HOME/.config
+[GKOS:darwin] env userconfig=$HOME'/Library/Application Support'
+[GKOS:ios] env userconfig=$HOME'/Library/Application Support'
+[!GKOS:windows] [!GKOS:darwin] [!GKOS:ios] [!GKOS:plan9] env userconfig=$HOME/.config
 env home=$WORK/userconfig # plan9
-[GOOS:plan9] env userconfig=$home/lib
+[GKOS:plan9] env userconfig=$home/lib
 
 go telemetry
 stdout 'local'
@@ -53,7 +53,7 @@ stderr '^gecko: GOTELEMETRYDIR cannot be modified$'
 # Test issue #69269: 'go telemetry off' should not increment counters.
 # Establish that previous commands did write telemetry files.
 # Only check for the existence of telemetry data on supported platforms.
-[!GOOS:openbsd] [!GOOS:solaris] [!GOOS:android] [!GOOS:illumos] [!GOOS:js] [!GOOS:wasip1] [!GOOS:plan9] [!GOARCH:mips] [!GOARCH:mipsle] exists $userconfig/go/telemetry/local
+[!GKOS:openbsd] [!GKOS:solaris] [!GKOS:android] [!GKOS:illumos] [!GKOS:js] [!GKOS:wasip1] [!GKOS:plan9] [!GKARCH:mips] [!GKARCH:mipsle] exists $userconfig/go/telemetry/local
 # Now check for go telemetry off behavior.
 rm $userconfig/go/telemetry/local
 go telemetry off
@@ -67,4 +67,4 @@ go telemetry -C=$WORK off
 ! exists $userconfig/go/telemetry/local
 go telemetry local
 go help telemetry
-[!GOOS:openbsd] [!GOOS:solaris] [!GOOS:android] [!GOOS:illumos] [!GOOS:js] [!GOOS:wasip1] [!GOOS:plan9] [!GOARCH:mips] [!GOARCH:mipsle] exists $userconfig/go/telemetry/local
+[!GKOS:openbsd] [!GKOS:solaris] [!GKOS:android] [!GKOS:illumos] [!GKOS:js] [!GKOS:wasip1] [!GKOS:plan9] [!GKARCH:mips] [!GKARCH:mipsle] exists $userconfig/go/telemetry/local

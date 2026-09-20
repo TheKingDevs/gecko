@@ -26,7 +26,7 @@ func TestMain(m *testing.M) {
 		fmt.Fprintf(os.Stderr, "failed to create temp gocache: %v\n", err)
 		os.Exit(1)
 	}
-	os.Setenv("GOCACHE", tmpdir)
+	os.Setenv("GKCACHE", tmpdir)
 
 	code := m.Run()
 
@@ -55,7 +55,7 @@ func TestExecInDeletedDir(t *testing.T) {
 	// `go version` should not fail
 	var stdout, stderr bytes.Buffer
 	cmd := exec.Command(gotool, "version")
-	cmd.Env = append(os.Environ(), "GO111MODULE=off") // This behavior doesn't apply with GO111MODULE != off because we need to know the module to check the version.
+	cmd.Env = append(os.Environ(), "GK111MODULE=off") // This behavior doesn't apply with GO111MODULE != off because we need to know the module to check the version.
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {

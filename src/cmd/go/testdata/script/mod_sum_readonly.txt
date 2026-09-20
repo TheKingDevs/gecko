@@ -4,7 +4,7 @@
 # specific module. The .mod file is not downloaded, and go.sum is not written.
 ! go list -m all
 stderr '^gecko: rsc.io/quote@v1.5.2: missing go.sum entry for go.mod file; to add it:\n\tgecko mod download rsc.io/quote$'
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
 ! exists go.sum
 
 # If go.sum exists but contains hashes from an algorithm we don't know about,
@@ -12,7 +12,7 @@ stderr '^gecko: rsc.io/quote@v1.5.2: missing go.sum entry for go.mod file; to ad
 cp go.sum.h2only go.sum
 ! go list -m all
 stderr '^gecko: rsc.io/quote@v1.5.2: missing go.sum entry for go.mod file; to add it:\n\tgecko mod download rsc.io/quote$'
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
 cmp go.sum go.sum.h2only
 rm go.sum
 
@@ -21,14 +21,14 @@ cp go.mod go.mod.orig
 go mod edit -replace rsc.io/quote@v1.5.2=rsc.io/quote@v1.5.1
 ! go list -m all
 stderr '^gecko: rsc.io/quote@v1.5.2 \(replaced by rsc.io/quote@v1.5.1\): missing go.sum entry for go.mod file; to add it:\n\tgecko mod download rsc.io/quote$'
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.1.mod
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.1.mod
 ! exists go.sum
 cp go.mod.orig go.mod
 
 # Control: when sums are present, loading the build list downloads .mod files.
 cp go.sum.buildlistonly go.sum
 go list -m all
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
 
 
 # When a sum is needed to load a .mod file for a package outside the build list,
@@ -40,14 +40,14 @@ stderr '^no required module provides package example.com/doesnotexist; to add it
 # The .zip file is not downloaded.
 ! go list rsc.io/quote
 stderr '^missing go.sum entry for module providing package rsc.io/quote; to add:\n\tgecko mod download rsc.io/quote$'
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
 
 # The error is attached to the package from the missing module. We can load
 # a package that imports it without that error.
 go list -e -deps -f '{{.ImportPath}}{{with .Error}} {{.Err}}{{end}}' .
 stdout '^m$'
 stdout '^rsc.io/quote missing go.sum entry for module providing package rsc.io/quote \(imported by m\); to add:\n\tgecko get m$'
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
 
 # go.sum should not have been written.
 cmp go.sum go.sum.buildlistonly
@@ -55,7 +55,7 @@ cmp go.sum go.sum.buildlistonly
 # Control: when sums are present, 'go list' downloads .zip files.
 cp go.sum.tidy go.sum
 go list .
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
 
 -- go.mod --
 module m

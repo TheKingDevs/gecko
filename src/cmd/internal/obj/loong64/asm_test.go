@@ -38,7 +38,7 @@ func TestLargeBranch(t *testing.T) {
 
 	// Assemble generated file.
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-o", filepath.Join(dir, "x.o"), tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=loong64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=loong64", "GKOS=linux")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("Build failed: %v, output: %s", err, out)
@@ -110,7 +110,7 @@ func TestPCALIGN(t *testing.T) {
 			t.Fatal(err)
 		}
 		cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-S", "-o", tmpout, tmpfile)
-		cmd.Env = append(os.Environ(), "GOARCH=loong64", "GOOS=linux")
+		cmd.Env = append(os.Environ(), "GKARCH=loong64", "GKOS=linux")
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Errorf("The %s build failed: %v, output: %s", test.name, err, out)
@@ -134,7 +134,7 @@ func TestNoRet(t *testing.T) {
 		t.Fatal(err)
 	}
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-o", tmpout, tmpfile)
-	cmd.Env = append(os.Environ(), "GOARCH=loong64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=loong64", "GKOS=linux")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Errorf("%v\n%s", err, out)
 	}

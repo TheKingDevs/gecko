@@ -1,5 +1,5 @@
-env GOFLAGS='$(echo ''cc"''; echo ''OOPS="oops'')'
+env GKFLAGS='$(echo ''cc"''; echo ''OOPS="oops'')'
 go env
-[GOOS:darwin] stdout 'GOFLAGS=''\$\(echo ''\\''''cc"''\\''''; echo ''\\''''OOPS="oops''\\''''\)'''
-[GOOS:linux] stdout 'GOFLAGS=''\$\(echo ''\\''''cc"''\\''''; echo ''\\''''OOPS="oops''\\''''\)'''
-[GOOS:windows] stdout 'set GOFLAGS=\$\(echo ''cc"''; echo ''OOPS="oops''\)'
+[GKOS:darwin] stdout 'GKFLAGS=''\$\(echo ''\\''''cc"''\\''''; echo ''\\''''OOPS="oops''\\''''\)'''
+[GKOS:linux] stdout 'GKFLAGS=''\$\(echo ''\\''''cc"''\\''''; echo ''\\''''OOPS="oops''\\''''\)'''
+[GKOS:windows] stdout 'set GKFLAGS=\$\(echo ''cc"''; echo ''OOPS="oops''\)'

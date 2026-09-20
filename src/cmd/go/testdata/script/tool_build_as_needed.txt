@@ -1,56 +1,56 @@
-[!symlink] skip 'uses symlinks to construct a GOROOT'
+[!symlink] skip 'uses symlinks to construct a GKROOT'
 
 env NEWGOROOT=$WORK${/}goroot
 # Use the installed host tools, but make testgo find them under its runtime tuple.
-env TOOLDIR=$GOROOT/pkg/tool/${TESTGO_GOHOSTOS}_${TESTGO_GOHOSTARCH}
-env TESTGO_GOHOSTOS=$GOOS
-env TESTGO_GOHOSTARCH=$GOARCH
+env TOOLDIR=$GKROOT/pkg/tool/${TESTGO_GOHOSTOS}_${TESTGO_GOHOSTARCH}
+env TESTGO_GOHOSTOS=$GKOS
+env TESTGO_GOHOSTARCH=$GKARCH
 # Use ${/} in paths we'll check for in stdout below, so they contain '\' on Windows
-env NEWTOOLDIR=$NEWGOROOT${/}pkg${/}tool${/}${GOOS}_${GOARCH}
+env NEWTOOLDIR=$NEWGOROOT${/}pkg${/}tool${/}${GKOS}_${GKARCH}
 mkdir $NEWGOROOT $NEWGOROOT/bin $NEWTOOLDIR
-[symlink] symlink $NEWGOROOT/src -> $GOROOT/src
-[symlink] symlink $NEWGOROOT/pkg/include -> $GOROOT/pkg/include
-[symlink] symlink $NEWGOROOT/bin/gecko -> $GOROOT/bin/gecko
-[symlink] symlink $NEWTOOLDIR/compile$GOEXE -> $TOOLDIR/compile$GOEXE
-[symlink] symlink $NEWTOOLDIR/cgo$GOEXE -> $TOOLDIR/cgo$GOEXE
-[symlink] symlink $NEWTOOLDIR/link$GOEXE -> $TOOLDIR/link$GOEXE
-[symlink] symlink $NEWTOOLDIR/asm$GOEXE -> $TOOLDIR/asm$GOEXE
-[symlink] symlink $NEWTOOLDIR/pack$GOEXE -> $TOOLDIR/pack$GOEXE
-env GOROOT=$NEWGOROOT
+[symlink] symlink $NEWGOROOT/src -> $GKROOT/src
+[symlink] symlink $NEWGOROOT/pkg/include -> $GKROOT/pkg/include
+[symlink] symlink $NEWGOROOT/bin/gecko -> $GKROOT/bin/gecko
+[symlink] symlink $NEWTOOLDIR/compile$GKEXE -> $TOOLDIR/compile$GKEXE
+[symlink] symlink $NEWTOOLDIR/cgo$GKEXE -> $TOOLDIR/cgo$GKEXE
+[symlink] symlink $NEWTOOLDIR/link$GKEXE -> $TOOLDIR/link$GKEXE
+[symlink] symlink $NEWTOOLDIR/asm$GKEXE -> $TOOLDIR/asm$GKEXE
+[symlink] symlink $NEWTOOLDIR/pack$GKEXE -> $TOOLDIR/pack$GKEXE
+env GKROOT=$NEWGOROOT
 env TOOLDIR=$NEWTOOLDIR
 
-# GOROOT without test2json tool builds and runs it as needed
-go env GOROOT
+# GKROOT without test2json tool builds and runs it as needed
+go env GKROOT
 ! exists $TOOLDIR/test2json
 go tool test2json
 stdout '{"Action":"start"}'
-! exists $TOOLDIR/test2json$GOEXE
+! exists $TOOLDIR/test2json$GKEXE
 go tool -n test2json
-! stdout $NEWTOOLDIR${/}test2json$GOEXE
+! stdout $NEWTOOLDIR${/}test2json$GKEXE
 
-# GOROOT with test2json uses the test2json in the GOROOT
+# GKROOT with test2json uses the test2json in the GKROOT
 go install cmd/test2json
-exists $TOOLDIR/test2json$GOEXE
+exists $TOOLDIR/test2json$GKEXE
 go tool test2json
 stdout '{"Action":"start"}'
 go tool -n test2json
-stdout $NEWTOOLDIR${/}test2json$GOEXE
+stdout $NEWTOOLDIR${/}test2json$GKEXE
 
-# Tool still runs properly even with wrong GOOS/GOARCH
+# Tool still runs properly even with wrong GKOS/GKARCH
 # Remove test2json from tooldir
-rm $TOOLDIR/test2json$GOEXE
+rm $TOOLDIR/test2json$GKEXE
 go tool -n test2json
-! stdout $NEWTOOLDIR${/}test2json$GOEXE
-# Set GOOS/GOARCH to different values than host GOOS/GOARCH.
-env GOOS=js
-env GOARCH=wasm
+! stdout $NEWTOOLDIR${/}test2json$GKEXE
+# Set GKOS/GKARCH to different values than host GKOS/GKARCH.
+env GKOS=js
+env GKARCH=wasm
 # Control case: go run shouldn't work because it respects
-# GOOS/GOARCH, and we can't execute non-native binary.
+# GKOS/GKARCH, and we can't execute non-native binary.
 # Don't actually run the binary because maybe we can.
 # (Maybe the user has a go_js_wasm_exec installed.)
 # Instead just look to see that the right binary got linked.
 go run -n cmd/test2json
-stderr modinfo.*GOARCH=wasm.*GOOS=js
-# go tool should succeed because it doesn't respect GOOS/GOARCH.
+stderr modinfo.*GKARCH=wasm.*GKOS=js
+# go tool should succeed because it doesn't respect GKOS/GKARCH.
 go tool test2json
 stdout '{"Action":"start"}'

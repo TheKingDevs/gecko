@@ -20,13 +20,13 @@ level1b${/}pkg.go:5:2: "test/main/level1b/level2y" imported as level2x and not u
 level1b${/}pkg.go:8:39: undefined: level2y
 ]
 -- wanterr_61816 --
-[level1b${/}pkg.go:4:2: package foo is not in std ($GOROOT${/}src${/}foo)]
+[level1b${/}pkg.go:4:2: package foo is not in std ($GKROOT${/}src${/}foo)]
 [# test/main/level1a
 level1a${/}pkg.go:5:2: level2x redeclared in this block
 	level1a${/}pkg.go:4:2: other declaration of level2x
 level1a${/}pkg.go:5:2: "test/main/level1a/level2y" imported as level2x and not used
 level1a${/}pkg.go:8:39: undefined: level2y
- level1b${/}pkg.go:4:2: package foo is not in std ($GOROOT${/}src${/}foo)]
+ level1b${/}pkg.go:4:2: package foo is not in std ($GKROOT${/}src${/}foo)]
 -- level1b_61816.txt --
 package level1b
 

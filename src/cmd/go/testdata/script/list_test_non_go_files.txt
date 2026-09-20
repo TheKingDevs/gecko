@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # issue 29899: handling files with non-Go extension
 go list -e -test -json -- c.c x.go

@@ -6984,7 +6984,7 @@ func TestTypeFieldReadOnly(t *testing.T) {
 	if runtime.GOOS == "js" || runtime.GOOS == "wasip1" {
 		// This is OK because we don't use the optimization
 		// for js or wasip1.
-		t.Skip("test does not fault on GOOS=js")
+		t.Skip("test does not fault on GKOS=js")
 	}
 
 	// It's important that changing one StructField.Index

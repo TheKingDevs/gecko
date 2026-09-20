@@ -1,26 +1,26 @@
 [!race] skip
 
-cd $GOPATH/src/empty/pkg
+cd $GKPATH/src/empty/pkg
 go test -cover -coverpkg=. -race
 
 [short] stop # Only run first case in short mode
 
-cd $GOPATH/src/empty/test
+cd $GKPATH/src/empty/test
 go test -cover -coverpkg=. -race
 
-cd $GOPATH/src/empty/xtest
+cd $GKPATH/src/empty/xtest
 go test -cover -coverpkg=. -race
 
-cd $GOPATH/src/empty/pkgtest
+cd $GKPATH/src/empty/pkgtest
 go test -cover -coverpkg=. -race
 
-cd $GOPATH/src/empty/pkgxtest
+cd $GKPATH/src/empty/pkgxtest
 go test -cover -coverpkg=. -race
 
-cd $GOPATH/src/empty/pkgtestxtest
+cd $GKPATH/src/empty/pkgtestxtest
 go test -cover -coverpkg=. -race
 
-cd $GOPATH/src/empty/testxtest
+cd $GKPATH/src/empty/testxtest
 go test -cover -coverpkg=. -race
 
 -- empty/go.mod --

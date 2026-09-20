@@ -7,7 +7,7 @@ go build ./cmd/mytool
 # for any stale standard-library dependencies.
 #
 # TODO(#27628): This should not be necessary.
-env GOCACHE=$WORK/gocache
+env GKCACHE=$WORK/gocache
 
 # mytool records here if it is ever run for a C-family compiler's -### probe.
 env TOOLEXEC_CDRIVER_LOG=$WORK/cdriver.log
@@ -20,12 +20,12 @@ env TOOLEXEC_CDRIVER_LOG=$WORK/cdriver.log
 # Finally, note that asm and cgo are run twice.
 
 go build -toolexec=$PWD/mytool
-[GOARCH:amd64] stderr -count=2 '^asm'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main/withasm"$'
-stderr -count=1 '^compile'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main/withasm"$'
-[cgo] stderr -count=2 '^cgo'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main/withcgo"$'
-[cgo] stderr -count=1 '^compile'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main/withcgo"$'
-stderr -count=1 '^compile'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main"$'
-stderr -count=1 '^link'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main"$'
+[GKARCH:amd64] stderr -count=2 '^asm'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main/withasm"$'
+stderr -count=1 '^compile'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main/withasm"$'
+[cgo] stderr -count=2 '^cgo'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main/withcgo"$'
+[cgo] stderr -count=1 '^compile'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main/withcgo"$'
+stderr -count=1 '^compile'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main"$'
+stderr -count=1 '^link'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main"$'
 
 # The C compiler used by cgo is not run under -toolexec, so the -### probe
 # used to compute its tool ID must not be run under -toolexec either.
@@ -48,14 +48,14 @@ stderr -count=1 '^link'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main"$'
 go test -toolexec=$PWD/mytool
 
 stderr -count=2 '^# test/main\.test$'
-stderr -count=1 '^compile'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main\.test"$'
-stderr -count=1 '^link'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main\.test"$'
+stderr -count=1 '^compile'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main\.test"$'
+stderr -count=1 '^link'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main\.test"$'
 
 stderr -count=1 '^# test/main \[test/main\.test\]$'
-stderr -count=1 '^compile'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main \[test/main\.test\]"$'
+stderr -count=1 '^compile'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main \[test/main\.test\]"$'
 
 stderr -count=1 '^# test/main_test \[test/main\.test\]$'
-stderr -count=1 '^compile'${GOEXE}' TOOLEXEC_IMPORTPATH="test/main_test \[test/main\.test\]"$'
+stderr -count=1 '^compile'${GKEXE}' TOOLEXEC_IMPORTPATH="test/main_test \[test/main\.test\]"$'
 
 -- go.mod --
 module test/main

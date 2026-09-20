@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 
 func testMain(m *testing.M) int {
 	if testing.Short() && testenv.Builder() == "" {
-		globalSkip = func(t testing.TB) { t.Skip("short mode and $GO_BUILDER_NAME not set") }
+		globalSkip = func(t testing.TB) { t.Skip("short mode and $GK_BUILDER_NAME not set") }
 		return m.Run()
 	}
 	if runtime.GOOS == "linux" {
@@ -81,7 +81,7 @@ func testMain(m *testing.M) int {
 	} else {
 		defer os.RemoveAll(GOPATH)
 	}
-	os.Setenv("GOPATH", GOPATH)
+	os.Setenv("GKPATH", GOPATH)
 
 	// Copy testdata into GOPATH/src/testarchive, along with a go.mod file
 	// declaring the same path.
@@ -97,14 +97,14 @@ func testMain(m *testing.M) int {
 		log.Panic(err)
 	}
 
-	GOOS = goEnv("GOOS")
-	GOARCH = goEnv("GOARCH")
+	GOOS = goEnv("GKOS")
+	GOARCH = goEnv("GKARCH")
 	bin = cmdToRun("./testp")
 
 	ccOut := goEnv("CC")
 	cc = []string{ccOut}
 
-	out := goEnv("GOGCCFLAGS")
+	out := goEnv("GKGCCFLAGS")
 	quote := '\000'
 	start := 0
 	lastSpace := true
@@ -189,7 +189,7 @@ func goEnv(key string) string {
 }
 
 func cmdToRun(name string) []string {
-	execScript := "go_" + goEnv("GOOS") + "_" + goEnv("GOARCH") + "_exec"
+	execScript := "go_" + goEnv("GKOS") + "_" + goEnv("GKARCH") + "_exec"
 	executor, err := exec.LookPath(execScript)
 	if err != nil {
 		return []string{name}
@@ -232,7 +232,7 @@ func genHeader(t *testing.T, header, dir string) {
 func testInstall(t *testing.T, exe, libgoa, libgoh string, buildcmd ...string) {
 	t.Helper()
 	cmd := exec.Command(buildcmd[0], buildcmd[1:]...)
-	cmd.Env = append(cmd.Environ(), "GO111MODULE=off") // 'go install' only works in GOPATH mode
+	cmd.Env = append(cmd.Environ(), "GK111MODULE=off") // 'go install' only works in GOPATH mode
 	t.Log(buildcmd)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Logf("%s", out)
@@ -1159,7 +1159,7 @@ func TestCachedInstall(t *testing.T) {
 	buildcmd := []string{"go", "install", "-buildmode=c-archive", "./libgo"}
 
 	cmd := exec.Command(buildcmd[0], buildcmd[1:]...)
-	cmd.Env = append(cmd.Environ(), "GO111MODULE=off") // 'go install' only works in GOPATH mode
+	cmd.Env = append(cmd.Environ(), "GK111MODULE=off") // 'go install' only works in GOPATH mode
 	t.Log(buildcmd)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Logf("%s", out)
@@ -1175,7 +1175,7 @@ func TestCachedInstall(t *testing.T) {
 	}
 
 	cmd = exec.Command(buildcmd[0], buildcmd[1:]...)
-	cmd.Env = append(cmd.Environ(), "GO111MODULE=off")
+	cmd.Env = append(cmd.Environ(), "GK111MODULE=off")
 	t.Log(buildcmd)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Logf("%s", out)

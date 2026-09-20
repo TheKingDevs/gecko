@@ -1,7 +1,7 @@
 [compiler:gccgo] skip # gccgo does not have standard packages
 [short] skip
 
-env GOCACHE=$WORK/tmp
+env GKCACHE=$WORK/tmp
 
 # Run go test -json on errors m/empty/pkg and m/skipper
 # It would be nice to test that the output is interlaced
@@ -36,8 +36,8 @@ stdout '"Package":"errors"'
 stdout '"Action":"run"'
 
 # Test running test2json
-go test -o $WORK/tmp/errors.test$GOEXE -c errors
-go tool test2json -p errors $WORK/tmp/errors.test$GOEXE -test.v -test.short
+go test -o $WORK/tmp/errors.test$GKEXE -c errors
+go tool test2json -p errors $WORK/tmp/errors.test$GKEXE -test.v -test.short
 stdout '"Package":"errors"'
 stdout '"Action":"run"'
 stdout '\{"Action":"pass","Package":"errors"\}'

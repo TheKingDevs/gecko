@@ -1,6 +1,6 @@
-env GOARCH=arm
-env GOOS=linux
-env GOARM=5
+env GKARCH=arm
+env GKOS=linux
+env GKARM=5
 
 go build hello.go
 ! stderr 'unable to find math.a'

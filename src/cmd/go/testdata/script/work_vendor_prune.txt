@@ -9,9 +9,9 @@ go list -m -f '{{.Version}}' example.com/q
 stdout '^v1.1.0$'
 
 go list -f '{{.Dir}}' example.com/q
-stdout $GOPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]q
+stdout $GKPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]q
 go list -f '{{.Dir}}' example.com/b
-stdout $GOPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]b
+stdout $GKPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]b
 
 rm b
 rm q1_0_0

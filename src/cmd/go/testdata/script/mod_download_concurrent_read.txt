@@ -10,7 +10,7 @@
 # Since 1.16, we extract to the final directory, but we create a .partial file
 # so that if we crash, other processes know the directory is incomplete.
 
-[!GOOS:windows] skip
+[!GKOS:windows] skip
 [short] skip
 
 go run downloader.go
@@ -73,7 +73,7 @@ func run() (err error) {
 func download(gopath string) error {
 	cmd := exec.Command("go", "mod", "download", "-modcacherw", "rsc.io/quote@v1.5.2")
 	cmd.Stderr = os.Stderr
-	cmd.Env = append(os.Environ(), "GOPATH="+gopath)
+	cmd.Env = append(os.Environ(), "GKPATH="+gopath)
 	return cmd.Run()
 }
 

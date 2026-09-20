@@ -7,26 +7,26 @@
 go work vendor
 cmp vendor/modules.txt want_workspace_modules_txt
 go list -f {{.Dir}} example.com/b
-stdout $GOPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]b
+stdout $GKPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]b
 
 # vendor directory produced for workspace, module mode
 # runs in mod=readonly
-env GOWORK=off
+env GKWORK=off
 go list -f {{.Dir}} example.com/b
-stdout $GOPATH[\\/]src[\\/]b
+stdout $GKPATH[\\/]src[\\/]b
 
 # vendor directory produced for module, module mode
 # runs in mod=vendor
 go mod vendor
 cmp vendor/modules.txt want_module_modules_txt
 go list -f {{.Dir}} example.com/b
-stdout $GOPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]b
+stdout $GKPATH[\\/]src[\\/]vendor[\\/]example.com[\\/]b
 
 # vendor directory produced for module, workspace mode
 # runs in mod=readonly
-env GOWORK=
+env GKWORK=
 go list -f {{.Dir}} example.com/b
-stdout $GOPATH[\\/]src[\\/]b
+stdout $GKPATH[\\/]src[\\/]b
 
 -- want_workspace_modules_txt --
 ## workspace

@@ -1,5 +1,5 @@
 # Imports
-env GO111MODULE=off
+env GK111MODULE=off
 
 # Pass -e to permit errors (e.g. bad.go, invalid.go)
 go list -f  '{{.ImportPath}} {{.Imports}}' -e 'vend/...' 'vend/vendor/...' 'vend/x/vendor/...'

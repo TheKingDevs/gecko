@@ -5,11 +5,11 @@
 # that becomes the default.
 [!cc:clang] [!cc:gcc] skip 'C compiler is not gcc or clang'
 
-env GOCACHE=$WORK/gocache  # Looking for compile flags, so need a clean cache.
-[!GOOS:windows] env PATH=.:$PATH
-[!GOOS:windows] chmod 0755 p/gcc p/clang
-[!GOOS:windows] exists -exec p/gcc p/clang
-[GOOS:windows] exists -exec p/gcc.bat p/clang.bat
+env GKCACHE=$WORK/gocache  # Looking for compile flags, so need a clean cache.
+[!GKOS:windows] env PATH=.:$PATH
+[!GKOS:windows] chmod 0755 p/gcc p/clang
+[!GKOS:windows] exists -exec p/gcc p/clang
+[GKOS:windows] exists -exec p/gcc.bat p/clang.bat
 ! exists p/bug.txt
 ! go build -x
 stderr '^cgo: C compiler "(clang|gcc)" not found: exec: "(clang|gcc)": cannot run executable found relative to current directory'

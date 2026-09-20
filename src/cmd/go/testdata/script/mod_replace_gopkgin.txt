@@ -8,9 +8,9 @@ skip 'skipping test that depends on an unreliable third-party server; see https:
 # TODO(#54503): Make this work without needing the external network, and then re-enable.
 [!git] skip
 
-env GOPROXY=direct
-env GOSUMDB=off
-env GOFLAGS=-mod=mod
+env GKPROXY=direct
+env GKSUMDB=off
+env GKFLAGS=-mod=mod
 
 # Replacing gopkg.in/[…].vN with a repository with a root go.mod file
 # specifying […].vN and a compatible version should succeed, even if

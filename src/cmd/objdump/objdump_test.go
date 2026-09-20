@@ -127,10 +127,10 @@ func testDisasm(t *testing.T, srcfname string, printCode bool, printGnuAsm bool,
 		if len(f) != 2 {
 			t.Fatalf("-target argument must be goos/goarch")
 		}
-		defer os.Setenv("GOOS", os.Getenv("GOOS"))
-		defer os.Setenv("GOARCH", os.Getenv("GOARCH"))
-		os.Setenv("GOOS", f[0])
-		os.Setenv("GOARCH", f[1])
+		defer os.Setenv("GKOS", os.Getenv("GKOS"))
+		defer os.Setenv("GKARCH", os.Getenv("GKARCH"))
+		os.Setenv("GKOS", f[0])
+		os.Setenv("GKARCH", f[1])
 		goarch = f[1]
 	}
 

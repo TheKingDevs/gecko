@@ -324,7 +324,7 @@ func TestPCALIGN(t *testing.T) {
 			t.Fatal(err)
 		}
 		cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-S", "-o", tmpout, tmpfile)
-		cmd.Env = append(os.Environ(), "GOARCH=amd64", "GOOS=linux")
+		cmd.Env = append(os.Environ(), "GKARCH=amd64", "GKOS=linux")
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Errorf("The %s build failed: %v, output: %s", test.name, err, out)

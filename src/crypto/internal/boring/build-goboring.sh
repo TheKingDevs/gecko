@@ -16,8 +16,8 @@ export LANG=C
 unset LANGUAGE
 
 case $(uname -m) in
-x86_64)  export GOARCH=amd64 ;;
-aarch64) export GOARCH=arm64 ;;
+x86_64)  export GKARCH=amd64 ;;
+aarch64) export GKARCH=arm64 ;;
 *)
 	echo 'unknown uname -m:' $(uname -m) >&2
 	exit 2
@@ -203,7 +203,7 @@ u128 __udivti3(u128 x, u128 y) {
 EOF
 
 extra=""
-case $GOARCH in
+case $GKARCH in
 amd64)
 	cp umod-amd64.s umod.s
 	clang -c -o umod.o umod.s
@@ -231,7 +231,7 @@ echo __umodti3 _goboringcrypto___umodti3 >>renames.txt
 echo __udivti3 _goboringcrypto___udivti3 >>renames.txt
 objcopy --remove-section=.llvm_addrsig goboringcrypto.o goboringcrypto1.o # b/179161016
 objcopy --redefine-syms=renames.txt goboringcrypto1.o goboringcrypto2.o
-objcopy --keep-global-symbols=globals.txt --strip-unneeded goboringcrypto2.o goboringcrypto_linux_$GOARCH.syso
+objcopy --keep-global-symbols=globals.txt --strip-unneeded goboringcrypto2.o goboringcrypto_linux_$GKARCH.syso
 
 # Done!
-ls -l goboringcrypto_linux_$GOARCH.syso
+ls -l goboringcrypto_linux_$GKARCH.syso

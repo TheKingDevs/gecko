@@ -51,7 +51,7 @@ func moduleStatus(t *testing.T) {
 
 	t.Logf("Module name: %s", fips140.Name())
 	t.Logf("Module version: %s", fips140.Version())
-	t.Logf("GOOS/GOARCH: %s/%s", runtime.GOOS, runtime.GOARCH)
+	t.Logf("GKOS/GKARCH: %s/%s", runtime.GOOS, runtime.GOARCH)
 
 	if noPAAPAI {
 		t.Log("PAA/PAI disabled")
@@ -72,7 +72,7 @@ func TestVersion(t *testing.T) {
 		t.Skip("no build info")
 	}
 	for _, setting := range bi.Settings {
-		if setting.Key != "GOFIPS140" {
+		if setting.Key != "GKFIPS140" {
 			continue
 		}
 		exp := setting.Value

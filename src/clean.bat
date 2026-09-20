@@ -11,11 +11,11 @@ call .\env.bat
 del env.bat
 echo.
 
-if not exist %GOTOOLDIR%\dist.exe (
-    echo cannot find %GOTOOLDIR%\dist.exe; nothing to clean
+if not exist %GKTOOLDIR%\dist.exe (
+    echo cannot find %GKTOOLDIR%\dist.exe; nothing to clean
     exit /b 1
 )
 
-"%GOBIN%\go" clean -i std
-"%GOBIN%\go" tool dist clean
-"%GOBIN%\go" clean -i cmd
+"%GKBIN%\go" clean -i std
+"%GKBIN%\go" tool dist clean
+"%GKBIN%\go" clean -i cmd

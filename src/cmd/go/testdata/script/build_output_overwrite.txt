@@ -1,8 +1,8 @@
 # windows executables have the .exe extension and won't overwrite source files
-[GOOS:windows] skip
+[GKOS:windows] skip
 
 mkdir out
-env GOTMPDIR=$PWD/out
+env GKTMPDIR=$PWD/out
 
 grep 'this should still exist' foo.go
 

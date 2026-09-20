@@ -36,7 +36,7 @@ URLs of a specified form. The requests have no query parameters, so even
 a site serving from a fixed file system (including a file:/// URL)
 can be a module proxy.
 
-For details on the GOPROXY protocol, see
+For details on the GKPROXY protocol, see
 https://go.dev/ref/mod#goproxy-protocol.
 `,
 }
@@ -119,7 +119,7 @@ func proxyList() ([]proxySpec, error) {
 			// There were no proxies, other than the implicit "noproxy" added when
 			// GONOPROXY is set. This can happen if GOPROXY is a non-empty string
 			// like "," or " ".
-			proxyOnce.err = fmt.Errorf("GOPROXY list is not the empty string, but contains no entries")
+			proxyOnce.err = fmt.Errorf("GKPROXY list is not the empty string, but contains no entries")
 		}
 	})
 
@@ -141,7 +141,7 @@ func TryProxies(f func(proxy string) error) error {
 		return err
 	}
 	if len(proxies) == 0 {
-		panic("GOPROXY list is empty")
+		panic("GKPROXY list is empty")
 	}
 
 	// We try to report the most helpful error to the user. "direct" and "noproxy"

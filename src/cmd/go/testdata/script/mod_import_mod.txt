@@ -1,5 +1,5 @@
-# Test that GOPATH/pkg/mod is excluded
-env GO111MODULE=off
+# Test that GKPATH/pkg/mod is excluded
+env GK111MODULE=off
 ! go list mod/foo
 stderr 'disallowed import path'
 

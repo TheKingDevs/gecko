@@ -16,16 +16,16 @@ go run -C ../../../../cmd/compile/internal/ssa/_gen .
 go install cmd/compile
 
 # Tests
-# Set the GOEXPERIMENT explicitly.
-GOEXPERIMENT=simd GOARCH=amd64 go run -C ../../../../simd/archsimd/testdata .
-GOEXPERIMENT=simd GOARCH=amd64 go test -v ../../../../simd/archsimd
-GOEXPERIMENT=simd GOARCH=amd64 go test go/doc go/build
-GOEXPERIMENT=simd GOARCH=amd64 go test cmd/api -v -check -run ^TestCheck$
-GOEXPERIMENT=simd GOARCH=amd64 go test cmd/compile/internal/ssagen -simd=0
+# Set the GKEXPERIMENT explicitly.
+GKEXPERIMENT=simd GKARCH=amd64 go run -C ../../../../simd/archsimd/testdata .
+GKEXPERIMENT=simd GKARCH=amd64 go test -v ../../../../simd/archsimd
+GKEXPERIMENT=simd GKARCH=amd64 go test go/doc go/build
+GKEXPERIMENT=simd GKARCH=amd64 go test cmd/api -v -check -run ^TestCheck$
+GKEXPERIMENT=simd GKARCH=amd64 go test cmd/compile/internal/ssagen -simd=0
 
-# Check tests without the GOEXPERIMENT
-GOEXPERIMENT= go test go/doc go/build
-GOEXPERIMENT= go test cmd/api -v -check -run ^TestCheck$
-GOEXPERIMENT= go test cmd/compile/internal/ssagen -simd=0
+# Check tests without the GKEXPERIMENT
+GKEXPERIMENT= go test go/doc go/build
+GKEXPERIMENT= go test cmd/api -v -check -run ^TestCheck$
+GKEXPERIMENT= go test cmd/compile/internal/ssagen -simd=0
 
 # TODO: Add some tests of SIMD itself

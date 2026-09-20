@@ -61,10 +61,10 @@ cp go.sum.orig go.sum
 
 # Delete the new version's zip (but not mod) from the cache and go offline.
 # 'go get' should fail when fetching the zip.
-rm $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
-env GOPROXY=off
+rm $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
+env GKPROXY=off
 ! go get example.com/upgrade@v0.0.2
-stderr '^gecko: upgraded rsc.io/quote v1.0.0 => v1.5.2: error finding sum for rsc.io/quote@v1.5.2: module lookup disabled by GOPROXY=off$'
+stderr '^gecko: upgraded rsc.io/quote v1.0.0 => v1.5.2: error finding sum for rsc.io/quote@v1.5.2: module lookup disabled by GKPROXY=off$'
 
 -- go.mod.orig --
 module m

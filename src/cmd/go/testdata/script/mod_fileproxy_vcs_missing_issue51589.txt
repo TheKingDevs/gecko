@@ -3,13 +3,13 @@
 # Verifies golang.org/issue/51589
 
 # download the modules first
-env GOPATH=$WORK/gopath
+env GKPATH=$WORK/gopath
 cd $WORK/x
 go mod tidy
 
 # Use download cache as file:/// proxy.
-[GOOS:windows] env GOPROXY=file:///$WORK/gopath/pkg/mod/cache/download
-[!GOOS:windows] env GOPROXY=file://$WORK/gopath/pkg/mod/cache/download
+[GKOS:windows] env GKPROXY=file:///$WORK/gopath/pkg/mod/cache/download
+[!GKOS:windows] env GKPROXY=file://$WORK/gopath/pkg/mod/cache/download
 rm $WORK/gopath/pkg/mod/cache/download/golang.org/x/text/
 go mod tidy -e
 stderr '^gecko: rsc.io/sampler@v1.3.0 requires\n\tgolang.org/x/text@.*: reading file://.*/pkg/mod/cache/download/golang.org/x/text/.*'

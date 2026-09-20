@@ -1,12 +1,12 @@
-# In GOPATH mode, vendored packages can replace std packages.
-env GO111MODULE=off
+# In GKPATH mode, vendored packages can replace std packages.
+env GK111MODULE=off
 cd vend/hello
 go test -v
 stdout TestMsgInternal
 stdout TestMsgExternal
 
 # In module mode, they cannot.
-env GO111MODULE=on
+env GK111MODULE=on
 ! go test -mod=vendor
 stderr 'undefined: strings.Msg'
 

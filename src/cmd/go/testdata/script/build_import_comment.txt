@@ -1,5 +1,5 @@
-# Test in GOPATH mode first.
-env GO111MODULE=off
+# Test in GKPATH mode first.
+env GK111MODULE=off
 cd m
 
 # Import comment matches
@@ -20,7 +20,7 @@ stderr 'found import comments'
 
 # Test in module mode.
 # We ignore import comments, so these commands should succeed.
-env GO111MODULE=on
+env GK111MODULE=on
 
 # Import comment matches
 go build -n works.go

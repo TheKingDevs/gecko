@@ -31,7 +31,7 @@ var (
 // res is used for the custom GOAUTH command's stdin.
 func AddCredentials(client *http.Client, req *http.Request, res *http.Response, url string) bool {
 	if req.URL.Scheme != "https" {
-		panic("GOAUTH called without https")
+		panic("GKAUTH called without https")
 	}
 	if cfg.GOAUTH == "off" {
 		return false
@@ -60,18 +60,18 @@ func runGoAuth(client *http.Client, res *http.Response, url string) {
 		command = strings.TrimSpace(command)
 		words := strings.Fields(command)
 		if len(words) == 0 {
-			base.Fatalf("gecko: GOAUTH encountered an empty command (GOAUTH=%s)", cfg.GOAUTH)
+			base.Fatalf("gecko: GKAUTH encountered an empty command (GKAUTH=%s)", cfg.GOAUTH)
 		}
 		switch words[0] {
 		case "off":
 			if len(goAuthCmds) != 1 {
-				base.Fatalf("gecko: GOAUTH=off cannot be combined with other authentication commands (GOAUTH=%s)", cfg.GOAUTH)
+				base.Fatalf("gecko: GKAUTH=off cannot be combined with other authentication commands (GKAUTH=%s)", cfg.GOAUTH)
 			}
 			return
 		case "netrc":
 			lines, err := readNetrc()
 			if err != nil {
-				cmdErrs = append(cmdErrs, fmt.Errorf("GOAUTH=%s: %v", command, err))
+				cmdErrs = append(cmdErrs, fmt.Errorf("GKAUTH=%s: %v", command, err))
 				continue
 			}
 			// Process lines in reverse so that if the same machine is listed
@@ -86,18 +86,18 @@ func runGoAuth(client *http.Client, res *http.Response, url string) {
 			}
 		case "git":
 			if len(words) != 2 {
-				base.Fatalf("gecko: GOAUTH=git dir method requires an absolute path to the git working directory")
+				base.Fatalf("gecko: GKAUTH=git dir method requires an absolute path to the git working directory")
 			}
 			dir := words[1]
 			if !filepath.IsAbs(dir) {
-				base.Fatalf("gecko: GOAUTH=git dir method requires an absolute path to the git working directory, dir is not absolute")
+				base.Fatalf("gecko: GKAUTH=git dir method requires an absolute path to the git working directory, dir is not absolute")
 			}
 			fs, err := os.Stat(dir)
 			if err != nil {
-				base.Fatalf("gecko: GOAUTH=git encountered an error; cannot stat %s: %v", dir, err)
+				base.Fatalf("gecko: GKAUTH=git encountered an error; cannot stat %s: %v", dir, err)
 			}
 			if !fs.IsDir() {
-				base.Fatalf("gecko: GOAUTH=git dir method requires an absolute path to the git working directory, dir is not a directory")
+				base.Fatalf("gecko: GKAUTH=git dir method requires an absolute path to the git working directory, dir is not a directory")
 			}
 
 			if url == "" {
@@ -109,7 +109,7 @@ func runGoAuth(client *http.Client, res *http.Response, url string) {
 			if err != nil {
 				// Save the error, but don't print it yet in case another
 				// GOAUTH command might succeed.
-				cmdErrs = append(cmdErrs, fmt.Errorf("GOAUTH=%s: %v", command, err))
+				cmdErrs = append(cmdErrs, fmt.Errorf("GKAUTH=%s: %v", command, err))
 			} else {
 				storeCredential(prefix, header)
 			}
@@ -118,7 +118,7 @@ func runGoAuth(client *http.Client, res *http.Response, url string) {
 			if err != nil {
 				// Save the error, but don't print it yet in case another
 				// GOAUTH command might succeed.
-				cmdErrs = append(cmdErrs, fmt.Errorf("GOAUTH=%s: %v", command, err))
+				cmdErrs = append(cmdErrs, fmt.Errorf("GKAUTH=%s: %v", command, err))
 				continue
 			}
 			for prefix := range credentials {
@@ -131,7 +131,7 @@ func runGoAuth(client *http.Client, res *http.Response, url string) {
 	if cfg.BuildX && url != "" {
 		req := &http.Request{Header: make(http.Header)}
 		if ok := loadCredential(req, url); !ok && len(cmdErrs) > 0 {
-			log.Printf("GOAUTH encountered errors for %s:", url)
+			log.Printf("GKAUTH encountered errors for %s:", url)
 			for _, err := range cmdErrs {
 				log.Printf("  %v", err)
 			}

@@ -5,52 +5,52 @@
 env TESTGO_VERSION=go1.500
 env TESTGO_VERSION_SWITCH=switch
 
-# GOTOOLCHAIN=auto runs default toolchain without a go.mod or go.work
-env GOTOOLCHAIN=auto
+# GKTOOLCHAIN=auto runs default toolchain without a go.mod or go.work
+env GKTOOLCHAIN=auto
 go version
 stdout go1.500
 
-# GOTOOLCHAIN=path runs default toolchain without a go.mod or go.work
-env GOTOOLCHAIN=path
+# GKTOOLCHAIN=path runs default toolchain without a go.mod or go.work
+env GKTOOLCHAIN=path
 go version
 stdout go1.500
 
-# GOTOOLCHAIN=asdf is a syntax error
-env GOTOOLCHAIN=asdf
+# GKTOOLCHAIN=asdf is a syntax error
+env GKTOOLCHAIN=asdf
 ! go version
-stderr '^gecko: invalid GOTOOLCHAIN "asdf"$'
+stderr '^gecko: invalid GKTOOLCHAIN "asdf"$'
 
-# GOTOOLCHAIN=version is used directly.
-env GOTOOLCHAIN=go1.600
+# GKTOOLCHAIN=version is used directly.
+env GKTOOLCHAIN=go1.600
 go version
 stdout go1.600
 
-env GOTOOLCHAIN=go1.400
+env GKTOOLCHAIN=go1.400
 go version
 stdout go1.400
 
-# GOTOOLCHAIN=version+auto sets a minimum.
-env GOTOOLCHAIN=go1.600+auto
+# GKTOOLCHAIN=version+auto sets a minimum.
+env GKTOOLCHAIN=go1.600+auto
 go version
 stdout go1.600
 
-env GOTOOLCHAIN=go1.400.0+auto
+env GKTOOLCHAIN=go1.400.0+auto
 go version
 stdout go1.400.0
 
-# GOTOOLCHAIN=version+path sets a minimum too.
-env GOTOOLCHAIN=go1.600+path
+# GKTOOLCHAIN=version+path sets a minimum too.
+env GKTOOLCHAIN=go1.600+path
 go version
 stdout go1.600
 
-env GOTOOLCHAIN=go1.400+path
+env GKTOOLCHAIN=go1.400+path
 go version
 stdout go1.400
 
 # Create a go.mod file and test interactions with auto and path.
 
-# GOTOOLCHAIN=auto uses go line if newer than local toolchain.
-env GOTOOLCHAIN=auto
+# GKTOOLCHAIN=auto uses go line if newer than local toolchain.
+env GKTOOLCHAIN=auto
 go mod init m
 go mod edit -go=1.700 -toolchain=none
 go version
@@ -70,12 +70,12 @@ stdout go1.500
 
 go mod edit -go=1.700 -toolchain=default
 go version
-stdout go1.500 # toolchain local is like GOTOOLCHAIN=local and wins
+stdout go1.500 # toolchain local is like GKTOOLCHAIN=local and wins
 ! go build
 stderr '^gecko: go.mod requires go >= 1.700 \(running go 1.500; go.mod sets toolchain default\)'
 
-# GOTOOLCHAIN=path does the same.
-env GOTOOLCHAIN=path
+# GKTOOLCHAIN=path does the same.
+env GKTOOLCHAIN=path
 go mod edit -go=1.700 -toolchain=none
 go version
 stdout 1.700
@@ -96,26 +96,26 @@ go mod edit -go=1.700 -toolchain=default
 go version
 stdout go1.500 # toolchain default applies even if older than go line
 ! go build
-stderr '^gecko: go.mod requires go >= 1.700 \(running go 1.500; GOTOOLCHAIN=path; go.mod sets toolchain default\)'
+stderr '^gecko: go.mod requires go >= 1.700 \(running go 1.500; GKTOOLCHAIN=path; go.mod sets toolchain default\)'
 
-# GOTOOLCHAIN=min+auto with toolchain default uses min, not local
+# GKTOOLCHAIN=min+auto with toolchain default uses min, not local
 
-env GOTOOLCHAIN=go1.400+auto
+env GKTOOLCHAIN=go1.400+auto
 go mod edit -go=1.300 -toolchain=default
 go version
 stdout 1.400 # not 1.500 local toolchain
 
-env GOTOOLCHAIN=go1.600+auto
+env GKTOOLCHAIN=go1.600+auto
 go mod edit -go=1.300 -toolchain=default
 go version
 stdout 1.600 # not 1.500 local toolchain
 
-# GOTOOLCHAIN names can have -suffix
-env GOTOOLCHAIN=go1.800-bigcorp
+# GKTOOLCHAIN names can have -suffix
+env GKTOOLCHAIN=go1.800-bigcorp
 go version
 stdout go1.800-bigcorp
 
-env GOTOOLCHAIN=auto
+env GKTOOLCHAIN=auto
 go mod edit -go=1.999 -toolchain=go1.800-bigcorp
 go version
 stdout go1.999
@@ -199,15 +199,15 @@ stdout go1.501
 
 go mod edit -go=1.21
 
-# avoid two-step switch, first from install target requirement, then from GOTOOLCHAIN min
-# instead, just jump directly to GOTOOLCHAIN min
+# avoid two-step switch, first from install target requirement, then from GKTOOLCHAIN min
+# instead, just jump directly to GKTOOLCHAIN min
 env TESTGO_VERSION=go1.2.3
 env GODEBUG=toolchaintrace=1
-env GOTOOLCHAIN=go1.23.0+auto
+env GKTOOLCHAIN=go1.23.0+auto
 ! go install rsc.io/fortune/nonexist@v0.0.1
 ! stderr 'switching to go1.22.9'
 stderr 'using go1.23.0'
-env GOTOOLCHAIN=auto
+env GKTOOLCHAIN=auto
 
 # go install m@v and go run m@v should use the go directive from m@v,
 # or the go directive in go.mod, whichever is higher.
@@ -227,24 +227,24 @@ stderr '^gecko: rsc.io/fortune/nonexist@v0.0.1: module rsc.io/fortune@v0.0.1 fou
 go mod edit -go=1.23rc1 -toolchain=go1.1.1
 
 ! go install rsc.io/fortune/nonexist@v0.0.1
-stderr '^gecko: upgrading toolchain to go1.23rc1 \(required by go line in go.mod; upgrade allowed by GOTOOLCHAIN=auto\)'
+stderr '^gecko: upgrading toolchain to go1.23rc1 \(required by go line in go.mod; upgrade allowed by GKTOOLCHAIN=auto\)'
 ! stderr 'switching to'
 stderr '^gecko: rsc.io/fortune/nonexist@v0.0.1: module rsc.io/fortune@v0.0.1 found, but does not contain package rsc.io/fortune/nonexist'
 
 ! go run rsc.io/fortune/nonexist@v0.0.1
-stderr '^gecko: upgrading toolchain to go1.23rc1 \(required by go line in go.mod; upgrade allowed by GOTOOLCHAIN=auto\)'
+stderr '^gecko: upgrading toolchain to go1.23rc1 \(required by go line in go.mod; upgrade allowed by GKTOOLCHAIN=auto\)'
 ! stderr 'switching to'
 stderr '^gecko: rsc.io/fortune/nonexist@v0.0.1: module rsc.io/fortune@v0.0.1 found, but does not contain package rsc.io/fortune/nonexist'
 
 go mod edit -go=1.23rc1 -toolchain=go1.998
 
 ! go install rsc.io/fortune/nonexist@v0.0.1
-stderr '^gecko: upgrading toolchain to go1.998 \(required by toolchain line in go.mod; upgrade allowed by GOTOOLCHAIN=auto\)'
+stderr '^gecko: upgrading toolchain to go1.998 \(required by toolchain line in go.mod; upgrade allowed by GKTOOLCHAIN=auto\)'
 ! stderr 'switching to'
 stderr '^gecko: rsc.io/fortune/nonexist@v0.0.1: module rsc.io/fortune@v0.0.1 found, but does not contain package rsc.io/fortune/nonexist'
 
 ! go run rsc.io/fortune/nonexist@v0.0.1
-stderr '^gecko: upgrading toolchain to go1.998 \(required by toolchain line in go.mod; upgrade allowed by GOTOOLCHAIN=auto\)'
+stderr '^gecko: upgrading toolchain to go1.998 \(required by toolchain line in go.mod; upgrade allowed by GKTOOLCHAIN=auto\)'
 ! stderr 'switching to'
 stderr '^gecko: rsc.io/fortune/nonexist@v0.0.1: module rsc.io/fortune@v0.0.1 found, but does not contain package rsc.io/fortune/nonexist'
 

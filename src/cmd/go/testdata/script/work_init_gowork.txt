@@ -1,15 +1,15 @@
-# Test that the GOWORK environment variable flag is used by go work init.
+# Test that the GKWORK environment variable flag is used by go work init.
 
 ! exists go.work
 go work init
 exists go.work
 
-env GOWORK=$GOPATH/src/foo/foo.work
+env GKWORK=$GKPATH/src/foo/foo.work
 ! exists foo/foo.work
 go work init
 exists foo/foo.work
 
-env GOWORK=
+env GKWORK=
 cd foo/bar
 ! go work init
 stderr 'already exists'

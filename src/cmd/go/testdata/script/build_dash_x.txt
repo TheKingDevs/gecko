@@ -5,7 +5,7 @@
 [!exec:bash] skip
 
 mkdir $WORK/tmp/cache
-env GOCACHE=$WORK/tmp/cache
+env GKCACHE=$WORK/tmp/cache
 
 # Before building our test main.go, ensure that an up-to-date copy of
 # runtime/cgo is present in the cache. If it isn't, the 'go build' step below

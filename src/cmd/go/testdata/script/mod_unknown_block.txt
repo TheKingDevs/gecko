@@ -1,4 +1,4 @@
-env GOTOOLCHAIN=local
+env GKTOOLCHAIN=local
 ! go list .
 stderr 'gecko: go.mod requires go >= 1.999'
 

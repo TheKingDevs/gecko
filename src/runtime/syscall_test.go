@@ -12,7 +12,7 @@ import (
 
 func TestSyscallArgs(t *testing.T) {
 	if runtime.GOOS != "darwin" {
-		t.Skipf("skipping test: GOARCH=%s", runtime.GOARCH)
+		t.Skipf("skipping test: GKARCH=%s", runtime.GOARCH)
 	}
 	testenv.MustHaveCGO(t)
 

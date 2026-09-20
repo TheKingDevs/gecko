@@ -6,11 +6,11 @@
 # no two action entry files that point to the same object id.
 
 sleep 2s # Sleep so that the unpacked files are > 2 seconds old. The index won't be used if the modified times on the files are newer.
-go build -o check$GOEXE check.go
+go build -o check$GKEXE check.go
 cd mod
-env GOCACHE=$WORK/newcache # Run list command in a clean cache.
+env GKCACHE=$WORK/newcache # Run list command in a clean cache.
 go list all
-exec ../check$GOEXE
+exec ../check$GKEXE
 
 -- mod/go.mod --
 module example.com/foo
@@ -28,9 +28,9 @@ import (
 )
 
 func main() {
-	cachedir := os.Getenv("GOCACHE")
+	cachedir := os.Getenv("GKCACHE")
 	if cachedir == "" {
-		log.Fatal("GOCACHE env var is empty; expected it to be set")
+		log.Fatal("GKCACHE env var is empty; expected it to be set")
 	}
 
 	// Read the top level cache directory. The cache directory contains directories with

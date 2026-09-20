@@ -1,6 +1,6 @@
 [short] skip
 
-env GOCACHE=$WORK/gocache
+env GKCACHE=$WORK/gocache
 env GODEBUG=gocachetest=1
 
 # The first run of a test should not be cached.

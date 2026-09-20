@@ -128,7 +128,7 @@ func main() {
 	corrupt := flag.Bool("corrupt", false, "run a module with a corrupted integrity checksum (-run)")
 	addr := flag.String("addr", "127.0.0.1:14140", "HTTP listen address (-serve)")
 	wasm := flag.String("wasm", "fips140test.test", "path to the WebAssembly module (-serve)")
-	wasmExec := flag.String("wasmexec", "wasm_exec.js", "path to wasm_exec.js from GOROOT/lib/wasm (-serve)")
+	wasmExec := flag.String("wasmexec", "wasm_exec.js", "path to wasm_exec.js from GKROOT/lib/wasm (-serve)")
 	flag.Parse()
 
 	switch {
@@ -240,7 +240,7 @@ func corruptModule(bin []byte) ([]byte, error) {
 	magic := append([]byte{0xff}, " Go fipsinfo \xff\x00"...)
 	i := bytes.Index(bin, magic)
 	if i < 0 {
-		return nil, errors.New("go:fipsinfo magic not found (module not built with GOFIPS140?)")
+		return nil, errors.New("go:fipsinfo magic not found (module not built with GKFIPS140?)")
 	}
 	rest := bin[i+len(magic):]
 	if bytes.Contains(rest, magic) {

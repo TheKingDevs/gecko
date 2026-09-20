@@ -17,9 +17,6 @@ var CmdWork = &base.Command{
 Note that support for workspaces is built into many other commands, not
 just 'gecko work'.
 
-See 'gecko help modules' for information about Go's module system of which
-workspaces are a part.
-
 See https://go.dev/ref/mod#workspaces for an in-depth reference on
 workspaces.
 
@@ -67,7 +64,7 @@ primarily intended to override conflicting replaces in different workspace
 modules.
 
 To determine whether the gecko command is operating in workspace mode, use
-the "gecko env GOWORK" command. This will specify the workspace file being
+the "gecko env GKWORK" command. This will specify the workspace file being
 used.
 `,
 

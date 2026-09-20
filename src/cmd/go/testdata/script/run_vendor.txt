@@ -1,5 +1,5 @@
 # Run
-env GO111MODULE=off
+env GK111MODULE=off
 cd vend/hello
 go run hello.go
 stdout 'hello, world'

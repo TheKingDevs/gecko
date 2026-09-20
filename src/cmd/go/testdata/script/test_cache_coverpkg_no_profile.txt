@@ -5,8 +5,8 @@
 [short] skip
 [GODEBUG:gocacheverify=1] skip
 
-# Start with a clean GOCACHE.
-env GOCACHE=$WORK/cache
+# Start with a clean GKCACHE.
+env GKCACHE=$WORK/cache
 
 cd proj
 

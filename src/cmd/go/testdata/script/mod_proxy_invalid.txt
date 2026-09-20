@@ -1,7 +1,7 @@
-env GOPROXY=$GOPROXY/invalid
+env GKPROXY=$GKPROXY/invalid
 
 ! go list -m rsc.io/quote@latest
-stderr '^gecko: module rsc.io/quote: invalid response from proxy "'$GOPROXY'": invalid character ''i'' looking for beginning of value$'
+stderr '^gecko: module rsc.io/quote: invalid response from proxy "'$GKPROXY'": invalid character ''i'' looking for beginning of value$'
 
 ! go list -m rsc.io/quote@1.5.2
-stderr '^gecko: rsc.io/quote@1.5.2: invalid version: invalid response from proxy "'$GOPROXY'": invalid character ''i'' looking for beginning of value$'
+stderr '^gecko: rsc.io/quote@1.5.2: invalid version: invalid response from proxy "'$GKPROXY'": invalid character ''i'' looking for beginning of value$'

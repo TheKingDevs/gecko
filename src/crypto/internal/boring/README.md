@@ -3,9 +3,9 @@ BoringCrypto (the core of [BoringSSL](https://boringssl.googlesource.com/borings
 for various crypto primitives, in furtherance of some work related to FIPS 140.
 We have heard that some external users of Go would be
 interested in this code as well, so we have published this code
-here in the main Go repository behind the setting GOEXPERIMENT=boringcrypto.
+here in the main Go repository behind the setting GKEXPERIMENT=boringcrypto.
 
-Use of GOEXPERIMENT=boringcrypto outside Google is _unsupported_.
+Use of GKEXPERIMENT=boringcrypto outside Google is _unsupported_.
 This mode is not part of the [Go 1 compatibility rules](https://go.dev/doc/go1compat),
 and it may change incompatibly or break in other ways at any time.
 
@@ -21,11 +21,11 @@ as well as the build scripts for the module itself: syso/*.syso.
 
 syso/goboringcrypto_linux_amd64.syso is built with:
 
-	GOARCH=amd64 ./build.sh
+	GKARCH=amd64 ./build.sh
 
 syso/goboringcrypto_linux_arm64.syso is built with:
 
-	GOARCH=arm64 ./build.sh
+	GKARCH=arm64 ./build.sh
 
 Both run using Docker.
 

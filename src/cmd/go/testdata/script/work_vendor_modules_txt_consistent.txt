@@ -40,7 +40,7 @@ cmpenv stderr extra_replacement_error.txt
 # example.com/q v1.0.0 => ./q
 ## explicit; go 1.21
 -- required_but_not_explicit_error.txt --
-gecko: inconsistent vendoring in $GOPATH${/}src:
+gecko: inconsistent vendoring in $GKPATH${/}src:
 	example.com/p@v1.0.0: is explicitly required in go.mod, but not marked as explicit in vendor/modules.txt
 
 	To ignore the vendor directory, use -mod=readonly or -mod=mod.
@@ -53,7 +53,7 @@ gecko: inconsistent vendoring in $GOPATH${/}src:
 # example.com/q v1.0.0 => ./q
 ## explicit; go 1.21
 -- missing_replacement_error.txt --
-gecko: inconsistent vendoring in $GOPATH${/}src:
+gecko: inconsistent vendoring in $GKPATH${/}src:
 	example.com/p@v1.0.0: is replaced in a${/}go.mod, but not marked as replaced in vendor/modules.txt
 
 	To ignore the vendor directory, use -mod=readonly or -mod=mod.
@@ -66,7 +66,7 @@ gecko: inconsistent vendoring in $GOPATH${/}src:
 # example.com/q v1.0.0 => ./q
 ## explicit; go 1.21
 -- different_replacement_error.txt --
-gecko: inconsistent vendoring in $GOPATH${/}src:
+gecko: inconsistent vendoring in $GKPATH${/}src:
 	example.com/p@v1.0.0: is replaced by ../p in a${/}go.mod, but marked as replaced by ./r in vendor/modules.txt
 
 	To ignore the vendor directory, use -mod=readonly or -mod=mod.
@@ -82,7 +82,7 @@ gecko: inconsistent vendoring in $GOPATH${/}src:
 example.com/r
 ## explicit; go 1.21
 -- extra_explicit_error.txt --
-gecko: inconsistent vendoring in $GOPATH${/}src:
+gecko: inconsistent vendoring in $GKPATH${/}src:
 	example.com/r@v1.0.0: is marked as explicit in vendor/modules.txt, but not explicitly required in a go.mod
 
 	To ignore the vendor directory, use -mod=readonly or -mod=mod.
@@ -98,7 +98,7 @@ gecko: inconsistent vendoring in $GOPATH${/}src:
 example.com/r
 ## go 1.21
 -- extra_replacement_error.txt --
-gecko: inconsistent vendoring in $GOPATH${/}src:
+gecko: inconsistent vendoring in $GKPATH${/}src:
 	example.com/r@v1.0.0: is marked as replaced in vendor/modules.txt, but not replaced in the workspace
 
 	To ignore the vendor directory, use -mod=readonly or -mod=mod.

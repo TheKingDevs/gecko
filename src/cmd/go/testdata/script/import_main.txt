@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # Test that you cannot import a main package.
 # See golang.org/issue/4210 and golang.org/issue/17475.

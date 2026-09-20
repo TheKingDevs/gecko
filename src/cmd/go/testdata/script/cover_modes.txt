@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # Coverage analysis should use 'set' mode by default,
 # and should merge coverage profiles correctly.

@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 ! go install p1
 stderr 'binary-only packages are no longer supported'

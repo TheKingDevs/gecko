@@ -39,7 +39,7 @@ func initDefaultCache() Cache {
 		base.Fatalf("build cache is required, but could not be located: %v", err)
 	}
 	if dir == "off" {
-		base.Fatalf("build cache is disabled by GOCACHE=off, but required as of Go 1.12")
+		base.Fatalf("build cache is disabled by GKCACHE=off, but required as of Go 1.12")
 	}
 	if err := os.MkdirAll(dir, 0o777); err != nil {
 		base.Fatalf("failed to initialize build cache at %s: %s\n", dir, err)
@@ -82,12 +82,12 @@ func DefaultDir() (string, bool, error) {
 		dir, err := os.UserCacheDir()
 		if err != nil {
 			defaultDir = "off"
-			defaultDirErr = fmt.Errorf("GOCACHE is not defined and %v", err)
+			defaultDirErr = fmt.Errorf("GKCACHE is not defined and %v", err)
 		} else {
-			defaultDir = filepath.Join(dir, "go-build")
+			defaultDir = filepath.Join(dir, "gecko-build")
 		}
 
-		newDir := cfg.Getenv("GOCACHE")
+		newDir := cfg.Getenv("GKCACHE")
 		if newDir != "" {
 			defaultDirErr = nil
 			defaultDirChanged = newDir != defaultDir
@@ -96,7 +96,7 @@ func DefaultDir() (string, bool, error) {
 				return
 			}
 			defaultDir = "off"
-			defaultDirErr = fmt.Errorf("GOCACHE is not an absolute path")
+			defaultDirErr = fmt.Errorf("GKCACHE is not an absolute path")
 			return
 		}
 	})

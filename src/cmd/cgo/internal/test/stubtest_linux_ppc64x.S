@@ -8,7 +8,7 @@
 // A call stub is usually needed when the ELFv2 st_other attribute is different
 // between caller and callee.
 //
-// The type of call stub inserted will vary depending on GOPPC64 and the
+// The type of call stub inserted will vary depending on GKPPC64 and the
 // buildmode (e.g pie builds shared code, default builds fixed-position code).
 // CI is set up to run for P8 and P10 machines, and this test is run in both
 // pie and default modes.
@@ -24,9 +24,9 @@
 //       random          [dynamic TOC call]
 //     random		 [dynamic NOTOC call]
 //
-// Depending on the GOPPC64/buildmode used, and type of call, one of 7 stubs may need inserted:
+// Depending on the GKPPC64/buildmode used, and type of call, one of 7 stubs may need inserted:
 //
-// TOC   -> NOTOC:     Save R2, call global entry. (valid for any GOPPC64)
+// TOC   -> NOTOC:     Save R2, call global entry. (valid for any GKPPC64)
 //                      TOC save slot is rewrittent to restore TOC.
 // NOTOC -> TOC [P10]: A PIC call stub using P10 instructions to call the global entry
 // NOTOC -> TOC [P8]:  A PIC call stub using P8 instructions to call the global entry

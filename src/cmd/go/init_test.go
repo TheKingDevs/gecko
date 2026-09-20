@@ -26,7 +26,7 @@ func BenchmarkExecGoEnv(b *testing.B) {
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			cmd := testenv.Command(b, gotool, "env", "GOARCH")
+			cmd := testenv.Command(b, gotool, "env", "GKARCH")
 
 			if err := cmd.Run(); err != nil {
 				b.Fatal(err)

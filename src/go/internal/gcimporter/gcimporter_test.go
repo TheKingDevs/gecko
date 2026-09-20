@@ -139,7 +139,7 @@ func TestImportTypeparamTests(t *testing.T) {
 	gorootTest := filepath.Join(testenv.GOROOT(t), "test")
 	if _, err := os.Stat(gorootTest); os.IsNotExist(err) {
 		if _, err := os.Stat(filepath.Join(testenv.GOROOT(t), "VERSION")); err == nil {
-			t.Skipf("skipping: GOROOT/test not present")
+			t.Skipf("skipping: GKROOT/test not present")
 		}
 	}
 

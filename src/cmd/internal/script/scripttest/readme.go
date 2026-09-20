@@ -113,8 +113,8 @@ As an example, run_hello.txt says:
 Each script runs in a fresh temporary work directory tree, available to scripts as $WORK.
 Scripts also have access to other environment variables, including:
 
-	GOARCH=<target GOARCH>
-	GOOS=<target GOOS>
+	GKARCH=<target GKARCH>
+	GKOS=<target GKOS>
 	TMPDIR=$WORK/tmp
 	devnull=<value of os.DevNull>
 	goversion=<current Go version; for example, 1.12>

@@ -119,7 +119,7 @@ The following reserved names expand to a set of packages:
 
 - "all" expands to all packages in the main module (or workspace modules) and
 their dependencies, including dependencies needed by tests of any of those. In
-the legacy GOPATH mode, "all" expands to all packages found in all the GOPATH trees.
+the legacy GKPATH mode, "all" expands to all packages found in all the GKPATH trees.
 
 - "std" expands to all the packages in the standard library
 and their internal libraries.
@@ -140,7 +140,7 @@ Package names
 
 Packages are identified by their import path.
 Import paths for packages in the standard library use their
-relative path under "$GOROOT/src".
+relative path under "$GKROOT/src".
 Import paths for all other packages are a combination of their module name
 and their relative directory path within the module.
 Within a program, all packages must be identified by a unique import path.
@@ -186,8 +186,7 @@ var HelpImportPath = &base.Command{
 	Long: `
 An import path is used to uniquely identify and locate a package.
 In general, an import path denotes either a standard library package
-(such as "unicode/utf8") or a package found in a module (for more
-details see: 'gecko help modules').
+(such as "unicode/utf8") or a package found in a project or module.
 
 The standard library reserves all import paths without a dot in the
 first element for its packages. See "Fully-qualified import paths"
@@ -360,7 +359,7 @@ For example,
 will result in the following requests:
 
 	https://example.org/pkg/foo?go-get=1 (preferred)
-	http://example.org/pkg/foo?go-get=1  (fallback, only with use of correctly set GOINSECURE)
+	http://example.org/pkg/foo?go-get=1  (fallback, only with use of correctly set GKINSECURE)
 
 If that page contains the meta tag
 
@@ -395,37 +394,37 @@ proxy protocol.
 
 var HelpGopath = &base.Command{
 	UsageLine: "gopath",
-	Short:     "GOPATH environment variable",
+	Short:     "GKPATH environment variable",
 	Long: `
-The GOPATH environment variable is used to change the default
+The GKPATH environment variable is used to change the default
 location to store the module cache and installed binaries, if
-not overridden by GOMODCACHE and GOBIN respectively.
+not overridden by GKMODCACHE and GKBIN respectively.
 
-Most users don't need to explicitly set GOPATH.
-If the environment variable is unset, GOPATH defaults
+Most users don't need to explicitly set GKPATH.
+If the environment variable is unset, GKPATH defaults
 to a subdirectory named "go" in the user's home directory
 ($HOME/go on Unix, %USERPROFILE%\go on Windows),
 unless that directory holds a Go distribution.
-Run "gecko env GOPATH" to see the current GOPATH.
+Run "gecko env GKPATH" to see the current GKPATH.
 
 The module cache is stored in the directory specified by
-GOPATH/pkg/mod. If GOMODCACHE is set, it will be used
+GKPATH/pkg/mod. If GKMODCACHE is set, it will be used
 as the directory to store the module cache instead.
 
 Executables installed using 'gecko install' are placed in the
-directory specified by GOPATH/bin or, if GOBIN is set, by GOBIN.
+directory specified by GKPATH/bin or, if GKBIN is set, by GKBIN.
 
-GOPATH mode
+GKPATH mode
 
-The GOPATH environment variable is also used by a legacy behavior of the
-toolchain called GOPATH mode that allows some older projects, created before
+The GKPATH environment variable is also used by a legacy behavior of the
+toolchain called GKPATH mode that allows some older projects, created before
 modules were introduced in Go 1.11 and never updated to use modules,
 to continue to build.
 
-GOPATH mode is enabled when modules are disabled, either when GO111MODULE=off,
-or when GO111MODULE=auto, and the working directory is not in a module or workspace.
+GKPATH mode is enabled when modules are disabled, either when GK111MODULE=off,
+or when GK111MODULE=auto, and the working directory is not in a module or workspace.
 
-In GOPATH mode, packages are located using the GOPATH environment variable,
+In GKPATH mode, packages are located using the GKPATH environment variable,
 which specifies a list of paths to search:
 On Unix, the value is a colon-separated string.
 On Windows, the value is a semicolon-separated string.
@@ -433,9 +432,9 @@ On Plan 9, the value is a list.
 The first element of this list is used to set the default module cache and
 binary install directory locations as described above.
 
-See https://go.dev/wiki/SettingGOPATH to set a custom GOPATH.
+See https://go.dev/wiki/SettingGOPATH to set a custom GKPATH.
 
-Each directory listed in GOPATH must have a prescribed structure:
+Each directory listed in GKPATH must have a prescribed structure:
 
 The src directory holds source code. The path below src
 determines the import path or executable name.
@@ -445,7 +444,7 @@ As in the Go tree, each target operating system and
 architecture pair has its own subdirectory of pkg
 (pkg/GOOS_GOARCH).
 
-If DIR is a directory listed in the GOPATH, a package with
+If DIR is a directory listed in the GKPATH, a package with
 source in DIR/src/foo/bar can be imported as "foo/bar" and
 has its compiled form installed to "DIR/pkg/GOOS_GOARCH/foo/bar.a".
 
@@ -455,13 +454,13 @@ the final element, not the entire path. That is, the
 command with source in DIR/src/foo/quux is installed into
 DIR/bin/quux, not DIR/bin/foo/quux. The "foo/" prefix is stripped
 so that you can add DIR/bin to your PATH to get at the
-installed commands. If the GOBIN environment variable is
+installed commands. If the GKBIN environment variable is
 set, commands are installed to the directory it names instead
-of DIR/bin. GOBIN must be an absolute path.
+of DIR/bin. GKBIN must be an absolute path.
 
 Here's an example directory layout:
 
-    GOPATH=/home/user/go
+    GKPATH=/home/user/go
 
     /home/user/go/
         src/
@@ -477,15 +476,15 @@ Here's an example directory layout:
                 foo/
                     bar.a          (installed package object)
 
-Go searches each directory listed in GOPATH to find source code,
+Go searches each directory listed in GKPATH to find source code,
 but new packages are always downloaded into the first directory
 in the list.
 
 See https://go.dev/doc/code.html for an example.
 
-GOPATH mode vendor directories
+GKPATH mode vendor directories
 
-In GOPATH mode, code below a directory named "vendor" is importable only
+In GKPATH mode, code below a directory named "vendor" is importable only
 by code in the directory tree rooted at the parent of "vendor",
 and only using an import path that omits the prefix up to and
 including the vendor element.
@@ -515,20 +514,20 @@ and a new foo/vendor/crash/bang directory added:
 The same visibility rules apply as for internal, but the code
 in z.go is imported as "baz", not as "foo/vendor/baz".
 
-Code in GOPATH mode vendor directories deeper in the source tree shadows
+Code in GKPATH mode vendor directories deeper in the source tree shadows
 code in higher directories. Within the subtree rooted at foo, an import
 of "crash/bang" resolves to "foo/vendor/crash/bang", not the
 top-level "crash/bang".
 
-Code in GOPATH mode vendor directories is not subject to
-GOPATH mode import path checking (see 'gecko help importpath').
+Code in GKPATH mode vendor directories is not subject to
+GKPATH mode import path checking (see 'gecko help importpath').
 
-In GOPATH mode, the default GODEBUG values built into a binary
+In GKPATH mode, the default GODEBUG values built into a binary
 will be the same GODEBUG values as when a module specifies
 "godebug default=go1.20". To use different GODEBUG settings, the
 GODEBUG environment variable must be set to override those values.
 This also means that the standard library tests will not run
-properly with GO111MODULE=off.
+properly with GK111MODULE=off.
 
 See https://go.dev/s/go15vendor for details.
 
@@ -550,7 +549,7 @@ run 'gecko env -w <NAME>=<VALUE>'. Defaults changed using 'gecko env -w'
 are recorded in a Go environment configuration file stored in the
 per-user configuration directory, as reported by os.UserConfigDir.
 The location of the configuration file can be changed by setting
-the environment variable GOENV, and 'gecko env GOENV' prints the
+the environment variable GKENV, and 'gecko env GKENV' prints the
 effective location, but 'gecko env -w' cannot change the default location.
 See 'gecko help env' for details.
 
@@ -558,22 +557,22 @@ General-purpose environment variables:
 
 	GCCGO
 		The gccgecko command to run for 'gecko build -compiler=gccgo'.
-	GO111MODULE
-		Controls whether the gecko command runs in module-aware mode or GOPATH mode.
+	GK111MODULE
+		Controls whether the gecko command runs in module-aware mode or GKPATH mode.
 		May be "off", "on", or "auto".
 		See https://go.dev/ref/mod#mod-commands.
-	GOARCH
+	GKARCH
 		The architecture, or processor, for which to compile code.
 		Examples are amd64, 386, arm, ppc64.
-	GOAUTH
+	GKAUTH
 		Controls authentication for go-import and HTTPS module mirror interactions.
 		See 'gecko help goauth'.
-	GOBIN
+	GKBIN
 		The directory where 'gecko install' will install a command.
-	GOCACHE
+	GKCACHE
 		The directory where the gecko command will store cached
 		information for reuse in future builds. Must be an absolute path.
-	GOCACHEPROG
+	GKCACHEPROG
 		A command (with optional space-separated flags) that implements an
 		external gecko command build cache.
 		See 'gecko doc cmd/go/internal/cacheprog'.
@@ -581,60 +580,60 @@ General-purpose environment variables:
 		Enable various debugging facilities for programs built with Go,
 		including the gecko command. Cannot be set using 'gecko env -w'.
 		See https://go.dev/doc/godebug for details.
-	GOENV
+	GKENV
 		The location of the Go environment configuration file.
 		Cannot be set using 'gecko env -w'.
-		Setting GOENV=off in the environment disables the use of the
+		Setting GKENV=off in the environment disables the use of the
 		default configuration file.
-	GOFLAGS
+	GKFLAGS
 		A space-separated list of -flag=value settings to apply
 		to gecko commands by default, when the given flag is known by
 		the current command. Each entry must be a standalone flag.
 		Because the entries are space-separated, flag values must
 		not contain spaces. Flags listed on the command line
 		are applied after this list and therefore override it.
-	GOINSECURE
+	GKINSECURE
 		Comma-separated list of glob patterns (in the syntax of Go's path.Match)
 		of module path prefixes that should always be fetched in an insecure
 		manner. Only applies to dependencies that are being fetched directly.
-		GOINSECURE does not disable checksum database validation. GOPRIVATE or
-		GONOSUMDB may be used to achieve that.
-	GOMODCACHE
+		GKINSECURE does not disable checksum database validation. GKPRIVATE or
+		GKNOSUMDB may be used to achieve that.
+	GKMODCACHE
 		The directory where the gecko command will store downloaded modules.
-	GOOS
+	GKOS
 		The operating system for which to compile code.
 		Examples are linux, darwin, windows, netbsd.
-	GOPATH
+	GKPATH
 		Controls where various files are stored. See: 'gecko help gopath'.
-	GOPRIVATE, GONOPROXY, GONOSUMDB
+	GKPRIVATE, GKNOPROXY, GKNOSUMDB
 		Comma-separated list of glob patterns (in the syntax of Go's path.Match)
 		of module path prefixes that should always be fetched directly
 		or that should not be compared against the checksum database.
 		See https://go.dev/ref/mod#private-modules.
-	GOPROXY
+	GKPROXY
 		URL of Go module proxy. See https://go.dev/ref/mod#environment-variables
 		and https://go.dev/ref/mod#module-proxy for details.
-	GOROOT
+	GKROOT
 		The root of the go tree.
-	GOSUMDB
+	GKSUMDB
 		The name of checksum database to use and optionally its public key and
 		URL. See https://go.dev/ref/mod#authenticating.
-	GOTMPDIR
+	GKTMPDIR
 		Temporary directory used by the gecko command and testing package.
 		Overrides the platform-specific temporary directory such as "/tmp".
 		The gecko command and testing package will write temporary source files,
 		packages, and binaries here.
-	GOTOOLCHAIN
+	GKTOOLCHAIN
 		Controls which Go toolchain is used. See https://go.dev/doc/toolchain.
-	GOVCS
+	GKVCS
 		Lists version control commands that may be used with matching servers.
 		See 'gecko help vcs'.
-	GOWORK
+	GKWORK
 		In module aware mode, use the given go.work file as a workspace file.
-		By default or when GOWORK is "auto", the gecko command searches for a
+		By default or when GKWORK is "auto", the gecko command searches for a
 		file named go.work in the current directory and then containing directories
 		until one is found. If a valid go.work file is found, the modules
-		specified will collectively be used as the main modules. If GOWORK
+		specified will collectively be used as the main modules. If GKWORK
 		is "off", or a go.work file is not found in "auto" mode, workspace
 		mode is disabled.
 
@@ -680,15 +679,15 @@ Environment variables for use with cgo:
 
 Architecture-specific environment variables:
 
-	GO386
-		For GOARCH=386, how to implement floating point instructions.
+	GK386
+		For GKARCH=386, how to implement floating point instructions.
 		Valid values are sse2 (default), softfloat.
-	GOAMD64
-		For GOARCH=amd64, the microarchitecture level for which to compile.
+	GKAMD64
+		For GKARCH=amd64, the microarchitecture level for which to compile.
 		Valid values are v1 (default), v2, v3, v4.
 		See https://go.dev/wiki/MinimumRequirements#amd64
-	GOARM
-		For GOARCH=arm, the ARM architecture for which to compile.
+	GKARM
+		For GKARCH=arm, the ARM architecture for which to compile.
 		Valid values are 5, 6, 7.
 		When the Go tools are built on an arm system,
 		the default value is set based on what the build system supports.
@@ -697,29 +696,29 @@ Architecture-specific environment variables:
 		the default value is 7.
 		The value can be followed by an option specifying how to implement floating point instructions.
 		Valid options are ,softfloat (default for 5) and ,hardfloat (default for 6 and 7).
-	GOARM64
-		For GOARCH=arm64, the ARM64 architecture for which to compile.
+	GKARM64
+		For GKARCH=arm64, the ARM64 architecture for which to compile.
 		Valid values are v8.0 (default), v8.{1-9}, v9.{0-5}.
 		The value can be followed by an option specifying extensions implemented by target hardware.
 		Valid options are ,lse and ,crypto.
-		Note that some extensions are enabled by default starting from a certain GOARM64 version;
+		Note that some extensions are enabled by default starting from a certain GKARM64 version;
 		for example, lse is enabled by default starting from v8.1.
-	GOMIPS
-		For GOARCH=mips{,le}, whether to use floating point instructions.
+	GKMIPS
+		For GKARCH=mips{,le}, whether to use floating point instructions.
 		Valid values are hardfloat (default), softfloat.
-	GOMIPS64
-		For GOARCH=mips64{,le}, whether to use floating point instructions.
+	GKMIPS64
+		For GKARCH=mips64{,le}, whether to use floating point instructions.
 		Valid values are hardfloat (default), softfloat.
-	GOPPC64
-		For GOARCH=ppc64{,le}, the target ISA (Instruction Set Architecture).
+	GKPPC64
+		For GKARCH=ppc64{,le}, the target ISA (Instruction Set Architecture).
 		Valid values are power8 (default), power9, power10.
-	GORISCV64
-		For GOARCH=riscv64, the RISC-V user-mode application profile for which
+	GKRISCV64
+		For GKARCH=riscv64, the RISC-V user-mode application profile for which
 		to compile. Valid values are rva20u64 (default), rva22u64, rva23u64.
 		See https://github.com/riscv/riscv-profiles/blob/main/src/profiles.adoc
 		and https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc
-	GOWASM
-		For GOARCH=wasm, comma-separated list of experimental WebAssembly features to use.
+	GKWASM
+		For GKARCH=wasm, comma-separated list of experimental WebAssembly features to use.
 		Valid values are satconv, signext.
 
 Environment variables for use with code coverage:
@@ -733,39 +732,39 @@ Special-purpose environment variables:
 	GCCGOTOOLDIR
 		If set, where to find gccgecko tools, such as cgo.
 		The default is based on how gccgo was configured.
-	GOEXPERIMENT
+	GKEXPERIMENT
 		Comma-separated list of toolchain experiments to enable or disable.
 		The list of available experiments may change arbitrarily over time.
-		See GOROOT/src/internal/goexperiment/flags.go for currently valid values.
+		See GKROOT/src/internal/goexperiment/flags.go for currently valid values.
 		Warning: This variable is provided for the development and testing
 		of the Go toolchain itself. Use beyond that purpose is unsupported.
-	GOFIPS140
+	GKFIPS140
 		The FIPS-140 cryptography mode to use when building binaries.
-		The default is GOFIPS140=off, which makes no FIPS-140 changes at all.
+		The default is GKFIPS140=off, which makes no FIPS-140 changes at all.
 		Other values enable FIPS-140 compliance measures and select alternate
 		versions of the cryptography source code.
 		See https://go.dev/doc/security/fips140 for details.
-	GO_EXTLINK_ENABLED
+	GK_EXTLINK_ENABLED
 		Whether the linker should use external linking mode
 		when using -linkmode=auto with code that uses cgo.
 		Set to 0 to disable external linking mode, 1 to enable it.
 	GIT_ALLOW_PROTOCOL
 		Defined by Git. A colon-separated list of schemes that are allowed
 		to be used with git fetch/clone. If set, any scheme not explicitly
-		mentioned will be considered insecure by 'gecko get'.
+		mentioned will be considered insecure by gecko's fetch tooling.
 		Because the variable is defined by Git, the default value cannot
 		be set using 'gecko env -w'.
 
 Additional information available from 'gecko env' but not read from the environment:
 
-	GOEXE
+	GKEXE
 		The executable file name suffix (".exe" on Windows, "" on other systems).
-	GOGCCFLAGS
+	GKGCCFLAGS
 		A space-separated list of arguments supplied to the CC command.
-	GOHOSTARCH
-		The architecture (GOARCH) of the Go toolchain binaries.
-	GOHOSTOS
-		The operating system (GOOS) of the Go toolchain binaries.
+	GKHOSTARCH
+		The architecture (GKARCH) of the Go toolchain binaries.
+	GKHOSTOS
+		The operating system (GKOS) of the Go toolchain binaries.
 	GOMOD
 		The absolute path to the go.mod of the main module.
 		If module-aware mode is enabled, but there is no go.mod, GOMOD will be
@@ -776,7 +775,7 @@ Additional information available from 'gecko env' but not read from the environm
 		See "gecko help telemetry" for more information.
 	GOTELEMETRYDIR
 		The directory Go telemetry data is written is written to.
-	GOTOOLDIR
+	GKTOOLDIR
 		The directory where the gecko tools (compile, cover, doc, etc...) are installed.
 	GOVERSION
 		The version of the installed Go tree, as reported by runtime.Version.
@@ -882,11 +881,11 @@ var HelpCache = &base.Command{
 	Short:     "build and test caching",
 	Long: `
 The gecko command caches build outputs for reuse in future builds.
-The default location for cache data is a subdirectory named go-build
+The default location for cache data is a subdirectory named gecko-build
 in the standard user cache directory for the current operating system.
 The cache is safe for concurrent invocations of the gecko command.
-Setting the GOCACHE environment variable overrides this default,
-and running 'gecko env GOCACHE' prints the current cache directory.
+Setting the GKCACHE environment variable overrides this default,
+and running 'gecko env GKCACHE' prints the current cache directory.
 
 The gecko command periodically deletes cached data that has not been
 used recently. Running 'gecko clean -cache' deletes all cached data.
@@ -925,7 +924,7 @@ The output is voluminous but can be useful for debugging the cache.
 GODEBUG=gocachetest=1 causes the gecko command to print details of its
 decisions about whether to reuse a cached test result.
 
-The GOCACHEPROG environment variable can be used to provide an
+The GKCACHEPROG environment variable can be used to provide an
 externally managed build cache. For details see:
 "gecko doc cmd/go/internal/cacheprog".
 `,
@@ -967,12 +966,12 @@ It is an error for a file to have more than one //go:build line.
 During a particular build, the following build tags are satisfied:
 
 	- the target operating system, as spelled by runtime.GOOS, set with the
-	  GOOS environment variable.
+	  GKOS environment variable.
 	- the target architecture, as spelled by runtime.GOARCH, set with the
-	  GOARCH environment variable.
-	- any architecture features, in the form GOARCH.feature
+	  GKARCH environment variable.
+	- any architecture features, in the form GKARCH.feature
 	  (for example, "amd64.v2"), as detailed below.
-	- "unix", if GOOS is a Unix or Unix-like system.
+	- "unix", if GKOS is a Unix or Unix-like system.
 	- the compiler being used, either "gc" or "gccgo"
 	- "cgo", if the cgecko command is supported (see CGO_ENABLED in
 	  'gecko help environment').
@@ -987,54 +986,54 @@ matches any of the following patterns:
 	*_GOOS
 	*_GOARCH
 	*_GOOS_GOARCH
-(example: source_windows_amd64.go) where GOOS and GOARCH represent
+(example: source_windows_amd64.go) where GKOS and GKARCH represent
 any known operating system and architecture values respectively, then
 the file is considered to have an implicit build constraint requiring
 those terms (in addition to any explicit constraints in the file).
 
-Using GOOS=android matches build tags and files as for GOOS=linux
+Using GKOS=android matches build tags and files as for GKOS=linux
 in addition to android tags and files.
 
-Using GOOS=illumos matches build tags and files as for GOOS=solaris
+Using GKOS=illumos matches build tags and files as for GKOS=solaris
 in addition to illumos tags and files.
 
-Using GOOS=ios matches build tags and files as for GOOS=darwin
+Using GKOS=ios matches build tags and files as for GKOS=darwin
 in addition to ios tags and files.
 
 The defined architecture feature build tags are:
 
-	- For GOARCH=386, GO386=387 and GO386=sse2
+	- For GKARCH=386, GK386=387 and GK386=sse2
 	  set the 386.387 and 386.sse2 build tags, respectively.
-	- For GOARCH=amd64, GOAMD64=v1, v2, and v3
+	- For GKARCH=amd64, GKAMD64=v1, v2, and v3
 	  correspond to the amd64.v1, amd64.v2, and amd64.v3 feature build tags.
-	- For GOARCH=arm, GOARM=5, 6, and 7
+	- For GKARCH=arm, GKARM=5, 6, and 7
 	  correspond to the arm.5, arm.6, and arm.7 feature build tags.
-	- For GOARCH=arm64, GOARM64=v8.{0-9} and v9.{0-5}
+	- For GKARCH=arm64, GKARM64=v8.{0-9} and v9.{0-5}
 	  correspond to the arm64.v8.{0-9} and arm64.v9.{0-5} feature build tags.
-	- For GOARCH=mips or mipsle,
-	  GOMIPS=hardfloat and softfloat
+	- For GKARCH=mips or mipsle,
+	  GKMIPS=hardfloat and softfloat
 	  correspond to the mips.hardfloat and mips.softfloat
 	  (or mipsle.hardfloat and mipsle.softfloat) feature build tags.
-	- For GOARCH=mips64 or mips64le,
-	  GOMIPS64=hardfloat and softfloat
+	- For GKARCH=mips64 or mips64le,
+	  GKMIPS64=hardfloat and softfloat
 	  correspond to the mips64.hardfloat and mips64.softfloat
 	  (or mips64le.hardfloat and mips64le.softfloat) feature build tags.
-	- For GOARCH=ppc64 or ppc64le,
-	  GOPPC64=power8, power9, and power10 correspond to the
+	- For GKARCH=ppc64 or ppc64le,
+	  GKPPC64=power8, power9, and power10 correspond to the
 	  ppc64.power8, ppc64.power9, and ppc64.power10
 	  (or ppc64le.power8, ppc64le.power9, and ppc64le.power10)
 	  feature build tags.
-	- For GOARCH=riscv64,
-	  GORISCV64=rva20u64, rva22u64 and rva23u64 correspond to the riscv64.rva20u64,
+	- For GKARCH=riscv64,
+	  GKRISCV64=rva20u64, rva22u64 and rva23u64 correspond to the riscv64.rva20u64,
 	  riscv64.rva22u64 and riscv64.rva23u64 build tags.
-	- For GOARCH=wasm, GOWASM=satconv and signext
+	- For GKARCH=wasm, GKWASM=satconv and signext
 	  correspond to the wasm.satconv and wasm.signext feature build tags.
 
-For GOARCH=amd64, arm, ppc64, ppc64le, and riscv64, a particular feature level
+For GKARCH=amd64, arm, ppc64, ppc64le, and riscv64, a particular feature level
 sets the feature build tags for all previous levels as well.
-For example, GOAMD64=v2 sets the amd64.v1 and amd64.v2 feature flags.
+For example, GKAMD64=v2 sets the amd64.v1 and amd64.v2 feature flags.
 This ensures that code making use of v2 features continues to compile
-when, say, GOAMD64=v4 is introduced.
+when, say, GKAMD64=v4 is introduced.
 Code handling the absence of a particular feature level
 should use a negation:
 
@@ -1078,9 +1077,9 @@ the file will be the minimum version implied by the build constraint.
 
 var HelpGoAuth = &base.Command{
 	UsageLine: "goauth",
-	Short:     "GOAUTH environment variable",
+	Short:     "GKAUTH environment variable",
 	Long: `
-GOAUTH is a semicolon-separated list of authentication commands for go-import and
+GKAUTH is a semicolon-separated list of authentication commands for go-import and
 HTTPS module mirror interactions. The default is netrc.
 
 The supported authentication commands are:
@@ -1131,13 +1130,13 @@ command
 
 	Note: it is safe to use net/http.ReadResponse to parse this input.
 
-Before the first HTTPS fetch, the gecko command will invoke each GOAUTH
+Before the first HTTPS fetch, the gecko command will invoke each GKAUTH
 command in the list with no additional arguments and no input.
 If the server responds with any 4xx code, the gecko command will invoke the
-GOAUTH commands again with the URL as an additional command-line argument
+GKAUTH commands again with the URL as an additional command-line argument
 and the HTTP Response to the program's stdin.
 If the server responds with an error again, the fetch fails: a URL-specific
-GOAUTH will only be attempted once per fetch.
+GKAUTH will only be attempted once per fetch.
 `,
 }
 

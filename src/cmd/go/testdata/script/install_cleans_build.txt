@@ -1,23 +1,23 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # 'go install' with no arguments should clean up after go build
 cd mycmd
 go build
-exists mycmd$GOEXE
+exists mycmd$GKEXE
 go install
-! exists mycmd$GOEXE
+! exists mycmd$GKEXE
 
 # 'go install mycmd' does not clean up, even in the mycmd directory
 go build
-exists mycmd$GOEXE
+exists mycmd$GKEXE
 go install mycmd
-exists mycmd$GOEXE
+exists mycmd$GKEXE
 
 # 'go install mycmd' should not clean up in an unrelated current directory either
 cd ..
-cp mycmd/mycmd$GOEXE mycmd$GOEXE
+cp mycmd/mycmd$GKEXE mycmd$GKEXE
 go install mycmd
-exists mycmd$GOEXE
+exists mycmd$GKEXE
 
 -- mycmd/main.go --
 package main

@@ -3,24 +3,24 @@
 # The Git test covers common functionality.
 
 # "fossil" is the Fossil file server on Plan 9.
-[GOOS:plan9] skip
+[GKOS:plan9] skip
 [!exec:fossil] skip
 [short] skip
-env GOBIN=$WORK/gopath/bin
+env GKBIN=$WORK/gopath/bin
 env oldpath=$PATH
 env HOME=$WORK
 env USER=gopher
-[!GOOS:windows] env fslckout=.fslckout
-[GOOS:windows] env fslckout=_FOSSIL_
+[!GKOS:windows] env fslckout=.fslckout
+[GKOS:windows] env fslckout=_FOSSIL_
 exec pwd
 exec fossil init repo.fossil
 cd repo/a
 
 # If there's no local repository, there's no VCS info.
 go install
-go version -m $GOBIN/a$GOEXE
+go version -m $GKBIN/a$GKEXE
 ! stdout vcs.revision
-rm $GOBIN/a$GOEXE
+rm $GKBIN/a$GKEXE
 
 # If there is a repository, but it can't be used for some reason,
 # there should be an error. It should hint about -buildvcs=false.
@@ -32,7 +32,7 @@ chmod 0755 $WORK/fakebin/fossil
 cd a
 ! go install
 stderr '^error obtaining VCS status: exit status 1\n\tUse -buildvcs=false to disable VCS stamping.$'
-rm $GOBIN/a$GOEXE
+rm $GKBIN/a$GKEXE
 cd ..
 env PATH=$oldpath
 rm $fslckout
@@ -43,36 +43,36 @@ exec fossil add a README
 exec fossil commit -m 'initial commit'
 cd a
 go install
-go version -m $GOBIN/a$GOEXE
+go version -m $GKBIN/a$GKEXE
 stdout '^\tbuild\tvcs=fossil\n'
 stdout '^\tbuild\tvcs.revision='
 stdout '^\tbuild\tvcs.time='
 stdout '^\tbuild\tvcs.modified=false$'
-rm $GOBIN/a$GOEXE
+rm $GKBIN/a$GKEXE
 
 # Building with -buildvcs=false suppresses the info.
 go install -buildvcs=false
-go version -m $GOBIN/a$GOEXE
+go version -m $GKBIN/a$GKEXE
 ! stdout vcs.revision
-rm $GOBIN/a$GOEXE
+rm $GKBIN/a$GKEXE
 
 # An untracked file is shown as modified, even if it isn't part of the build.
 cp ../../outside/empty.txt .
 go install
-go version -m $GOBIN/a$GOEXE
+go version -m $GKBIN/a$GKEXE
 stdout '^\tbuild\tvcs=fossil\n'
 stdout '^\tbuild\tvcs.modified=true$'
 rm empty.txt
-rm $GOBIN/a$GOEXE
+rm $GKBIN/a$GKEXE
 
 # An edited file is shown as modified, even if it isn't part of the build.
 cp ../../outside/empty.txt ../README
 go install
-go version -m $GOBIN/a$GOEXE
+go version -m $GKBIN/a$GKEXE
 stdout '^\tbuild\tvcs=fossil\n'
 stdout '^\tbuild\tvcs.modified=true$'
 exec fossil revert ../README
-rm $GOBIN/a$GOEXE
+rm $GKBIN/a$GKEXE
 
 -- $WORK/fakebin/fossil --
 #!/bin/sh

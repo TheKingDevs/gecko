@@ -2,7 +2,7 @@
 
 cd pkgs
 
-env GO111MODULE=off
+env GK111MODULE=off
 go build ./...
 ! stdout .
 go test ./...

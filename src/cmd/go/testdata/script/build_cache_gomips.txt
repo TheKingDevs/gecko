@@ -1,33 +1,33 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
-# Set up fresh GOCACHE.
-env GOCACHE=$WORK/gocache
-mkdir $GOCACHE
+# Set up fresh GKCACHE.
+env GKCACHE=$WORK/gocache
+mkdir $GKCACHE
 
-# Building for mipsle without setting GOMIPS will use floating point registers.
-env GOARCH=mipsle
-env GOOS=linux
+# Building for mipsle without setting GKMIPS will use floating point registers.
+env GKARCH=mipsle
+env GKOS=linux
 go build -gcflags=-S f.go
 stderr ADDD.F[0-9]+,.F[0-9]+,.F[0-9]+
 
 # Clean cache
 go clean -cache
 
-# Building with GOMIPS=softfloat will not use floating point registers
-env GOMIPS=softfloat
+# Building with GKMIPS=softfloat will not use floating point registers
+env GKMIPS=softfloat
 go build -gcflags=-S f.go
 ! stderr ADDD.F[0-9]+,.F[0-9]+,.F[0-9]+
 
 # Clean cache
 go clean -cache
 
-# Build without setting GOMIPS
-env GOMIPS=
+# Build without setting GKMIPS
+env GKMIPS=
 go build -gcflags=-S f.go
 stderr ADDD.F[0-9]+,.F[0-9]+,.F[0-9]+
 
-# Building with GOMIPS should still not use floating point registers.
-env GOMIPS=softfloat
+# Building with GKMIPS should still not use floating point registers.
+env GKMIPS=softfloat
 go build -gcflags=-S f.go
 ! stderr ADDD.F[0-9]+,.F[0-9]+,.F[0-9]+
 

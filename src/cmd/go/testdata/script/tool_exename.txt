@@ -3,19 +3,19 @@
 # First run: executable for bar is not cached.
 # Make sure it's not called a.out
 go tool bar
-stdout 'my name is: bar'$GOEXE
+stdout 'my name is: bar'$GKEXE
 ! stdout 'a.out'
 
 # Second run: executable is cached. Make sure it
 # has the right name.
 go tool bar
-stdout 'my name is: bar'$GOEXE
+stdout 'my name is: bar'$GKEXE
 ! stdout 'a.out'
 
 # Third run: with arguments
 # https://go.dev/issue/70509
 go tool bar --baz
-stdout 'my name is: bar'$GOEXE
+stdout 'my name is: bar'$GKEXE
 ! stdout 'a.out'
 
 # Test tool package paths that end in v2
@@ -28,15 +28,15 @@ stderr 'gecko: no such tool "v2"'
 # Use the second to last component as the short
 # name of the tool.
 go tool foo
-stdout 'my name is: foo'$GOEXE
+stdout 'my name is: foo'$GKEXE
 
 # go run should use the same name for the tool
 # We need to use a fresh cache, or we'd end up with an executable cache hit
 # from when we ran built the tool to run go tool above, and we'd just
 # reuse the name from the test case above.
-env GOCACHE=$WORK/cache2
+env GKCACHE=$WORK/cache2
 go run example.com/foo/v2
-stdout 'my name is: foo'$GOEXE
+stdout 'my name is: foo'$GKEXE
 
 # list aliases for tools
 go tool

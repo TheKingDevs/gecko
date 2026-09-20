@@ -17,7 +17,7 @@ import (
 func FindSpecDir() (string, error) {
 	goroot, err := goEnvGoroot()
 	if err != nil {
-		return "", fmt.Errorf("could not find GOROOT: %w", err)
+		return "", fmt.Errorf("could not find GKROOT: %w", err)
 	}
 	path := filepath.Join(goroot, "src/simd/internal/spec")
 	if _, err := os.Stat(path); err != nil {
@@ -36,7 +36,7 @@ func MustFindSpecDir() string {
 }
 
 func goEnvGoroot() (string, error) {
-	out, err := exec.Command("go", "env", "GOROOT").Output()
+	out, err := exec.Command("go", "env", "GKROOT").Output()
 	if err != nil {
 		return "", err
 	}

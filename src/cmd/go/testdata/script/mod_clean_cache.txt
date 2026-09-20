@@ -1,21 +1,21 @@
 # 'mod download' should download the module to the cache.
 go mod download rsc.io/quote@v1.5.0
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.zip
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.zip
 
 # '-n' should print commands but not actually execute them.
 go clean -modcache -n
 stdout '^rm -rf .*pkg.mod$'
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.zip
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.zip
 
 # 'go clean -modcache' should actually delete the files.
 go clean -modcache
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.zip
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.zip
 
 # 'go clean -r -modcache' should clean only the dependencies that are within the
 # main module.

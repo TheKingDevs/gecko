@@ -1,9 +1,9 @@
 # Wrong import path
-env GO111MODULE=off
+env GK111MODULE=off
 ! go build vend/x/invalid
 stderr 'must be imported as foo'
 
-env GO111MODULE=
+env GK111MODULE=
 cd vend/x/invalid
 ! go build vend/x/invalid
 stderr 'must be imported as foo'

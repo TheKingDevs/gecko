@@ -8,7 +8,7 @@ env HOME=$WORK${/}home${/}gopher
 exec git config --global --show-origin user.name
 stdout 'Go Gopher'
 
-env GOPRIVATE=vcs-test.golang.org
+env GKPRIVATE=vcs-test.golang.org
 
 go mod download -x
 

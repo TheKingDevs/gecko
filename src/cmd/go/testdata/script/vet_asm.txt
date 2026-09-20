@@ -1,8 +1,8 @@
 # Issue 27665. Verify that "go vet" analyzes non-Go files.
 
-env GO111MODULE=off
-env GOARCH=amd64
-env GOOS=linux
+env GK111MODULE=off
+env GKARCH=amd64
+env GKOS=linux
 
 ! go vet -asmdecl a
 stderr 'f: invalid MOVW of x'

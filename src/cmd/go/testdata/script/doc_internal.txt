@@ -1,6 +1,6 @@
 # go doc prefers non-internal packages for shorthand package paths.
 
-env GO111MODULE=off
+env GK111MODULE=off
 cd example.com/z/docpick
 
 go doc docpick.Public

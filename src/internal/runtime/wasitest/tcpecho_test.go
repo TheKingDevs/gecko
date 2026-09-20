@@ -49,7 +49,7 @@ func TestTCPEcho(t *testing.T) {
 
 	subProcess := exec.Command(testenv.GoToolPath(t), "run", "./testdata/tcpecho.go")
 
-	subProcess.Env = append(os.Environ(), "GOOS=wasip1", "GOARCH=wasm")
+	subProcess.Env = append(os.Environ(), "GKOS=wasip1", "GKARCH=wasm")
 
 	switch os.Getenv("GOWASIRUNTIME") {
 	case "wazero":

@@ -5,6 +5,44 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: module system kept internal-only (no user-facing mod)
+
+**Título / Title:** the module machinery remains in the tree only as internal infrastructure (building/testing the std toolchain from `src/`, `GKTOOLCHAIN=auto` toolchain downloads, and gpm's interop with Go-ecosystem packages); it is no longer exposed to users. `gecko mod`, `gecko get` and the `help modules`/`help go.mod` topics are gone.
+
+**Descrição / Description:**
+
+- Registered help topics `modules` and `go.mod` (`modload.HelpModules`, `modload.HelpGoMod`) are removed from `cmd/go/main.go`, so `gecko help modules`/`gecko help go.mod`/`gecko help mod`/`gecko help get` now report "unknown help topic"; the now-orphaned `cmd/go/internal/modload/help.go` was deleted.
+- User-facing command docs no longer point at the removed topics/commands: `help importpath`, `gecko build`, `gecko install`, `gecko run`, `gecko list`, `gecko work`, `gecko fmt` and `gecko fix` texts updated (project/gpm pointers instead of `'gecko help modules'`); error messages in `modload/init.go` drop the `see 'gecko help modules'`/`'gecko help mod init'` advice.
+- `cmd/go/testdata/script/help.txt` no longer asserts help for `mod`/`get`; the `mod_help.txt` script (entirely about `go help mod`/`go help get`) is deleted. Scripts that still drive `gecko mod …` remain skipped via the `usesModCommand` harness filter.
+- Modules stay in use internally: the std library is still the module in `src/`, `GKTOOLCHAIN=auto` downloads toolchains through the module proxy, and `cmd/gpm` reads third-party `go.mod` files as dependency manifests.
+
+**Hash do commit / Commit hash:** `-` (uncommitted)
+
+**Mensagem do commit / Commit message:**
+```
+gecko: keep the module system internal-only, drop user-facing mod surface
+```
+
+### Entry: gecko environment variables (GKROOT, GKPATH, GKHOME, …)
+
+**Título / Title:** the toolchain no longer uses the standard Go `GO*` environment variables. Every variable the command manages or the compiler/linker reads is renamed to a `GK*` counterpart (`GKROOT`, `GKPATH`, `GKCACHE`, `GKENV`, `GKOS`, `GKARCH`, `GKEXPERIMENT`, `GKTOOLCHAIN`, `GKFLAGS`, `GKPROXY`, …), and a new `GKHOME` variable locates gecko's user configuration directory, so gecko recognizes its own config without depending on Go's variables.
+
+**Descrição / Description:**
+
+- New `GKHOME` environment variable (defaults to `<user-config-dir>/gecko`). It can only be set through the OS environment (like `GKENV`). The gecko environment configuration file defaults to `$GKHOME/env` instead of Go's `go/env`.
+- Renamed environment variables across the whole tree: `GO111MODULE→GK111MODULE`, `GO_EXTLINK_ENABLED→GK_EXTLINK_ENABLED`, `GO_BUILDER_NAME→GK_BUILDER_NAME`, `GO_GCFLAGS→GK_GCFLAGS`, `GO_LDFLAGS→GK_LDFLAGS`, `GO_SSAFLAGS→GK_SSAFLAGS`, `GOROOT_BOOTSTRAP→GKROOT_BOOTSTRAP`, `GOROOT_FINAL→GKROOT_FINAL`, `GOCACHEPROG→GKCACHEPROG`, `GOAUTH→GKAUTH`, `GOBIN→GKBIN`, `GOCACHE→GKCACHE`, `GOENV→GKENV`, `GOEXE→GKEXE`, `GOEXPERIMENT→GKEXPERIMENT`, `GOFIPS140→GKFIPS140`, `GOFLAGS→GKFLAGS`, `GOGCCFLAGS→GKGCCFLAGS`, `GOHOSTARCH→GKHOSTARCH`, `GOHOSTOS→GKHOSTOS`, `GOINSECURE→GKINSECURE`, `GOMODCACHE→GKMODCACHE`, `GONOPROXY→GKNOPROXY`, `GONOSUMDB→GKNOSUMDB`, `GOPACKAGESDRIVER→GKPACKAGESDRIVER`, `GOPATH→GKPATH`, `GOPRIVATE→GKPRIVATE`, `GOPROXY→GKPROXY`, `GOSUMDB→GKSUMDB`, `GOTMPDIR→GKTMPDIR`, `GOTOOLCHAIN→GKTOOLCHAIN`, `GOTOOLDIR→GKTOOLDIR`, `GOVCS→GKVCS`, `GOWASM→GKWASM`, `GOWORK→GKWORK`, `GO_LDSO→GK_LDSO`, plus the architecture knobs `GO386→GK386`, `GOAMD64→GKAMD64`, `GOARM→GKARM`, `GOARM64→GKARM64`, `GOMIPS→GKMIPS`, `GOMIPS64→GKMIPS64`, `GOPPC64→GKPPC64`, `GORISCV64→GKRISCV64`.
+- Runtime knobs (`GODEBUG`, `GOMAXPROCS`, `GOGC`, `GOMEMLIMIT`, `GOTRACEBACK`), compiler debug helpers (`GOSSAFUNC`, `GOSSADIR`, `GOSSAHASH`, …), test internals (`GO_TEST_*`, `GOCOVERDIR`, …) and the `GOOS_`/`GOARCH_` C-preprocessor macros are intentionally unchanged; `runtime.GOOS`/`runtime.GOARCH`, `build.Context`, `runtime.GOROOT()` and other Go API names are untouched.
+- Default locations follow the new names: `GKPATH` defaults to `<home>/gecko`, `GKCACHE` to `<cache>/gecko-build`, and the GOROOT defaults file is `$GOROOT/gecko.env` (renamed from `go.env`) with `GK` keys (`GKPROXY`, `GKSUMDB`, `GKTOOLCHAIN`). `gecko env -w` now writes `$GKHOME/env`, `gecko env GKHOME` prints it, and `GKHOME`/`GKENV` are non-settable except via the OS environment.
+- `cmd/dist`, `make.bash`/`make.bat`/`make.rc` and the `script` test framework condition names follow the rename (`[GKOS:linux]`, etc.). Where dist or the shell bootstrap scripts drive a standard Go bootstrap toolchain, both the `GO*` names (read by the standard Go binary) and the `GK*` equivalents are set.
+- The `gecko install` command is used again internally by `cmd/dist` to build the toolchain (its removal broke `make.bash`); `gecko get` remains removed.
+
+**Hash do commit / Commit hash:** `-` (uncommitted)
+
+**Mensagem do commit / Commit message:**
+```
+gecko: use GK* environment variables for toolchain configuration
+```
+
 ### Entry: fix fork fallout in the toolchain's own test suite
 
 **Título / Title:** the toolchain's own tests no longer pin the `bin/go` → `bin/gecko` renaming or the gecko dialect restrictions to stale upstream text, so `go/build`, `cmd/cover` and `internal/testenv` pass again.

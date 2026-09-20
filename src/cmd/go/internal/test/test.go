@@ -89,7 +89,7 @@ standard output, even if the test printed them to its own standard
 error. (The gecko command's standard error is reserved for printing
 errors building the tests.)
 
-The gecko command places $GOROOT/bin at the beginning of $PATH
+The gecko command places $GKROOT/bin at the beginning of $PATH
 in the test's environment, so that tests that execute
 'gecko' commands use the same 'gecko' as the parent 'gecko test' command.
 
@@ -1807,7 +1807,7 @@ func (c *runCache) tryCacheWithID(b *work.Builder, a *work.Action, id string) bo
 	if a.Package.Root == "" {
 		// Caching does not apply to tests outside of any module, GOPATH, or GOROOT.
 		if cache.DebugTest {
-			fmt.Fprintf(os.Stderr, "testcache: caching disabled for package outside of module root, GOPATH, or GOROOT: %s\n", a.Package.ImportPath)
+			fmt.Fprintf(os.Stderr, "testcache: caching disabled for package outside of module root, GKPATH, or GKROOT: %s\n", a.Package.ImportPath)
 		}
 		c.disableCache = true
 		return false

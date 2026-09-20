@@ -1,4 +1,4 @@
-env GOPATH=$WORK${/}invalid-gopath
+env GKPATH=$WORK${/}invalid-gopath
 
 go list -m
 stdout '^example.com$'

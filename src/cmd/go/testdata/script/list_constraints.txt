@@ -2,8 +2,8 @@
 # when they are excluded by build constraints.
 
 # Linux and cgo files should be included when building in that configuration.
-env GOOS=linux
-env GOARCH=amd64
+env GKOS=linux
+env GKARCH=amd64
 env CGO_ENABLED=1
 go list -f '{{range .GoFiles}}{{.}} {{end}}'
 stdout '^cgotag.go empty.go suffix_linux.go tag.go $'
@@ -22,7 +22,7 @@ go list -f '{{range .Imports}}{{.}} {{end}}'
 stdout '^suffix tag $'
 
 # Changing OS should exclude linux sources.
-env GOOS=darwin
+env GKOS=darwin
 go list -f '{{range .GoFiles}}{{.}} {{end}}'
 stdout '^empty.go $'
 go list -f '{{range .Imports}}{{.}} {{end}}'

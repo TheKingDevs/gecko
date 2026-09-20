@@ -2,10 +2,10 @@
 
 mkdir $WORK/mod1
 mkdir $WORK/mod2
-env GONOSUMDB=vcs-test.golang.org
+env GKNOSUMDB=vcs-test.golang.org
 
-env GOPROXY=direct
-env GOMODCACHE=$WORK/mod1
+env GKPROXY=direct
+env GKMODCACHE=$WORK/mod1
 
 
 # If we query a module version from a git repo, we expect its
@@ -41,9 +41,9 @@ stdout '"Origin":'
 stdout '"VCS": "git"'
 stdout '"Hash": "08a4fa6bb9c04ffba03b26ae427b0d6335d90a2a"'
 
-[GOOS:windows] env GOPROXY=file:///$WORK/mod1/cache/download
-[!GOOS:windows] env GOPROXY=file://$WORK/mod1/cache/download
-env GOMODCACHE=$WORK/modcache2
+[GKOS:windows] env GKPROXY=file:///$WORK/mod1/cache/download
+[!GKOS:windows] env GKPROXY=file://$WORK/mod1/cache/download
+env GKMODCACHE=$WORK/modcache2
 
 
 # If we resolve the "latest" version query using a proxy,
@@ -83,11 +83,11 @@ stdout '"Hash": "08a4fa6bb9c04ffba03b26ae427b0d6335d90a2a"'
 ! stdout '"Reuse":'
 
 
-# With GOPROXY=direct, the -reuse flag has an effect, but
+# With GKPROXY=direct, the -reuse flag has an effect, but
 # the Origin data from the proxy should not be sufficient
 # for the proxy response to be reused.
 
-env GOPROXY=direct
+env GKPROXY=direct
 
 go list -reuse=proxy-latest.json -m -json vcs-test.golang.org/git/issue61415.git@latest
 stdout '"Version": "v0.0.0-20231114180001-f213069baa68"'

@@ -216,7 +216,7 @@ func ShortenSHA1(rev string) string {
 // given repository type and name.
 func WorkDir(ctx context.Context, typ, name string) (dir, lockfile string, err error) {
 	if cfg.GOMODCACHE == "" {
-		return "", "", fmt.Errorf("neither GOPATH nor GOMODCACHE are set")
+		return "", "", fmt.Errorf("neither GKPATH nor GKMODCACHE are set")
 	}
 
 	// We name the work directory for the SHA256 hash of the type and name.

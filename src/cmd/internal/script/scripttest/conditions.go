@@ -37,12 +37,12 @@ func AddToolChainScriptConditions(t *testing.T, conds map[string]script.Cond, go
 	add("buildmode", script.PrefixCondition("go supports -buildmode=<suffix>", hasBuildmode))
 	add("cgo", script.BoolCondition("host CGO_ENABLED", testenv.HasCGO()))
 	add("cgolinkext", script.Condition("platform requires external linking for cgo", cgoLinkExt))
-	add("cross", script.BoolCondition("cmd/go GOOS/GOARCH != GOHOSTOS/GOHOSTARCH", goHostOS != runtime.GOOS || goHostArch != runtime.GOARCH))
+	add("cross", script.BoolCondition("cmd/go GKOS/GKARCH != GKHOSTOS/GKHOSTARCH", goHostOS != runtime.GOOS || goHostArch != runtime.GOARCH))
 	add("fuzz", sysCondition("-fuzz", platform.FuzzSupported, false, goHostOS, goHostArch))
 	add("fuzz-instrumented", sysCondition("-fuzz with instrumentation", platform.FuzzInstrumented, false, goHostOS, goHostArch))
 	add("GODEBUG", script.PrefixCondition("GODEBUG contains <suffix>", hasGodebug))
-	add("GOEXPERIMENT", script.PrefixCondition("GOEXPERIMENT <suffix> is enabled", hasGoexperiment))
-	add("go-builder", script.BoolCondition("GO_BUILDER_NAME is non-empty", testenv.Builder() != ""))
+	add("GKEXPERIMENT", script.PrefixCondition("GKEXPERIMENT <suffix> is enabled", hasGoexperiment))
+	add("gecko-builder", script.BoolCondition("GK_BUILDER_NAME is non-empty", testenv.Builder() != ""))
 	add("link", lazyBool("testenv.HasLink()", testenv.HasLink))
 	add("msan", sysCondition("-msan", platform.MSanSupported, true, goHostOS, goHostArch))
 	add("mustlinkext", script.Condition("platform always requires external linking", mustLinkExt))
@@ -53,36 +53,36 @@ func AddToolChainScriptConditions(t *testing.T, conds map[string]script.Cond, go
 
 func sysCondition(flag string, f func(goos, goarch string) bool, needsCgo bool, goHostOS, goHostArch string) script.Cond {
 	return script.Condition(
-		"GOOS/GOARCH supports "+flag,
+		"GKOS/GKARCH supports "+flag,
 		func(s *script.State) (bool, error) {
-			GOOS, _ := s.LookupEnv("GOOS")
-			GOARCH, _ := s.LookupEnv("GOARCH")
+			GOOS, _ := s.LookupEnv("GKOS")
+			GOARCH, _ := s.LookupEnv("GKARCH")
 			cross := goHostOS != GOOS || goHostArch != GOARCH
 			return (!needsCgo || (testenv.HasCGO() && !cross)) && f(GOOS, GOARCH), nil
 		})
 }
 
 func hasBuildmode(s *script.State, mode string) (bool, error) {
-	GOOS, _ := s.LookupEnv("GOOS")
-	GOARCH, _ := s.LookupEnv("GOARCH")
+	GOOS, _ := s.LookupEnv("GKOS")
+	GOARCH, _ := s.LookupEnv("GKARCH")
 	return platform.BuildModeSupported(runtime.Compiler, mode, GOOS, GOARCH), nil
 }
 
 func cgoLinkExt(s *script.State) (bool, error) {
-	GOOS, _ := s.LookupEnv("GOOS")
-	GOARCH, _ := s.LookupEnv("GOARCH")
+	GOOS, _ := s.LookupEnv("GKOS")
+	GOARCH, _ := s.LookupEnv("GKARCH")
 	return platform.MustLinkExternal(GOOS, GOARCH, true), nil
 }
 
 func mustLinkExt(s *script.State) (bool, error) {
-	GOOS, _ := s.LookupEnv("GOOS")
-	GOARCH, _ := s.LookupEnv("GOARCH")
+	GOOS, _ := s.LookupEnv("GKOS")
+	GOARCH, _ := s.LookupEnv("GKARCH")
 	return platform.MustLinkExternal(GOOS, GOARCH, false), nil
 }
 
 func pieLinkExt(s *script.State) (bool, error) {
-	GOOS, _ := s.LookupEnv("GOOS")
-	GOARCH, _ := s.LookupEnv("GOARCH")
+	GOOS, _ := s.LookupEnv("GKOS")
+	GOARCH, _ := s.LookupEnv("GKARCH")
 	return !platform.InternalLinkPIESupported(GOOS, GOARCH), nil
 }
 
@@ -97,9 +97,9 @@ func hasGodebug(s *script.State, value string) (bool, error) {
 }
 
 func hasGoexperiment(s *script.State, value string) (bool, error) {
-	GOOS, _ := s.LookupEnv("GOOS")
-	GOARCH, _ := s.LookupEnv("GOARCH")
-	goexp, _ := s.LookupEnv("GOEXPERIMENT")
+	GOOS, _ := s.LookupEnv("GKOS")
+	GOARCH, _ := s.LookupEnv("GKARCH")
+	goexp, _ := s.LookupEnv("GKEXPERIMENT")
 	flags, err := buildcfg.ParseGOEXPERIMENT(GOOS, GOARCH, goexp)
 	if err != nil {
 		return false, err
@@ -112,5 +112,5 @@ func hasGoexperiment(s *script.State, value string) (bool, error) {
 			return false, nil
 		}
 	}
-	return false, fmt.Errorf("unrecognized GOEXPERIMENT %q", value)
+	return false, fmt.Errorf("unrecognized GKEXPERIMENT %q", value)
 }

@@ -63,7 +63,7 @@ instead of the go.mod in the module root directory.
 
 Tool also provides the -C, -overlay, and -modcacherw build flags.
 
-The gecko command places $GOROOT/bin at the beginning of $PATH in the
+The gecko command places $GKROOT/bin at the beginning of $PATH in the
 environment of commands run via tool directives, so that they use the
 same 'gecko' as the parent 'gecko tool'.
 

@@ -184,10 +184,10 @@ func (d *dstate) BeginCounterDataFile(cdf string, cdr *decodecounter.CounterData
 	if d.cmd == debugDumpMode {
 		fmt.Printf("data file %s", cdf)
 		if cdr.Goos() != "" {
-			fmt.Printf(" GOOS=%s", cdr.Goos())
+			fmt.Printf(" GKOS=%s", cdr.Goos())
 		}
 		if cdr.Goarch() != "" {
-			fmt.Printf(" GOARCH=%s", cdr.Goarch())
+			fmt.Printf(" GKARCH=%s", cdr.Goarch())
 		}
 		if len(cdr.OsArgs()) != 0 {
 			fmt.Printf("  program args: %+v\n", cdr.OsArgs())

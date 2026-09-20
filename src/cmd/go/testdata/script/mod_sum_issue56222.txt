@@ -46,11 +46,11 @@ go clean -modcache  # Remove checksums from the module cache, so that only go.su
 # dirty either.
 go list -m -u all
 
-env OLDSUMDB=$GOSUMDB
-env GOSUMDB=bad
+env OLDSUMDB=$GKSUMDB
+env GKSUMDB=bad
 go mod tidy
 
-env GOSUMDB=$OLDSUMDB
+env GKSUMDB=$OLDSUMDB
 
 
 # Regardless of the go version in go.mod, 'go get -t' should fetch

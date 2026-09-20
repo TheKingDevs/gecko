@@ -1,4 +1,4 @@
-env GOFLAGS=-mod=mod
+env GKFLAGS=-mod=mod
 
 # TODO(bcmills): Convert the 'go test' calls below to 'go list -test' once 'go
 # list' is more sensitive to package loading errors.

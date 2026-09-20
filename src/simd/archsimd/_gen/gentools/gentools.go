@@ -206,7 +206,7 @@ func (f *Files) Flush() error {
 	opts := f.getOptions()
 
 	if (opts.Write || opts.Diff) && opts.GOROOT == "" {
-		return fmt.Errorf("GOROOT not found; pass -goroot flag")
+		return fmt.Errorf("GKROOT not found; pass -goroot flag")
 	}
 
 	type preparedFile struct {

@@ -29,8 +29,8 @@ As an example, run_hello.txt says:
 Each script runs in a fresh temporary work directory tree, available to scripts as $WORK.
 Scripts also have access to other environment variables, including:
 
-	GOARCH=<target GOARCH>
-	GOOS=<target GOOS>
+	GKARCH=<target GKARCH>
+	GKOS=<target GKOS>
 	TMPDIR=$WORK/tmp
 	devnull=<value of os.DevNull>
 	goversion=<current Go version; for example, 1.12>
@@ -237,16 +237,16 @@ wait
 
 
 The available conditions are:
-[GOARCH:*]
+[GKARCH:*]
 	runtime.GOARCH == <suffix>
 [GODEBUG:*]
 	GODEBUG contains <suffix>
-[GOEXPERIMENT:*]
-	GOEXPERIMENT <suffix> is enabled
-[GOOS:*]
+[GKEXPERIMENT:*]
+	GKEXPERIMENT <suffix> is enabled
+[GKOS:*]
 	runtime.GOOS == <suffix>
 [asan]
-	GOOS/GOARCH supports -asan
+	GKOS/GKARCH supports -asan
 [buildmode:*]
 	go supports -buildmode=<suffix>
 [cgo]
@@ -256,25 +256,25 @@ The available conditions are:
 [compiler:*]
 	runtime.Compiler == <suffix>
 [cross]
-	cmd/go GOOS/GOARCH != GOHOSTOS/GOHOSTARCH
+	cmd/go GKOS/GKARCH != GKHOSTOS/GKHOSTARCH
 [exec:*]
 	<suffix> names an executable in the test binary's PATH
 [fuzz]
-	GOOS/GOARCH supports -fuzz
+	GKOS/GKARCH supports -fuzz
 [fuzz-instrumented]
-	GOOS/GOARCH supports -fuzz with instrumentation
-[go-builder]
-	GO_BUILDER_NAME is non-empty
+	GKOS/GKARCH supports -fuzz with instrumentation
+[gecko-builder]
+	GK_BUILDER_NAME is non-empty
 [link]
 	testenv.HasLink()
 [msan]
-	GOOS/GOARCH supports -msan
+	GKOS/GKARCH supports -msan
 [mustlinkext]
 	platform always requires external linking
 [pielinkext]
 	platform requires external linking for PIE
 [race]
-	GOOS/GOARCH supports -race
+	GKOS/GKARCH supports -race
 [root]
 	os.Geteuid() == 0
 [short]

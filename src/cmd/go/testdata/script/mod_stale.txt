@@ -1,4 +1,4 @@
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 go list -f '{{.Stale}}' .
 stdout true
 go install .

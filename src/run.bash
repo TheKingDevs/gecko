@@ -6,11 +6,11 @@
 # Environment variables that control run.bash:
 #
 # GO_TEST_SHARDS: number of "dist test" test shards that the
-# $GOROOT/test directory will be sliced up into for parallel
-# execution. Defaults to 1, unless GO_BUILDER_NAME is also specified,
+# $GKROOT/test directory will be sliced up into for parallel
+# execution. Defaults to 1, unless GK_BUILDER_NAME is also specified,
 # in which case it defaults to 10.
 #
-# GO_BUILDER_NAME: the name of the Go builder that's running the tests.
+# GK_BUILDER_NAME: the name of the Go builder that's running the tests.
 # Some tests are conditionally enabled or disabled based on the builder
 # name or the builder name being non-empty.
 #
@@ -32,16 +32,16 @@
 set -e
 
 if [ ! -f ../bin/gecko ]; then
-	echo 'run.bash must be run from $GOROOT/src after installing the gecko command' 1>&2
+	echo 'run.bash must be run from $GKROOT/src after installing the gecko command' 1>&2
 	exit 1
 fi
 
-export GOENV=off
+export GKENV=off
 eval $(../bin/gecko tool dist env)
 
 unset CDPATH	# in case user has it set
 
-export GOHOSTOS
+export GKHOSTOS
 export CC
 
 # no core files, please
@@ -56,5 +56,5 @@ if ulimit -T &> /dev/null; then
 	[ "$(ulimit -H -T)" = "unlimited" ] || ulimit -S -T $(ulimit -H -T)
 fi
 
-export GOPATH=/nonexist-gopath
+export GKPATH=/nonexist-gopath
 exec ../bin/gecko tool dist test -rebuild "$@"

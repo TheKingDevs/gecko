@@ -1,26 +1,26 @@
 # With good go.sum, verify succeeds by avoiding download.
 cp go.sum.good go.sum
 go mod verify
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.zip
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.zip
 
 # With bad go.sum, verify succeeds by avoiding download.
 cp go.sum.bad go.sum
 go mod verify
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.zip
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.zip
 
 # With bad go.sum, sync (which must download) fails.
 rm go.sum
 cp go.sum.bad go.sum
 ! go mod tidy
 stderr 'checksum mismatch'
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.zip
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.zip
 
 # With good go.sum, sync works.
 rm go.sum
 cp go.sum.good go.sum
 go mod tidy
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.zip
-exists $GOPATH/pkg/mod/rsc.io/quote@v1.1.0/quote.go
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.zip
+exists $GKPATH/pkg/mod/rsc.io/quote@v1.1.0/quote.go
 
 # go.sum should have the new checksum for go.mod
 grep '^rsc.io/quote v1.1.0/go.mod ' go.sum
@@ -41,11 +41,11 @@ grep '^rsc.io/quote v1.1.0/go.mod ' go.sum
 grep '^rsc.io/quote v1.1.0 ' go.sum
 
 # verify should fail on a missing ziphash. tidy should restore it.
-rm $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.ziphash
+rm $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.ziphash
 ! go mod verify
-stderr '^rsc.io/quote v1.1.0: missing ziphash: open '$GOPATH'[/\\]pkg[/\\]mod[/\\]cache[/\\]download[/\\]rsc.io[/\\]quote[/\\]@v[/\\]v1.1.0.ziphash'
+stderr '^rsc.io/quote v1.1.0: missing ziphash: open '$GKPATH'[/\\]pkg[/\\]mod[/\\]cache[/\\]download[/\\]rsc.io[/\\]quote[/\\]@v[/\\]v1.1.0.ziphash'
 go mod tidy
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.ziphash
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.1.0.ziphash
 go mod verify
 
 # Packages below module root should not be mentioned in go.sum.

@@ -1,5 +1,5 @@
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 
 [!git] skip
 

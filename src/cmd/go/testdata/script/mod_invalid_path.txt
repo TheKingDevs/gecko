@@ -5,7 +5,7 @@ cd $WORK/gopath/src/mod
 ! go list .
 stderr '^gecko: error reading go.mod: missing module declaration. To specify the module path:\n\tgecko mod edit -module=example.com/mod$'
 
-# Test that go mod init in GOPATH doesn't add a module declaration
+# Test that go mod init in GKPATH doesn't add a module declaration
 # with a path that can't possibly be a module path, because
 # it isn't even a valid import path.
 # The single quote and backtick are the only characters which are not allowed

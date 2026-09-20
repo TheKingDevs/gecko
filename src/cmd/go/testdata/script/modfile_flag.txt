@@ -2,7 +2,7 @@
 # The go.mod file exists but should not be read or written.
 # Same with go.sum.
 
-env GOFLAGS=-modfile=go.alt.mod
+env GKFLAGS=-modfile=go.alt.mod
 cp go.mod go.mod.orig
 cp go.sum go.sum.orig
 
@@ -67,12 +67,12 @@ rm vendor
 
 # 'go generate' should use the alternate file when resolving packages.
 # Recursive go commands started with 'go generate' should not get an explicitly
-# passed -modfile, but they should see arguments from GOFLAGS.
+# passed -modfile, but they should see arguments from GKFLAGS.
 cp go.alt.mod go.gen.mod
-env OLD_GOFLAGS=$GOFLAGS
-env GOFLAGS=-modfile=go.gen.mod
+env OLD_GOFLAGS=$GKFLAGS
+env GKFLAGS=-modfile=go.gen.mod
 go generate -modfile=go.alt.mod .
-env GOFLAGS=$OLD_GOFLAGS
+env GKFLAGS=$OLD_GOFLAGS
 grep example.com/exclude go.gen.mod
 ! grep example.com/exclude go.alt.mod
 

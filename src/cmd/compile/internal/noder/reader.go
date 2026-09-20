@@ -306,7 +306,7 @@ func (pr *pkgReader) posBaseIdx(idx index) *src.PosBase {
 	// but error messages need to use native paths (backslash on Windows)
 	// as if they had been specified on the command line.
 	// (The go command always passes native paths to the compiler.)
-	const dollarGOROOT = "$GOROOT"
+	const dollarGOROOT = "$GKROOT"
 	if buildcfg.GOROOT != "" && strings.HasPrefix(filename, dollarGOROOT) {
 		filename = filepath.FromSlash(buildcfg.GOROOT + filename[len(dollarGOROOT):])
 	}

@@ -1,7 +1,7 @@
 [!fuzz] skip
 [!cgo] skip
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # Test that fuzzing works with cgo (issue 65169)
 

@@ -34,15 +34,15 @@ the current directory or any parent directory, if there is one. This is useful
 for running programs without affecting the dependencies of the main module.
 
 If the package argument doesn't have a version suffix, "gecko run" may run in
-module-aware mode or GOPATH mode, depending on the GO111MODULE environment
-variable and the presence of a go.mod file. See 'gecko help modules' for details.
+module-aware mode or GKPATH mode, depending on the GK111MODULE environment
+variable and the presence of a go.mod file. See 'gecko help gopath' for details.
 If module-aware mode is enabled, "gecko run" runs in the context of the main
 module.
 
 By default, 'gecko run' runs the compiled binary directly: 'a.out arguments...'.
 If the -exec flag is given, 'gecko run' invokes the binary using xprog:
 	'xprog a.out arguments...'.
-If the -exec flag is not given, GOOS or GOARCH is different from the system
+If the -exec flag is not given, GKOS or GKARCH is different from the system
 default, and a program named go_$GOOS_$GOARCH_exec can be found
 on the current search path, 'gecko run' invokes the binary using that program,
 for example 'go_js_wasm_exec a.out arguments...'. This allows execution of
@@ -53,7 +53,7 @@ By default, 'gecko run' compiles the binary without generating the information
 used by debuggers, to reduce build time. To include debugger information in
 the binary, use 'gecko build'.
 
-The gecko command places $GOROOT/bin at the beginning of $PATH in the
+The gecko command places $GKROOT/bin at the beginning of $PATH in the
 subprocess environment, so that subprocesses that execute 'gecko' commands
 use the same 'gecko' as their parent.
 

@@ -567,8 +567,8 @@ func listEnv(c *build.Context) []string {
 	}
 
 	environ := append(os.Environ(),
-		"GOOS="+c.GOOS,
-		"GOARCH="+c.GOARCH)
+		"GKOS="+c.GOOS,
+		"GKARCH="+c.GOARCH)
 	if c.CgoEnabled {
 		environ = append(environ, "CGO_ENABLED=1")
 	} else {

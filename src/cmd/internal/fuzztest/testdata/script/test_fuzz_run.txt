@@ -1,6 +1,6 @@
 [!fuzz] skip
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # Tests which verify the behavior and command line output when
 # running a fuzz target as a unit test.

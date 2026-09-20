@@ -2,17 +2,17 @@
 # is recompiled only once.
 # Verifies golang.org/issue/34321.
 
-env GO111MODULE=off
+env GK111MODULE=off
 
 go list -e -test -deps -f '{{if not .Standard}}{{.ImportPath}}{{end}}' pkg
 cmp stdout want
 
--- $GOPATH/src/pkg/pkg.go --
+-- $GKPATH/src/pkg/pkg.go --
 package main
 
 func main() {}
 
--- $GOPATH/src/pkg/pkg_test.go --
+-- $GKPATH/src/pkg/pkg_test.go --
 package main
 
 import "testing"

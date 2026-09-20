@@ -5,15 +5,15 @@ cd workspace
 
 # Base case: ensure the module would default to mod=vendor
 # outside of workspace mode.
-env GOWORK=off
+env GKWORK=off
 go list -f '{{.Dir}}' example.com/dep
-stdout $GOPATH[\\/]src[\\/]workspace[\\/]vendor[\\/]example.com[\\/]dep
+stdout $GKPATH[\\/]src[\\/]workspace[\\/]vendor[\\/]example.com[\\/]dep
 
 # Test case: endure the module does not enter mod=vendor outside
 # worspace mode.
-env GOWORK=''
+env GKWORK=''
 go list -f '{{.Dir}}' example.com/dep
-stdout $GOPATH[\\/]src[\\/]dep
+stdout $GKPATH[\\/]src[\\/]dep
 
 -- workspace/go.work --
 use .

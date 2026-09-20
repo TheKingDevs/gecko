@@ -1,39 +1,39 @@
-# Regression test for GOPATH validation in GOPATH mode.
-env GO111MODULE=off
+# Regression test for GKPATH validation in GKPATH mode.
+env GK111MODULE=off
 
-env ORIG_GOPATH=$GOPATH
+env ORIG_GOPATH=$GKPATH
 
-# The literal path '.' in GOPATH should be rejected.
-env GOPATH=.
+# The literal path '.' in GKPATH should be rejected.
+env GKPATH=.
 ! go build go-cmd-test/helloworld.go
-stderr 'GOPATH entry is relative'
+stderr 'GKPATH entry is relative'
 
 # It should still be rejected if the requested package can be
 # found using another entry.
-env GOPATH=${:}$ORIG_GOPATH${:}.
+env GKPATH=${:}$ORIG_GOPATH${:}.
 ! go build go-cmd-test
-stderr 'GOPATH entry is relative'
+stderr 'GKPATH entry is relative'
 
-# GOPATH cannot be a relative subdirectory of the working directory.
+# GKPATH cannot be a relative subdirectory of the working directory.
 env ORIG_GOPATH
 stdout 'ORIG_GOPATH='$WORK[/\\]gopath
 cd $WORK
-env GOPATH=gopath
+env GKPATH=gopath
 ! go build gopath/src/go-cmd-test/helloworld.go
-stderr 'GOPATH entry is relative'
+stderr 'GKPATH entry is relative'
 
-# Blank paths in GOPATH should be rejected as relative (issue 21928).
-env GOPATH=' '${:}$ORIG_GOPATH
+# Blank paths in GKPATH should be rejected as relative (issue 21928).
+env GKPATH=' '${:}$ORIG_GOPATH
 ! go build go-cmd-test
-stderr 'GOPATH entry is relative'
+stderr 'GKPATH entry is relative'
 
 [short] stop
 
-# Empty paths in GOPATH should be ignored (issue 21928).
-env GOPATH=${:}$ORIG_GOPATH
-env GOPATH
+# Empty paths in GKPATH should be ignored (issue 21928).
+env GKPATH=${:}$ORIG_GOPATH
+env GKPATH
 go install go-cmd-test
-exists $ORIG_GOPATH/bin/go-cmd-test$GOEXE
+exists $ORIG_GOPATH/bin/go-cmd-test$GKEXE
 
 -- go-cmd-test/helloworld.go --
 package main

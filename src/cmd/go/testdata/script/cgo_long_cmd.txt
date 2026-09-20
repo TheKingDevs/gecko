@@ -1,8 +1,8 @@
 # Issue #66456
 
 [!cgo] skip
-[GOOS:windows] skip
-[GOOS:plan9] skip
+[GKOS:windows] skip
+[GKOS:plan9] skip
 
 # Generate a file with a very long #cgo LDFLAGS line.
 # This used to cause "go build" to fail with "argument list too long".

@@ -44,13 +44,13 @@ var origEnv = os.Environ()
 // If the test is not running on the build infrastructure,
 // Builder returns the empty string.
 func Builder() string {
-	return os.Getenv("GO_BUILDER_NAME")
+	return os.Getenv("GK_BUILDER_NAME")
 }
 
 // HasGoBuild reports whether the current system can build programs with “go build”
 // and then run them with os.StartProcess or exec.Command.
 func HasGoBuild() bool {
-	if os.Getenv("GO_GCFLAGS") != "" {
+	if os.Getenv("GK_GCFLAGS") != "" {
 		// It's too much work to require every caller of the go command
 		// to pass along "-gcflags="+os.Getenv("GO_GCFLAGS").
 		// For now, if $GO_GCFLAGS is set, report that we simply can't
@@ -116,9 +116,9 @@ var tryGoBuild = sync.OnceValue(func() error {
 // and then run them with os.StartProcess or exec.Command.
 // If not, MustHaveGoBuild calls t.Skip with an explanation.
 func MustHaveGoBuild(t testing.TB) {
-	if os.Getenv("GO_GCFLAGS") != "" {
+	if os.Getenv("GK_GCFLAGS") != "" {
 		t.Helper()
-		t.Skipf("skipping test: 'go build' not compatible with setting $GO_GCFLAGS")
+		t.Skipf("skipping test: 'go build' not compatible with setting $GK_GCFLAGS")
 	}
 	if !HasGoBuild() {
 		t.Helper()
@@ -204,7 +204,7 @@ var findGOROOT = sync.OnceValues(func() (path string, err error) {
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		return "", fmt.Errorf("finding GOROOT: %w", err)
+		return "", fmt.Errorf("finding GKROOT: %w", err)
 	}
 
 	dir := cwd
@@ -212,7 +212,7 @@ var findGOROOT = sync.OnceValues(func() (path string, err error) {
 		parent := filepath.Dir(dir)
 		if parent == dir {
 			// dir is either "." or only a volume name.
-			return "", fmt.Errorf("failed to locate GOROOT/src in any parent directory")
+			return "", fmt.Errorf("failed to locate GKROOT/src in any parent directory")
 		}
 
 		if base := filepath.Base(dir); base != "src" {
@@ -226,7 +226,7 @@ var findGOROOT = sync.OnceValues(func() (path string, err error) {
 				dir = parent
 				continue
 			}
-			return "", fmt.Errorf("finding GOROOT: %w", err)
+			return "", fmt.Errorf("finding GKROOT: %w", err)
 		}
 		goMod := string(b)
 
@@ -297,10 +297,10 @@ func MustHaveSource(t testing.TB) {
 	// a target machine where the source tree isn't available.
 	goroot, err := findGOROOT()
 	if err != nil {
-		t.Skipf("skipping test: cannot locate GOROOT: %v", err)
+		t.Skipf("skipping test: cannot locate GKROOT: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(goroot, "src", "go.mod")); err != nil {
-		t.Skipf("skipping test: GOROOT/src not available: %v", err)
+		t.Skipf("skipping test: GKROOT/src not available: %v", err)
 	}
 }
 

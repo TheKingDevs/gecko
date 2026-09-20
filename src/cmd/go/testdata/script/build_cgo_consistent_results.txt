@@ -1,14 +1,14 @@
 [!cgo] skip
 
-[GOOS:solaris] skip 'skipping on Solaris; see golang.org/issue/13247'
-[GOOS:illumos] skip 'skipping on Solaris; see golang.org/issue/13247'
+[GKOS:solaris] skip 'skipping on Solaris; see golang.org/issue/13247'
+[GKOS:illumos] skip 'skipping on Solaris; see golang.org/issue/13247'
 
-go build -o $WORK/exe1$GOEXE cgotest
-go build -x -o $WORK/exe2$GOEXE cgotest
+go build -o $WORK/exe1$GKEXE cgotest
+go build -x -o $WORK/exe2$GKEXE cgotest
 
 # TODO(matloob): skip if stderr does not contain '-fdebug-prefix-map=\$WORK'
 
-cmp $WORK/exe1$GOEXE $WORK/exe2$GOEXE
+cmp $WORK/exe1$GKEXE $WORK/exe2$GKEXE
 
 -- go.mod --
 module cgotest

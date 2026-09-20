@@ -1,17 +1,17 @@
 ! go work use
-stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GOWORK environment variable\)$'
+stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GKWORK environment variable\)$'
 
 ! go work use .
-stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GOWORK environment variable\)$'
+stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GKWORK environment variable\)$'
 
 ! go work edit
-stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GOWORK environment variable\)$'
+stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GKWORK environment variable\)$'
 
 ! go work edit -go=1.18
-stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GOWORK environment variable\)$'
+stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GKWORK environment variable\)$'
 
 ! go work sync
-stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GOWORK environment variable\)$'
+stderr '^gecko: no go\.work file found\n\t\(run ''gecko work init'' first or specify path using GKWORK environment variable\)$'
 
 -- go.mod --
 module example

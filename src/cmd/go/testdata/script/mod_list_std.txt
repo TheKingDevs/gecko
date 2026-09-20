@@ -1,9 +1,9 @@
-env GOPROXY=off
+env GKPROXY=off
 
 [!compiler:gc] skip
 [short] skip
 
-# Outside of GOROOT, our vendored packages should be reported as part of the standard library.
+# Outside of GKROOT, our vendored packages should be reported as part of the standard library.
 go list -f '{{if .Standard}}{{.ImportPath}}{{end}}' std cmd
 stdout ^vendor/golang\.org/x/net/http2/hpack
 stdout ^cmd/vendor/golang\.org/x/arch/x86/x86asm
@@ -13,16 +13,16 @@ stdout ^cmd/vendor/golang\.org/x/arch/x86/x86asm
 go list -deps vendor/golang.org/x/crypto/chacha20
 stdout ^vendor/golang\.org/x/crypto/internal/alias
 
-# cmd/... should match the same packages it used to match in GOPATH mode.
+# cmd/... should match the same packages it used to match in GKPATH mode.
 go list cmd/...
 stdout ^cmd/compile
 ! stdout ^cmd/vendor/golang\.org/x/arch/x86/x86asm
 
-# GOROOT/src/... should list the packages in std as if it were a module
+# GKROOT/src/... should list the packages in std as if it were a module
 # dependency: omitting vendored dependencies and stopping at the 'cmd' module
 # boundary.
 
-go list $GOROOT/src/...
+go list $GKROOT/src/...
 stdout ^bytes$
 ! stdout ^builtin$
 ! stdout ^cmd/
@@ -31,11 +31,11 @@ stdout ^bytes$
 
 
 # Vendored dependencies should appear with their 'vendor/' paths in std (they're
-# in GOROOT/src, but not in the 'std' module following the usual module-boundary
+# in GKROOT/src, but not in the 'std' module following the usual module-boundary
 # rules).
 
-cd $GOROOT/src
-env GOWORK=off
+cd $GKROOT/src
+env GKWORK=off
 
 go list std
 stdout ^vendor/golang.org/x/net/http2/hpack
@@ -64,7 +64,7 @@ go list -deps -f '{{if not .Standard}}{{.ImportPath}}{{end}}' std
 # directories.
 
 go list -f '{{.Dir}}' golang.org/x/net/http2/hpack
-stdout $GOROOT[/\\]src[/\\]vendor
+stdout $GKROOT[/\\]src[/\\]vendor
 
 # Within the std module, the packages within the module should omit the 'std/'
 # prefix (they retain their own identities), but should respect normal module

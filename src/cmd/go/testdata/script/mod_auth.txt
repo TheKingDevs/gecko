@@ -1,6 +1,6 @@
-env GOPROXY=direct
-env GOSUMDB=off
-env GOVCS='*:off'
+env GKPROXY=direct
+env GKSUMDB=off
+env GKVCS='*:off'
 
 # Without credentials, downloading a module from a path that requires HTTPS
 # basic auth should fail.

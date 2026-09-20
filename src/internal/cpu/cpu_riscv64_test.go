@@ -20,7 +20,7 @@ func TestRISCV64VectorLength(t *testing.T) {
 
 func TestDisableZbb(t *testing.T) {
 	if GetGORISCV64level() > 20 {
-		t.Skip("skipping test: can't run on GORISCV64>rva20u64")
+		t.Skip("skipping test: can't run on GKRISCV64>rva20u64")
 	}
 	runDebugOptionsTest(t, "TestZbbDebugOption", "cpu.zbb=off")
 }
@@ -39,7 +39,7 @@ func TestZbbDebugOption(t *testing.T) {
 
 func TestDisableV(t *testing.T) {
 	if GetGORISCV64level() > 22 {
-		t.Skip("skipping test: can't run on GORISCV64>rva22u64")
+		t.Skip("skipping test: can't run on GKRISCV64>rva22u64")
 	}
 
 	runDebugOptionsTest(t, "TestVDebugOption", "cpu.v=off")
@@ -59,7 +59,7 @@ func TestVDebugOption(t *testing.T) {
 
 func TestDisableZvbb(t *testing.T) {
 	if GetGORISCV64level() > 22 {
-		t.Skip("skipping test: can't run on GORISCV64>rva22u64")
+		t.Skip("skipping test: can't run on GKRISCV64>rva22u64")
 	}
 
 	runDebugOptionsTest(t, "TestZvbbDebugOption", "cpu.zvbb=off")

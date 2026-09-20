@@ -261,7 +261,7 @@ func vendorEnabled() (*moduleJSON, bool, error) {
 		return nil, false, err
 	}
 
-	stdout, _ := exec.Command(goCmd(), "env", "GOFLAGS").Output()
+	stdout, _ := exec.Command(goCmd(), "env", "GKFLAGS").Output()
 	goflags := string(bytes.TrimSpace(stdout))
 	matches := modFlagRegexp.FindStringSubmatch(goflags)
 	var modFlag string

@@ -817,11 +817,11 @@ func checkCacheDir(ctx context.Context) error {
 	if cfg.GOMODCACHE == "" {
 		// modload.Init exits if GOPATH[0] is empty, and cfg.GOMODCACHE
 		// is set to GOPATH[0]/pkg/mod if GOMODCACHE is empty, so this should never happen.
-		return fmt.Errorf("module cache not found: neither GOMODCACHE nor GOPATH is set")
+		return fmt.Errorf("module cache not found: neither GKMODCACHE nor GKPATH is set")
 	}
 	if !filepath.IsAbs(cfg.GOMODCACHE) {
 		counterErrorsGOMODCACHEEntryRelative.Inc()
-		return fmt.Errorf("GOMODCACHE entry is relative; must be absolute path: %q.\n", cfg.GOMODCACHE)
+		return fmt.Errorf("GKMODCACHE entry is relative; must be absolute path: %q.\n", cfg.GOMODCACHE)
 	}
 
 	// os.Stat is slow on Windows, so we only call it once to prevent unnecessary

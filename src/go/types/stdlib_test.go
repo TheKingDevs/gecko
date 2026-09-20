@@ -213,7 +213,7 @@ func testTestDir(t *testing.T, path string, ignore ...string) {
 		// suppress false-positive skips.
 		if _, err := os.Stat(filepath.Join(testenv.GOROOT(t), "test")); os.IsNotExist(err) {
 			if _, err := os.Stat(filepath.Join(testenv.GOROOT(t), "VERSION")); err == nil {
-				t.Skipf("skipping: GOROOT/test not present")
+				t.Skipf("skipping: GKROOT/test not present")
 			}
 		}
 		t.Fatal(err)

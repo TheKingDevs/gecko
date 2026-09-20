@@ -76,7 +76,7 @@ func TestVet(t *testing.T) {
 
 			// The asmdecl and framepointer tests assume amd64.
 			if name == "asmdecl" || name == "framepointer" {
-				cmd.Env = append(cmd.Env, "GOOS=linux", "GOARCH=amd64")
+				cmd.Env = append(cmd.Env, "GKOS=linux", "GKARCH=amd64")
 			}
 
 			// Run vet.
@@ -131,7 +131,7 @@ func TestStdVersion(t *testing.T) {
 	// version in its go.mod file for it to report anything.
 	// So again we use a testdata go.mod file to "downgrade".
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "vet", "-vettool="+vetPath(t), ".")
-	cmd.Env = append(os.Environ(), "GOWORK=off")
+	cmd.Env = append(os.Environ(), "GKWORK=off")
 	cmd.Dir = "testdata/stdversion"
 	cmd.Stderr = new(strings.Builder) // all vet output goes to stderr
 	cmd.Run()                         // ignore error

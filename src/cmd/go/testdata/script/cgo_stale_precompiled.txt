@@ -11,10 +11,10 @@
 # If running in non-short mode, explicitly vary CGO_CFLAGS
 # as a control case (to ensure that our regexps do catch rebuilds).
 
-[!short] env GOCACHE=$WORK/cache
+[!short] env GKCACHE=$WORK/cache
 [!short] env CGO_CFLAGS=-DTestScript_cgo_stale_precompiled=true
 go build -x runtime/cgo
-[!short] stderr '[/\\]cgo'$GOEXE'["]? .* -importpath runtime/cgo'
+[!short] stderr '[/\\]cgo'$GKEXE'["]? .* -importpath runtime/cgo'
 
 # https://go.dev/issue/47215: a missing $(go env CC) caused the precompiled net
 # to be stale. But as of https://go.dev/cl/452457 the precompiled libraries are
@@ -26,7 +26,7 @@ go build -x runtime/cgo
 
 env CGO_ENABLED=1
 env CC=''
-[!GOOS:plan9] env PATH=''  # Guaranteed not to include $(go env CC)!
-[GOOS:plan9] env path=''
+[!GKOS:plan9] env PATH=''  # Guaranteed not to include $(go env CC)!
+[GKOS:plan9] env path=''
 ! go build -x runtime/cgo
 stderr 'C compiler .* not found'

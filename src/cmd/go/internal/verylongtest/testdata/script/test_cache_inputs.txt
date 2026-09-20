@@ -1,5 +1,5 @@
-env GO111MODULE=off
-env GOPATH=$WORK/gopath
+env GK111MODULE=off
+env GKPATH=$WORK/gopath
 cd $WORK/gopath/src
 
 # Test that cached test results are invalidated in response to
@@ -8,15 +8,15 @@ cd $WORK/gopath/src
 [short] skip
 [GODEBUG:gocacheverify=1] skip
 
-# We're testing cache behavior, so start with a clean GOCACHE.
-env GOCACHE=$WORK/cache
+# We're testing cache behavior, so start with a clean GKCACHE.
+env GKCACHE=$WORK/cache
 
 # Build a helper binary to invoke os.Chtimes.
-go build -o mkold$GOEXE mkold.go
+go build -o mkold$GKEXE mkold.go
 
 # Make test input files appear to be a minute old.
-exec ./mkold$GOEXE 1m testcache/file.txt
-exec ./mkold$GOEXE 1m testcache/script.sh
+exec ./mkold$GKEXE 1m testcache/file.txt
+exec ./mkold$GKEXE 1m testcache/script.sh
 
 # If the test reads an environment variable, changes to that variable
 # should invalidate cached test results.
@@ -78,12 +78,12 @@ go test testcache -run=Chdir
 stdout '\(cached\)'
 
 # The content of files should affect caching, provided that the mtime also changes.
-exec ./mkold$GOEXE 1m testcache/file.txt
+exec ./mkold$GKEXE 1m testcache/file.txt
 go test testcache -run=FileContent
 go test testcache -run=FileContent
 stdout '\(cached\)'
 cp 2y.txt testcache/file.txt
-exec ./mkold$GOEXE 50s testcache/file.txt
+exec ./mkold$GKEXE 50s testcache/file.txt
 go test testcache -run=FileContent
 ! stdout '\(cached\)'
 go test testcache -run=FileContent
@@ -99,7 +99,7 @@ go test testcache -run=DirList
 go test testcache -run=DirList
 stdout '\(cached\)'
 
-# Files outside GOROOT and GOPATH should not affect caching.
+# Files outside GKROOT and GKPATH should not affect caching.
 env TEST_EXTERNAL_FILE=$WORK/external.txt
 go test testcache -run=ExternalFile
 go test testcache -run=ExternalFile
@@ -176,7 +176,7 @@ cmp coverage_v.out coverage_v2.out
 go test testcache -run=TestCoverageCache -coverprofile=coverage_count.out -count=2
 ! stdout '\(cached\)'
 
-# Executables within GOROOT and GOPATH should affect caching,
+# Executables within GKROOT and GKPATH should affect caching,
 # even if the test does not stat them explicitly.
 
 [!exec:/bin/sh] skip
@@ -187,7 +187,7 @@ go test testcache -run=Exec
 go test testcache -run=Exec
 stdout '\(cached\)'
 
-exec ./mkold$GOEXE 50s testcache/script.sh
+exec ./mkold$GKEXE 50s testcache/script.sh
 go test testcache -run=Exec
 ! stdout '\(cached\)'
 go test testcache -run=Exec
@@ -202,7 +202,7 @@ xxxxxx
 -- gopath/src/2y.txt --
 yy
 -- external.txt --
-This file is outside of GOPATH.
+This file is outside of GKPATH.
 -- gopath/src/testcache/script.sh --
 #!/bin/sh
 exit 0

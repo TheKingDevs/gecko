@@ -5,11 +5,11 @@
 
 eval `{go tool dist env -9}
 
-if(! test -x $GOTOOLDIR/dist){
-	echo 'cannot find $GOTOOLDIR/dist; nothing to clean' >[1=2]
+if(! test -x $GKTOOLDIR/dist){
+	echo 'cannot find $GKTOOLDIR/dist; nothing to clean' >[1=2]
 	exit noclean
 }
 
-$GOBIN/go clean -i std
-$GOBIN/go tool dist clean
-$GOBIN/go clean -i cmd
+$GKBIN/go clean -i std
+$GKBIN/go tool dist clean
+$GKBIN/go clean -i cmd

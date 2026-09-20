@@ -34,7 +34,7 @@ func init() {
 
 func init() {
 	if fips140.Enabled {
-		panic("boringcrypto: cannot use GODEBUG=fips140 with GOEXPERIMENT=boringcrypto")
+		panic("boringcrypto: cannot use GODEBUG=fips140 with GKEXPERIMENT=boringcrypto")
 	}
 }
 

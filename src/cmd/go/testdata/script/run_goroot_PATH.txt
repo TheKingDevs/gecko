@@ -1,12 +1,12 @@
-# https://go.dev/issue/68005: 'go run' should run the program with its own GOROOT/bin
+# https://go.dev/issue/68005: 'go run' should run the program with its own GKROOT/bin
 # at the beginning of $PATH.
 
-[!GOOS:plan9] env PATH=
-[GOOS:plan9] env path=
+[!GKOS:plan9] env PATH=
+[GKOS:plan9] env path=
 go run .
 
-[!GOOS:plan9] env PATH=$WORK${/}bin
-[GOOS:plan9] env path=$WORK${/}bin
+[!GKOS:plan9] env PATH=$WORK${/}bin
+[GKOS:plan9] env path=$WORK${/}bin
 go run .
 
 -- go.mod --
@@ -30,7 +30,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	want := filepath.Join(os.Getenv("GOROOT"), "bin", "gecko" + os.Getenv("GOEXE"))
+	want := filepath.Join(os.Getenv("GKROOT"), "bin", "gecko" + os.Getenv("GKEXE"))
 	if got != want {
 		fmt.Printf(`exec.LookPath("gecko") = %q; want %q\n`, got, want)
 		os.Exit(1)

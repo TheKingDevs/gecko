@@ -2092,7 +2092,7 @@ func TestServerHandshakeContextCancellation(t *testing.T) {
 		t.Errorf("Unexpected server handshake error: %v", err)
 	}
 	if runtime.GOOS == "js" || runtime.GOOS == "wasip1" {
-		t.Skip("conn.Close does not error as expected when called multiple times on GOOS=js or GOOS=wasip1")
+		t.Skip("conn.Close does not error as expected when called multiple times on GKOS=js or GKOS=wasip1")
 	}
 	err = conn.Close()
 	if err == nil {

@@ -1,24 +1,24 @@
-go env GOWORK
-stdout '^'$GOPATH'[\\/]src[\\/]go.work$'
+go env GKWORK
+stdout '^'$GKPATH'[\\/]src[\\/]go.work$'
 go env
-stdout '^(set )?GOWORK=''?'$GOPATH'[\\/]src[\\/]go.work''?$'
+stdout '^(set )?GKWORK=''?'$GKPATH'[\\/]src[\\/]go.work''?$'
 
 cd ..
-go env GOWORK
+go env GKWORK
 ! stdout .
 go env
-stdout 'GOWORK=("")?'
+stdout 'GKWORK=("")?'
 
 cd src
-go env GOWORK
+go env GKWORK
 stdout 'go.work'
 
-env GOWORK='off'
-go env GOWORK
+env GKWORK='off'
+go env GKWORK
 stdout 'off'
 
-! go env -w GOWORK=off
-stderr '^gecko: GOWORK cannot be modified$'
+! go env -w GKWORK=off
+stderr '^gecko: GKWORK cannot be modified$'
 
 -- go.work --
 go 1.18

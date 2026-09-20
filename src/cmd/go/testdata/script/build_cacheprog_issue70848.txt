@@ -1,5 +1,5 @@
-go build -o cacheprog$GOEXE cacheprog.go
-env GOCACHEPROG=$GOPATH/src/cacheprog$GOEXE
+go build -o cacheprog$GKEXE cacheprog.go
+env GKCACHEPROG=$GKPATH/src/cacheprog$GKEXE
 
 # This should not deadlock
 go build simple.go
@@ -10,7 +10,7 @@ package main
 
 func main() {}
 -- cacheprog.go --
-// This is a minimal GOCACHEPROG program that doesn't respond to close.
+// This is a minimal GKCACHEPROG program that doesn't respond to close.
 package main
 
 import (

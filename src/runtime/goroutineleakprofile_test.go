@@ -18,7 +18,7 @@ func TestGoroutineLeakProfile(t *testing.T) {
 	// This may be a test-only issue in that they're just sensitive to scheduling, but it
 	// needs more investigation.
 	for _, cfg := range []string{"mayMoreStackPreempt", "mayMoreStackMove"} {
-		if strings.Contains(os.Getenv("GOFLAGS"), cfg) {
+		if strings.Contains(os.Getenv("GKFLAGS"), cfg) {
 			testenv.SkipFlaky(t, 75729)
 		}
 	}

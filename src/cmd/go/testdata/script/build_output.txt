@@ -1,14 +1,14 @@
 [compiler:gccgo] skip 'gccgo has no standard packages'
 
-[!GOOS:windows] env NONEXE='.exe'
-[GOOS:windows] env NONEXE=''
+[!GKOS:windows] env NONEXE='.exe'
+[GKOS:windows] env NONEXE=''
 
-env GOBIN=$WORK/tmp/bin
+env GKBIN=$WORK/tmp/bin
 go install m/isarchive &
 
 go build x.go
-exists -exec x$GOEXE
-rm x$GOEXE
+exists -exec x$GKEXE
+rm x$GKEXE
 ! exists x$NONEXE
 
 go build -o myprog x.go
@@ -24,23 +24,23 @@ rm bin
 
 ! exists bin
 go build -o bin/ x.go
-exists -exec bin/x$GOEXE
+exists -exec bin/x$GKEXE
 rm bin
 
-[GOOS:windows] ! exists bin
-[GOOS:windows] go build -o bin\x x.go
-[GOOS:windows] exists -exec bin\x
-[GOOS:windows] rm bin
+[GKOS:windows] ! exists bin
+[GKOS:windows] go build -o bin\x x.go
+[GKOS:windows] exists -exec bin\x
+[GKOS:windows] rm bin
 
-[GOOS:windows] ! exists bin
-[GOOS:windows] go build -o bin\ x.go
-[GOOS:windows] exists -exec bin\x.exe
-[GOOS:windows] rm bin
+[GKOS:windows] ! exists bin
+[GKOS:windows] go build -o bin\ x.go
+[GKOS:windows] exists -exec bin\x.exe
+[GKOS:windows] rm bin
 
 ! exists bin
 mkdir bin
 go build -o bin x.go
-exists -exec bin/x$GOEXE
+exists -exec bin/x$GKEXE
 rm bin
 
 go build p.go
@@ -53,11 +53,11 @@ wait # for isarchive
 
 go build -o p.a p.go
 exists p.a
-exec $GOBIN/isarchive p.a
+exec $GKBIN/isarchive p.a
 
 go build cmd/gofmt
-exists -exec gofmt$GOEXE
-rm gofmt$GOEXE
+exists -exec gofmt$GKEXE
+rm gofmt$GKEXE
 ! exists gofmt$NONEXE
 
 go build -o mygofmt cmd/gofmt
@@ -72,7 +72,7 @@ go build sync/atomic
 
 go build -o myatomic.a sync/atomic
 exists myatomic.a
-exec $GOBIN/isarchive myatomic.a
+exec $GKBIN/isarchive myatomic.a
 ! exists atomic
 ! exists atomic.a
 ! exists atomic.exe

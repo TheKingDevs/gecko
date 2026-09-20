@@ -2,17 +2,17 @@
 
 # Check go test -cpuprofile creates errors.test
 go test -cpuprofile errors.prof errors
-exists -exec errors.test$GOEXE
+exists -exec errors.test$GKEXE
 
 # Check go test -cpuprofile -o myerrors.test creates errors.test
-go test -cpuprofile errors.prof -o myerrors.test$GOEXE errors
-exists -exec myerrors.test$GOEXE
+go test -cpuprofile errors.prof -o myerrors.test$GKEXE errors
+exists -exec myerrors.test$GKEXE
 
 # Check go test -mutexprofile creates errors.test
 go test -mutexprofile errors.prof errors
-exists -exec errors.test$GOEXE
+exists -exec errors.test$GKEXE
 
 # Check go test -mutexprofile -o myerrors.test creates errors.test
-go test -mutexprofile errors.prof -o myerrors.test$GOEXE errors
-exists -exec myerrors.test$GOEXE
+go test -mutexprofile errors.prof -o myerrors.test$GKEXE errors
+exists -exec myerrors.test$GKEXE
 

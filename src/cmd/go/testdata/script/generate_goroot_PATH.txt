@@ -1,13 +1,13 @@
 # https://go.dev/issue/51473: to avoid the need for generators to rely on
-# runtime.GOROOT, 'go generate' should run the test with its own GOROOT/bin
+# runtime.GOROOT, 'go generate' should run the test with its own GKROOT/bin
 # at the beginning of $PATH.
 
-[!GOOS:plan9] env PATH=
-[GOOS:plan9] env path=
+[!GKOS:plan9] env PATH=
+[GKOS:plan9] env path=
 go generate .
 
-[!GOOS:plan9] env PATH=$WORK${/}bin
-[GOOS:plan9] env path=$WORK${/}bin
+[!GKOS:plan9] env PATH=$WORK${/}bin
+[GKOS:plan9] env path=$WORK${/}bin
 go generate .
 
 -- go.mod --

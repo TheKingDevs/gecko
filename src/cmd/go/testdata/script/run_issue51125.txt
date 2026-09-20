@@ -1,5 +1,5 @@
 # Regression test for https://go.dev/issue/51125:
-# Relative import paths (a holdover from GOPATH) were accidentally allowed in module mode.
+# Relative import paths (a holdover from GKPATH) were accidentally allowed in module mode.
 
 cd $WORK
 
@@ -24,8 +24,8 @@ stdout '^driver.go:3:8: "./mypkg" is relative, but relative import paths are not
 ! stderr .
 
 
-# In GOPATH mode, they're still allowed (but only outside of GOPATH/src).
-env GO111MODULE=off
+# In GKPATH mode, they're still allowed (but only outside of GKPATH/src).
+env GK111MODULE=off
 
 [!short] go run driver.go
 

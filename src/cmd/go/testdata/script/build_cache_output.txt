@@ -1,12 +1,12 @@
-env GO111MODULE=off
+env GK111MODULE=off
 env GODEBUG=gocachetest=1
 
 [!compiler:gc] skip
 [short] skip # clears cache, rebuilds too much
 
-# Set up fresh GOCACHE.
-env GOCACHE=$WORK/gocache
-mkdir $GOCACHE
+# Set up fresh GKCACHE.
+env GKCACHE=$WORK/gocache
+mkdir $GKCACHE
 
 # Building a trivial non-main package should run compiler the first time.
 go build -x -gcflags=-m lib.go

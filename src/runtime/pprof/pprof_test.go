@@ -499,7 +499,7 @@ func diffCPUTime(t *testing.T, f func()) (user, system time.Duration) {
 	if fn := diffCPUTimeImpl; fn != nil {
 		return fn(f)
 	}
-	t.Fatalf("cannot measure CPU time on GOOS=%s GOARCH=%s", runtime.GOOS, runtime.GOARCH)
+	t.Fatalf("cannot measure CPU time on GKOS=%s GKARCH=%s", runtime.GOOS, runtime.GOARCH)
 	return 0, 0
 }
 

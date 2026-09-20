@@ -1,9 +1,9 @@
 # go doc should find module documentation
 
-env GOFLAGS=-mod=mod
+env GKFLAGS=-mod=mod
 [short] skip
 
-# Check when module x is inside GOPATH/src.
+# Check when module x is inside GKPATH/src.
 go doc y
 stdout 'Package y is.*alphabet'
 stdout 'import "x/y"'
@@ -24,23 +24,23 @@ stdout 'Hello returns a greeting'
 go doc quote
 stdout 'Package quote collects pithy sayings.'
 
-# Double-check when module x is outside GOPATH/src.
-env GOPATH=$WORK/emptygopath
+# Double-check when module x is outside GKPATH/src.
+env GKPATH=$WORK/emptygopath
 go doc x/y
 stdout 'Package y is.*alphabet'
 go doc y
 stdout 'Package y is.*alphabet'
 
-# Triple-check when module x is outside GOPATH/src,
-# but other packages with same import paths are in GOPATH/src.
+# Triple-check when module x is outside GKPATH/src,
+# but other packages with same import paths are in GKPATH/src.
 # Since go doc is running in module mode here, packages in active module
-# should be preferred over packages in GOPATH. See golang.org/issue/28992.
-env GOPATH=$WORK/gopath2
+# should be preferred over packages in GKPATH. See golang.org/issue/28992.
+env GKPATH=$WORK/gopath2
 go doc x/y
-! stdout 'Package y is.*GOPATH'
+! stdout 'Package y is.*GKPATH'
 stdout 'Package y is.*alphabet'
 go doc rsc.io/quote
-! stdout 'Package quote is located in a GOPATH workspace.'
+! stdout 'Package quote is located in a GKPATH workspace.'
 stdout 'Package quote collects pithy sayings.'
 
 # Check that a sensible error message is printed when a package is not found.
@@ -51,29 +51,29 @@ stderr 'doc: no required module provides package example.com/hello; to add it:\n
 # of the packages. 'std' and 'cmd' are convenient examples of such modules.
 #
 # When in those modules, the "// import" comment should refer to the same import
-# path used in source code, not to the absolute path relative to GOROOT.
+# path used in source code, not to the absolute path relative to GKROOT.
 
-cd $GOROOT/src
-env GOFLAGS=
-env GOWORK=off
+cd $GKROOT/src
+env GKFLAGS=
+env GKWORK=off
 go doc cryptobyte
 stdout '// import "golang.org/x/crypto/cryptobyte"'
 
-cd $GOROOT/src/cmd/go
+cd $GKROOT/src/cmd/go
 go doc modfile
 stdout '// import "golang.org/x/mod/modfile"'
 
 # When outside of the 'std' module, its vendored packages
 # remain accessible using the 'vendor/' prefix, but report
 # the correct "// import" comment as used within std.
-cd $GOPATH
+cd $GKPATH
 go doc vendor/golang.org/x/crypto/cryptobyte
 stdout '// import "vendor/golang.org/x/crypto/cryptobyte"'
 
 go doc cmd/vendor/golang.org/x/mod/modfile
 stdout '// import "cmd/vendor/golang.org/x/mod/modfile"'
 
-# Not in a module and not in GOPATH
+# Not in a module and not in GKPATH
 cd $WORK
 go env GOMOD
 stdout '(/dev/null|NUL)'
@@ -103,11 +103,11 @@ type Alphabet struct{}
 package x
 
 -- $WORK/gopath2/src/x/y/y.go --
-// Package y is located in a GOPATH workspace.
+// Package y is located in a GKPATH workspace.
 package y
 -- $WORK/gopath2/src/rsc.io/quote/quote.go --
-// Package quote is located in a GOPATH workspace.
+// Package quote is located in a GKPATH workspace.
 package quote
 
-// Hello is located in a GOPATH workspace.
+// Hello is located in a GKPATH workspace.
 func Hello() string { return "" }

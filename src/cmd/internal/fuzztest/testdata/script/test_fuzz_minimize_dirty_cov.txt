@@ -9,9 +9,9 @@
 [short] skip
 [!fuzz-instrumented] skip
 
-env GOCACHE=$WORK/gocache
-go test -fuzz=FuzzCovMin -fuzztime=500000x -test.fuzzcachedir=$GOCACHE/fuzz
-go run check_file/main.go $GOCACHE/fuzz/FuzzCovMin ab
+env GKCACHE=$WORK/gocache
+go test -fuzz=FuzzCovMin -fuzztime=500000x -test.fuzzcachedir=$GKCACHE/fuzz
+go run check_file/main.go $GKCACHE/fuzz/FuzzCovMin ab
 
 -- go.mod --
 module test

@@ -7,29 +7,29 @@ env TESTGO_VERSION_SWITCH=switch
 cp go.mod go.mod.orig
 
 # tidy reports needing 1.22.0 for b1
-env GOTOOLCHAIN=local
+env GKTOOLCHAIN=local
 ! go mod tidy
-stderr '^gecko: example imports\n\texample.net/b: module ./b1 requires go >= 1.22.0 \(running go 1.21.0; GOTOOLCHAIN=local\)$'
-env GOTOOLCHAIN=auto
+stderr '^gecko: example imports\n\texample.net/b: module ./b1 requires go >= 1.22.0 \(running go 1.21.0; GKTOOLCHAIN=local\)$'
+env GKTOOLCHAIN=auto
 go mod tidy
 
 cmp stderr tidy-stderr.want
 cmp go.mod go.mod.tidy
 
 cp go.mod.orig go.mod
-env GOTOOLCHAIN=local
+env GKTOOLCHAIN=local
 ! go get -v .
-stderr '^gecko: example.net/b@v0.1.0: module ./b1 requires go >= 1.22.0 \(running go 1.21.0; GOTOOLCHAIN=local\)$'
-env GOTOOLCHAIN=auto
+stderr '^gecko: example.net/b@v0.1.0: module ./b1 requires go >= 1.22.0 \(running go 1.21.0; GKTOOLCHAIN=local\)$'
+env GKTOOLCHAIN=auto
 go get -v .
 cmp stderr get-v-stderr.want
 cmp go.mod go.mod.tidy
 
 cp go.mod.orig go.mod
-env GOTOOLCHAIN=local
+env GKTOOLCHAIN=local
 ! go get -u -v .
-stderr '^gecko: example.net/a@v0.2.0: module ./a2 requires go >= 1.22.0 \(running go 1.21.0; GOTOOLCHAIN=local\)$'
-env GOTOOLCHAIN=auto
+stderr '^gecko: example.net/a@v0.2.0: module ./a2 requires go >= 1.22.0 \(running go 1.21.0; GKTOOLCHAIN=local\)$'
+env GKTOOLCHAIN=auto
 go get -u -v .
 cmp stderr get-u-v-stderr.want
 cmp go.mod go.mod.upgraded

@@ -2,8 +2,8 @@
 # go.mod files should be preserved when overwriting them.
 
 # Skip platforms that do not have Unix-style file permissions.
-[GOOS:windows] skip
-[GOOS:plan9] skip
+[GKOS:windows] skip
+[GKOS:plan9] skip
 
 chmod 0640 go.mod
 chmod 0604 go.sum

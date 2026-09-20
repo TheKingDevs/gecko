@@ -24,17 +24,17 @@ stderr 'could not read Go build info'
 go version empty.dll
 stderr 'could not read Go build info'
 
-# Neither of the three flags above should be an issue via GOFLAGS.
-env GOFLAGS='-m -v -json'
+# Neither of the three flags above should be an issue via GKFLAGS.
+env GKFLAGS='-m -v -json'
 go version
 stdout '^gecko version'
-env GOFLAGS=
+env GKFLAGS=
 
 # Check that very basic version lookup succeeds.
 go build empty.go
-go version empty$GOEXE
+go version empty$GKEXE
 [cgo] go build -ldflags=-linkmode=external empty.go
-[cgo] go version empty$GOEXE
+[cgo] go version empty$GKEXE
 
 # Check that 'go version' and 'go version -m' work on a binary built in module mode.
 go get rsc.io/fortune
@@ -47,7 +47,7 @@ go version -m fortune.exe
 stdout '^\tpath\trsc.io/fortune'
 stdout '^\tmod\trsc.io/fortune\tv1.0.0'
 
-# Check the build info of a binary built from $GOROOT/src/cmd
+# Check the build info of a binary built from $GKROOT/src/cmd
 go build -o test2json.exe cmd/test2json
 go version -m test2json.exe
 [!default-pie] stdout -buildmode=exe

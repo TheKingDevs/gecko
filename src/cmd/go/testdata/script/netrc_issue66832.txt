@@ -1,11 +1,11 @@
 # This test ensures .netrc and _netrc are both supported on windows.
 # See golang.org/issue/66832
 
-[!GOOS:windows] skip
+[!GKOS:windows] skip
 [short] skip
 
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 mkdir $WORK\home
 env USERPROFILE=$WORK\home
 

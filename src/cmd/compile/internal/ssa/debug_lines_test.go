@@ -168,8 +168,8 @@ func compileAndDump(t *testing.T, file, function, moreGCFlags string) []byte {
 	if testGoArch() == "wasm" {
 		testGoos = "js"
 	}
-	cmd.Env = replaceEnv(cmd.Env, "GOOS", testGoos)
-	cmd.Env = replaceEnv(cmd.Env, "GOARCH", testGoArch())
+	cmd.Env = replaceEnv(cmd.Env, "GKOS", testGoos)
+	cmd.Env = replaceEnv(cmd.Env, "GKARCH", testGoArch())
 
 	if testing.Verbose() {
 		fmt.Printf("About to run %s\n", asCommandLine("", cmd))

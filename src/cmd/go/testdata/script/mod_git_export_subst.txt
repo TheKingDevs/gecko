@@ -1,5 +1,5 @@
-env GOPROXY=direct
-env GONOSUMDB=vcs-test.golang.org
+env GKPROXY=direct
+env GKNOSUMDB=vcs-test.golang.org
 
 # Testing that git export-subst is disabled
 [!git] skip

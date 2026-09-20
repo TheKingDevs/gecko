@@ -25,7 +25,7 @@ import (
 )
 
 func cmdtest() {
-	gogcflags = os.Getenv("GO_GCFLAGS")
+	gogcflags = os.Getenv("GK_GCFLAGS")
 	setNoOpt()
 
 	var t tester
@@ -165,7 +165,7 @@ func (t *tester) run() {
 	}
 
 	if !t.listMode {
-		if builder := os.Getenv("GO_BUILDER_NAME"); builder == "" {
+		if builder := os.Getenv("GK_BUILDER_NAME"); builder == "" {
 			// Ensure that installed commands are up to date, even with -no-rebuild,
 			// so that tests that run commands end up testing what's actually on disk.
 			// If everything is up-to-date, this is a no-op.
@@ -217,7 +217,7 @@ func (t *tester) run() {
 	}
 
 	// On a few builders, make GOROOT unwritable to catch tests writing to it.
-	if strings.HasPrefix(os.Getenv("GO_BUILDER_NAME"), "linux-") {
+	if strings.HasPrefix(os.Getenv("GK_BUILDER_NAME"), "linux-") {
 		if os.Getuid() == 0 {
 			// Don't bother making GOROOT unwritable:
 			// we're running as root, so permissions would have no effect.
@@ -515,8 +515,8 @@ func (opts *goTest) buildArgs(t *tester) (build, run, pkgs, testFlags []string, 
 			}
 		}
 		if runOnHost {
-			setEnv(cmd, "GOARCH", gohostarch)
-			setEnv(cmd, "GOOS", gohostos)
+			setEnv(cmd, "GKARCH", gohostarch)
+			setEnv(cmd, "GKOS", gohostos)
 		}
 	}
 
@@ -719,9 +719,9 @@ func (t *tester) registerTests() {
 	// Check that all crypto packages compile (and test correctly, in longmode) with fips.
 	if t.fipsSupported() {
 		// Test standard crypto packages with fips140=on.
-		t.registerTest("GOFIPS140=latest go test crypto/...", &goTest{
+		t.registerTest("GKFIPS140=latest go test crypto/...", &goTest{
 			variant: "gofips140",
-			env:     []string{"GOFIPS140=latest"},
+			env:     []string{"GKFIPS140=latest"},
 			pkg:     "crypto/...",
 		})
 
@@ -734,29 +734,29 @@ func (t *tester) registerTests() {
 				suffix = ""
 				run = ""
 			}
-			t.registerTest("GOFIPS140="+version+" go test crypto/..."+suffix, &goTest{
+			t.registerTest("GKFIPS140="+version+" go test crypto/..."+suffix, &goTest{
 				variant:  "gofips140-" + version,
 				pkg:      "crypto/...",
 				runTests: run,
-				env:      []string{"GOFIPS140=" + version, "GOMODCACHE=" + filepath.Join(workdir, "fips-"+version)},
+				env:      []string{"GKFIPS140=" + version, "GKMODCACHE=" + filepath.Join(workdir, "fips-"+version)},
 			})
 		}
 	}
 
 	// Test GOEXPERIMENT=nojsonv2.
 	if !strings.Contains(goexperiment, "nojsonv2") {
-		t.registerTest("GOEXPERIMENT=nojsonv2 go test encoding/json/...", &goTest{
+		t.registerTest("GKEXPERIMENT=nojsonv2 go test encoding/json/...", &goTest{
 			variant: "nojsonv2",
-			env:     []string{"GOEXPERIMENT=" + goexperiments("nojsonv2")},
+			env:     []string{"GKEXPERIMENT=" + goexperiments("nojsonv2")},
 			pkg:     "encoding/json/...",
 		})
 	}
 
 	// Test GOEXPERIMENT=runtimesecret.
 	if !strings.Contains(goexperiment, "runtimesecret") {
-		t.registerTest("GOEXPERIMENT=runtimesecret go test runtime/secret/...", &goTest{
+		t.registerTest("GKEXPERIMENT=runtimesecret go test runtime/secret/...", &goTest{
 			variant: "runtimesecret",
-			env:     []string{"GOEXPERIMENT=" + goexperiments("runtimesecret")},
+			env:     []string{"GKEXPERIMENT=" + goexperiments("runtimesecret")},
 			pkg:     "runtime/secret/...",
 		})
 	}
@@ -764,17 +764,17 @@ func (t *tester) registerTests() {
 	// Test GOEXPERIMENT=simd.
 	if !strings.Contains(goexperiment, "simd") {
 		// simd package is portable.
-		t.registerTest("GOEXPERIMENT=simd go test simd", &goTest{
+		t.registerTest("GKEXPERIMENT=simd go test simd", &goTest{
 			variant: "simd",
-			env:     []string{"GOEXPERIMENT=" + goexperiments("simd")},
+			env:     []string{"GKEXPERIMENT=" + goexperiments("simd")},
 			pkg:     "simd",
 		})
 		// simd/archsimd supports amd64, arm64, and wasm.
 		archsimdSupported := goarch == "amd64" || goarch == "arm64" || goarch == "wasm"
 		if archsimdSupported {
-			t.registerTest("GOEXPERIMENT=simd go test simd/archsimd/...", &goTest{
+			t.registerTest("GKEXPERIMENT=simd go test simd/archsimd/...", &goTest{
 				variant: "simd",
-				env:     []string{"GOEXPERIMENT=" + goexperiments("simd")},
+				env:     []string{"GKEXPERIMENT=" + goexperiments("simd")},
 				pkg:     "simd/archsimd/...",
 			})
 		}
@@ -782,11 +782,11 @@ func (t *tester) registerTests() {
 
 	// Test ios/amd64 for the iOS simulator.
 	if goos == "darwin" && goarch == "amd64" && t.cgoEnabled {
-		t.registerTest("GOOS=ios on darwin/amd64",
+		t.registerTest("GKOS=ios on darwin/amd64",
 			&goTest{
 				variant:  "amd64ios",
 				runTests: "SystemRoots",
-				env:      []string{"GOOS=ios", "CGO_ENABLED=1"},
+				env:      []string{"GKOS=ios", "CGO_ENABLED=1"},
 				pkg:      "crypto/x509",
 			})
 	}
@@ -822,7 +822,7 @@ func (t *tester) registerTests() {
 			&goTest{
 				variant: "spectre",
 				short:   true,
-				env:     []string{"GOFLAGS=-gcflags=all=-spectre=all -asmflags=all=-spectre=all"},
+				env:     []string{"GKFLAGS=-gcflags=all=-spectre=all -asmflags=all=-spectre=all"},
 				pkgs:    pkgs,
 			})
 	}
@@ -862,7 +862,7 @@ func (t *tester) registerTests() {
 				&goTest{
 					variant: hook,
 					short:   true,
-					env:     []string{"GOFLAGS=" + goFlags},
+					env:     []string{"GKFLAGS=" + goFlags},
 					pkgs:    []string{"runtime", "reflect", "sync"},
 				})
 		}
@@ -898,7 +898,7 @@ func (t *tester) registerTests() {
 	}
 
 	// Stub out following test on alpine until 54354 resolved.
-	builderName := os.Getenv("GO_BUILDER_NAME")
+	builderName := os.Getenv("GK_BUILDER_NAME")
 	disablePIE := strings.HasSuffix(builderName, "-alpine")
 
 	// Test internal linking of PIE binaries where it is supported.
@@ -1023,7 +1023,7 @@ func (t *tester) registerTests() {
 		// where they get distributed to multiple machines.
 		// See issues 20141 and 31834.
 		nShards := 1
-		if os.Getenv("GO_BUILDER_NAME") != "" {
+		if os.Getenv("GK_BUILDER_NAME") != "" {
 			nShards = 10
 		}
 		if n, err := strconv.Atoi(os.Getenv("GO_TEST_SHARDS")); err == nil {
@@ -1308,7 +1308,7 @@ func (t *tester) registerCgoTests(heading string) {
 	// build modes of these tests.
 
 	// Stub out various buildmode=pie tests  on alpine until 54354 resolved.
-	builderName := os.Getenv("GO_BUILDER_NAME")
+	builderName := os.Getenv("GK_BUILDER_NAME")
 	disablePIE := strings.HasSuffix(builderName, "-alpine")
 
 	if t.internalLink() {
@@ -1650,9 +1650,9 @@ func (t *tester) packageHasBenchmarks(pkg string) bool {
 // makeGOROOTUnwritable makes all $GOROOT files & directories non-writable to
 // check that no tests accidentally write to $GOROOT.
 func (t *tester) makeGOROOTUnwritable() (undo func()) {
-	dir := os.Getenv("GOROOT")
+	dir := os.Getenv("GKROOT")
 	if dir == "" {
-		panic("GOROOT not set")
+		panic("GKROOT not set")
 	}
 
 	type pathMode struct {
@@ -1698,7 +1698,7 @@ func (t *tester) makeGOROOTUnwritable() (undo func()) {
 		if err != nil {
 			dirs = dirs[i:] // Only undo what we did so far.
 			undo()
-			fatalf("failed to make GOROOT read-only: %v", err)
+			fatalf("failed to make GKROOT read-only: %v", err)
 		}
 	}
 

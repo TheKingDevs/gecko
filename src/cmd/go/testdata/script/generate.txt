@@ -1,7 +1,7 @@
 # Install an echo command because Windows doesn't have it.
-env GOBIN=$WORK/tmp/bin
+env GKBIN=$WORK/tmp/bin
 go install echo.go
-env PATH=$GOBIN${:}$PATH
+env PATH=$GKBIN${:}$PATH
 
 # Test go generate handles a simple command
 go generate ./generate/simple.go
@@ -13,7 +13,7 @@ stdout 'Now is the time for all good men'
 
 # Test go generate's variable substitution
 go generate './generate/substitution.go'
-stdout $GOARCH' substitution.go:7 pabc xyzp/substitution.go/123'
+stdout $GKARCH' substitution.go:7 pabc xyzp/substitution.go/123'
 
 # Test go generate's run and skip flags
 go generate -run y.s './generate/flag.go'
@@ -81,7 +81,7 @@ package p
 
 // Test go generate variable substitution.
 
-//go:generate echo $GOARCH $GOFILE:$GOLINE ${GOPACKAGE}abc xyz$GOPACKAGE/$GOFILE/123
+//go:generate echo $GKARCH $GOFILE:$GOLINE ${GOPACKAGE}abc xyz$GOPACKAGE/$GOFILE/123
 
 package p
 -- generate/flag.go --

@@ -1255,7 +1255,7 @@ var rootConsistencyTestCases = []rootConsistencyTest{{
 				t.Skip("known inconsistency on windows")
 			case "js":
 				// GOOS=js behavior varies with what the underlying OS is.
-				t.Skip("known inconsistency with GOOS=js")
+				t.Skip("known inconsistency with GKOS=js")
 			}
 		}
 	},

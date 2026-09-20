@@ -12,11 +12,11 @@ The test harness compiles Go code inside files in this directory and
 matches the generated assembly (the output of `go tool compile -S`)
 against a set of regexps to be specified in comments that follow a
 special syntax (described below). The test driver is implemented as
-an action within the GOROOT/test test suite, called "asmcheck".
+an action within the GKROOT/test test suite, called "asmcheck".
 
 The codegen harness is part of the all.bash test suite, but for
 performance reasons only the codegen tests for the host machine's
-GOARCH are enabled by default, and only on GOOS=linux.
+GKARCH are enabled by default, and only on GKOS=linux.
 
 To perform comprehensive tests for all the supported architectures
 (even on a non-Linux system), one can run the following command:
@@ -114,7 +114,7 @@ should be run:
 
 * Specify only the architecture (eg: "amd64"). This indicates that the
   check should be run on all the supported architecture variants. For
-  instance, arm checks will be run against all supported GOARM
+  instance, arm checks will be run against all supported GKARM
   variations (5,6,7).
 * Specify both the architecture and a variant, separated by a slash
   (eg: "arm/7"). This means that the check will be run only on that

@@ -24,10 +24,10 @@ func Init(arch *ssagen.ArchInfo) {
 	case "softfloat":
 		arch.SoftFloat = true
 	case "387":
-		fmt.Fprintf(os.Stderr, "unsupported setting GO386=387. Consider using GO386=softfloat instead.\n")
+		fmt.Fprintf(os.Stderr, "unsupported setting GK386=387. Consider using GK386=softfloat instead.\n")
 		base.Exit(1)
 	default:
-		fmt.Fprintf(os.Stderr, "unsupported setting GO386=%s\n", v)
+		fmt.Fprintf(os.Stderr, "unsupported setting GK386=%s\n", v)
 		base.Exit(1)
 
 	}

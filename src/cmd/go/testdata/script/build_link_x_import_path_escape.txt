@@ -1,7 +1,7 @@
 [compiler:gccgo] skip 'gccgo does not support -ldflags -X'
 
-go build -o linkx$GOEXE -ldflags -X=my.pkg.Text=linkXworked my.pkg/main
-exec ./linkx$GOEXE
+go build -o linkx$GKEXE -ldflags -X=my.pkg.Text=linkXworked my.pkg/main
+exec ./linkx$GKEXE
 stdout '^linkXworked$'
 
 -- go.mod --

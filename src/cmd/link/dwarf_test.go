@@ -289,11 +289,11 @@ func TestDWARFiOS(t *testing.T) {
 	cc := "CC=" + runtime.GOROOT() + "/misc/ios/clangwrap.sh"
 	// iOS doesn't allow unmapped segments, so iOS executables don't have DWARF.
 	t.Run("exe", func(t *testing.T) {
-		testDWARF(t, "", false, cc, "CGO_ENABLED=1", "GOOS=ios", "GOARCH=arm64")
+		testDWARF(t, "", false, cc, "CGO_ENABLED=1", "GKOS=ios", "GKARCH=arm64")
 	})
 	// However, c-archive iOS objects have embedded DWARF.
 	t.Run("c-archive", func(t *testing.T) {
-		testDWARF(t, "c-archive", true, cc, "CGO_ENABLED=1", "GOOS=ios", "GOARCH=arm64")
+		testDWARF(t, "c-archive", true, cc, "CGO_ENABLED=1", "GKOS=ios", "GKARCH=arm64")
 	})
 }
 

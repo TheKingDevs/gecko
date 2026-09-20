@@ -13,12 +13,12 @@ cd ..
 # has build tags that cause it to be filtered out, but produces an error
 # when it is included
 
-env GOARCH=arm64
-env GOOS=linux
+env GKARCH=arm64
+env GKOS=linux
 go build ./baz
 
-env GOARCH=amd64
-env GOOS=linux
+env GKARCH=amd64
+env GKOS=linux
 ! go build ./baz
 
 -- go.mod --

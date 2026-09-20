@@ -11,7 +11,7 @@ func checkgoarm() {
 	// getCPUCount directly.
 	if getCPUCount() > 1 && goarm < 7 {
 		print("runtime: this system has multiple CPUs and must use\n")
-		print("atomic synchronization instructions. Recompile using GOARM=7.\n")
+		print("atomic synchronization instructions. Recompile using GKARM=7.\n")
 		exit(1)
 	}
 }

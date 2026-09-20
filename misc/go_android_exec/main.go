@@ -198,11 +198,11 @@ func runMain() (int, error) {
 		}
 	}()
 	cmd := `export TMPDIR="` + deviceGotmp + `"` +
-		`; export GOROOT="` + deviceGoroot + `"` +
-		`; export GOPATH="` + deviceGopath + `"` +
+		`; export GKROOT="` + deviceGoroot + `"` +
+		`; export GKPATH="` + deviceGopath + `"` +
 		`; export CGO_ENABLED=0` +
-		`; export GOPROXY=` + os.Getenv("GOPROXY") +
-		`; export GOCACHE="` + deviceRoot + `/gocache"` +
+		`; export GKPROXY=` + os.Getenv("GKPROXY") +
+		`; export GKCACHE="` + deviceRoot + `/gocache"` +
 		`; export PATH="` + deviceGoroot + `/bin":$PATH` +
 		`; export HOME="` + deviceRoot + `/home"` +
 		`; cd "` + deviceCwd + `"` +
@@ -496,7 +496,7 @@ func findGoroot() (string, error) {
 		// -trimpath and GOROOT is unset. Try 'go env GOROOT' as a fallback,
 		// assuming that the 'go' command in $PATH is the correct one.
 
-		cmd := exec.Command("go", "env", "GOROOT")
+		cmd := exec.Command("go", "env", "GKROOT")
 		cmd.Stderr = os.Stderr
 		out, err := cmd.Output()
 		if err != nil {
@@ -505,7 +505,7 @@ func findGoroot() (string, error) {
 
 		gorootPath = string(bytes.TrimSpace(out))
 		if gorootPath == "" {
-			gorootErr = errors.New("GOROOT not found")
+			gorootErr = errors.New("GKROOT not found")
 		}
 	})
 

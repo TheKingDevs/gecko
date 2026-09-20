@@ -5,12 +5,12 @@
 
 # When run as (for example)
 #
-#	GOOS=linux GOARCH=ppc64 bootstrap.bash
+#	GKOS=linux GKARCH=ppc64 bootstrap.bash
 #
-# this script cross-compiles a toolchain for that GOOS/GOARCH
-# combination, leaving the resulting tree in ../../go-${GOOS}-${GOARCH}-bootstrap.
+# this script cross-compiles a toolchain for that GKOS/GKARCH
+# combination, leaving the resulting tree in ../../go-${GKOS}-${GKARCH}-bootstrap.
 # That tree can be copied to a machine of the given target type
-# and used as $GOROOT_BOOTSTRAP to bootstrap a local build.
+# and used as $GKROOT_BOOTSTRAP to bootstrap a local build.
 #
 # Only changes that have been committed to Git (at least locally,
 # not necessary reviewed and submitted to master) are included in the tree.
@@ -20,8 +20,8 @@
 
 set -e
 
-if [ "$GOOS" = "" -o "$GOARCH" = "" ]; then
-	echo "usage: GOOS=os GOARCH=arch ./bootstrap.bash [-force]" >&2
+if [ "$GKOS" = "" -o "$GKARCH" = "" ]; then
+	echo "usage: GKOS=os GKARCH=arch ./bootstrap.bash [-force]" >&2
 	exit 2
 fi
 
@@ -31,13 +31,13 @@ if [ "$1" = "-force" ]; then
 	shift
 fi
 
-targ="../../go-${GOOS}-${GOARCH}-bootstrap"
+targ="../../go-${GKOS}-${GKARCH}-bootstrap"
 if [ -e $targ ]; then
 	echo "$targ already exists; remove before continuing"
 	exit 2
 fi
 
-unset GOROOT
+unset GKROOT
 src=$(cd .. && pwd)
 echo "#### Copying to $targ"
 cp -Rp "$src" "$targ"
@@ -54,10 +54,10 @@ echo "#### Building $targ"
 echo
 cd src
 ./make.bash --no-banner $forceflag
-gohostos="$(../bin/gecko env GOHOSTOS)"
-gohostarch="$(../bin/gecko env GOHOSTARCH)"
-goos="$(../bin/gecko env GOOS)"
-goarch="$(../bin/gecko env GOARCH)"
+gohostos="$(../bin/gecko env GKHOSTOS)"
+gohostarch="$(../bin/gecko env GKHOSTARCH)"
+goos="$(../bin/gecko env GKOS)"
+goarch="$(../bin/gecko env GKARCH)"
 
 # NOTE: Cannot invoke go command after this point.
 # We're about to delete all but the cross-compiled binaries.
@@ -77,9 +77,9 @@ fi
 rm -rf pkg/bootstrap pkg/obj .git
 
 echo ----
-echo Bootstrap toolchain for "$GOOS/$GOARCH" installed in "$(pwd)".
+echo Bootstrap toolchain for "$GKOS/$GKARCH" installed in "$(pwd)".
 echo Building tbz.
 cd ..
-tar cf - "go-${GOOS}-${GOARCH}-bootstrap" | bzip2 -9 >"go-${GOOS}-${GOARCH}-bootstrap.tbz"
-ls -l "$(pwd)/go-${GOOS}-${GOARCH}-bootstrap.tbz"
+tar cf - "go-${GKOS}-${GKARCH}-bootstrap" | bzip2 -9 >"go-${GKOS}-${GKARCH}-bootstrap.tbz"
+ls -l "$(pwd)/go-${GKOS}-${GKARCH}-bootstrap.tbz"
 exit 0

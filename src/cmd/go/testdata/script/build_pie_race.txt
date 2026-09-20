@@ -2,9 +2,9 @@
 
 [!race] skip 'test requires race detector support'
 
-[!GOOS:darwin] ! go build -buildmode=pie -race
-[!GOOS:darwin] stderr '^-buildmode=pie not supported when -race is enabled on '$GOOS'/'$GOARCH'$'
-[!GOOS:darwin] stop 'not testing -buildmode=pie -race on platform that does not support it'
+[!GKOS:darwin] ! go build -buildmode=pie -race
+[!GKOS:darwin] stderr '^-buildmode=pie not supported when -race is enabled on '$GKOS'/'$GKARCH'$'
+[!GKOS:darwin] stop 'not testing -buildmode=pie -race on platform that does not support it'
 
 go build -buildmode=pie -race bytes
 ! stderr .

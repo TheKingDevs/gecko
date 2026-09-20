@@ -265,9 +265,9 @@ func logFilesInGOMODCACHE() {
 		return nil
 	})
 	if werr != nil {
-		base.Errorf("walking files in GOMODCACHE (for debugging go.dev/issue/68087): %v", werr)
+		base.Errorf("walking files in GKMODCACHE (for debugging go.dev/issue/68087): %v", werr)
 	}
-	base.Errorf("files in GOMODCACHE (for debugging go.dev/issue/68087):\n%s", strings.Join(found, "\n"))
+	base.Errorf("files in GKMODCACHE (for debugging go.dev/issue/68087):\n%s", strings.Join(found, "\n"))
 }
 
 var cleaned = map[*load.Package]bool{}

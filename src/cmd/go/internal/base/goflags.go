@@ -38,12 +38,12 @@ func InitGOFLAGS() {
 	hideErrors := cfg.CmdName == "env" || cfg.CmdName == "bug"
 
 	var err error
-	goflags, err = quoted.Split(cfg.Getenv("GOFLAGS"))
+	goflags, err = quoted.Split(cfg.Getenv("GKFLAGS"))
 	if err != nil {
 		if hideErrors {
 			return
 		}
-		Fatalf("gecko: parsing $GOFLAGS: %v", err)
+		Fatalf("gecko: parsing $GKFLAGS: %v", err)
 	}
 
 	if len(goflags) == 0 {
@@ -61,7 +61,7 @@ func InitGOFLAGS() {
 			if hideErrors {
 				continue
 			}
-			Fatalf("gecko: parsing $GOFLAGS: non-flag %q", f)
+			Fatalf("gecko: parsing $GKFLAGS: non-flag %q", f)
 		}
 
 		name := f[1:]
@@ -75,7 +75,7 @@ func InitGOFLAGS() {
 			if hideErrors {
 				continue
 			}
-			Fatalf("gecko: parsing $GOFLAGS: unknown flag -%s", name)
+			Fatalf("gecko: parsing $GKFLAGS: unknown flag -%s", name)
 		}
 	}
 }
@@ -95,9 +95,9 @@ func SetFromGOFLAGS(flags *flag.FlagSet) {
 	// unknown flags found in goflags, so that setting, say, GOFLAGS=-ldflags=-w
 	// does not break commands that don't have a -ldflags.
 	// It also adjusts the output to be clear that the reported problem is from $GOFLAGS.
-	where := "$GOFLAGS"
+	where := "$GKFLAGS"
 	if runtime.GOOS == "windows" {
-		where = "%GOFLAGS%"
+		where = "%GKFLAGS%"
 	}
 	for _, goflag := range goflags {
 		name, value, hasValue := goflag, "", false

@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 [!exec:echo] skip
 [!exec:false] skip

@@ -113,7 +113,7 @@ func NewEngine(t *testing.T, repls []ToolReplacement) (*script.Engine, []string)
 	// Set up an alternate go root for running script tests, since it
 	// is possible that we might want to replace one of the installed
 	// tools with a unit test executable.
-	goroot := goEnv("GOROOT")
+	goroot := goEnv("GKROOT")
 	tmpdir := t.TempDir()
 	tgr := SetupTestGoRoot(t, tmpdir, goroot)
 
@@ -129,16 +129,16 @@ func NewEngine(t *testing.T, repls []ToolReplacement) (*script.Engine, []string)
 	addcmd("cc", scriptCC(cmdExec, goEnv("CC")))
 
 	// Add various helpful conditions related to builds and toolchain use.
-	goHostOS, goHostArch := goEnv("GOHOSTOS"), goEnv("GOHOSTARCH")
+	goHostOS, goHostArch := goEnv("GKHOSTOS"), goEnv("GKHOSTARCH")
 	AddToolChainScriptConditions(t, conds, goHostOS, goHostArch)
 
 	// Environment setup.
 	env := os.Environ()
 	prependToPath(env, filepath.Join(tgr, "bin"))
-	env = setenv(env, "GOROOT", tgr)
+	env = setenv(env, "GKROOT", tgr)
 	// GOOS and GOARCH are expected to be set by the toolchain script conditions.
-	env = setenv(env, "GOOS", runtime.GOOS)
-	env = setenv(env, "GOARCH", runtime.GOARCH)
+	env = setenv(env, "GKOS", runtime.GOOS)
+	env = setenv(env, "GKARCH", runtime.GOARCH)
 	for _, repl := range repls {
 		// consistency check
 		chunks := strings.Split(repl.EnvVar, "=")

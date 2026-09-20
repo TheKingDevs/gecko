@@ -6,10 +6,10 @@
 
 [!cc:clang] [!cc:gcc] skip
 [!cgo] skip
-[GOARCH:ppc64le] skip 'broken on ppc64le: #81174'
-[GOARCH:ppc64] skip 'broken on ppc64: #81174'
+[GKARCH:ppc64le] skip 'broken on ppc64le: #81174'
+[GKARCH:ppc64] skip 'broken on ppc64: #81174'
 
-env GOENV=$WORK/go.env
+env GKENV=$WORK/gecko.env
 mkdir 'program files'
 go build -o 'program files' './which cc/which cc.go'
 [cc:clang] env CC='"'$PWD${/}program' 'files${/}which' 'cc"' 'clang

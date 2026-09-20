@@ -10,38 +10,38 @@
 # file in an overlay and one file outside the overlay, which in turn imports m/dir,
 # which only has source files in the overlay.
 
-env GO111MODULE=off
+env GK111MODULE=off
 
 cd m
 
 ! go build -compiler=gccgo .
-go build -compiler=gccgo -overlay overlay.json -o main_gccgo$GOEXE .
+go build -compiler=gccgo -overlay overlay.json -o main_gccgo$GKEXE .
 exec ./main_gccgo$goexe
 stdout '^hello$'
 
-go build -compiler=gccgo -overlay overlay.json -o print_abspath_gccgo$GOEXE ./printpath
-exec ./print_abspath_gccgo$GOEXE
+go build -compiler=gccgo -overlay overlay.json -o print_abspath_gccgo$GKEXE ./printpath
+exec ./print_abspath_gccgo$GKEXE
 stdout $WORK[/\\]gopath[/\\]src[/\\]m[/\\]printpath[/\\]main.go
 
-go build -compiler=gccgo -overlay overlay.json -o print_trimpath_gccgo$GOEXE -trimpath ./printpath
-exec ./print_trimpath_gccgo$GOEXE
+go build -compiler=gccgo -overlay overlay.json -o print_trimpath_gccgo$GKEXE -trimpath ./printpath
+exec ./print_trimpath_gccgo$GKEXE
 stdout ^\.[/\\]printpath[/\\]main.go
 
 
-go build -compiler=gccgo  -overlay overlay.json -o main_cgo_replace_gccgo$GOEXE ./cgo_hello_replace
-exec ./main_cgo_replace_gccgo$GOEXE
+go build -compiler=gccgo  -overlay overlay.json -o main_cgo_replace_gccgo$GKEXE ./cgo_hello_replace
+exec ./main_cgo_replace_gccgo$GKEXE
 stdout '^hello cgo\r?\n'
 
-go build -compiler=gccgo  -overlay overlay.json -o main_cgo_quote_gccgo$GOEXE ./cgo_hello_quote
-exec ./main_cgo_quote_gccgo$GOEXE
+go build -compiler=gccgo  -overlay overlay.json -o main_cgo_quote_gccgo$GKEXE ./cgo_hello_quote
+exec ./main_cgo_quote_gccgo$GKEXE
 stdout '^hello cgo\r?\n'
 
-go build -compiler=gccgo  -overlay overlay.json -o main_cgo_angle_gccgo$GOEXE ./cgo_hello_angle
-exec ./main_cgo_angle_gccgo$GOEXE
+go build -compiler=gccgo  -overlay overlay.json -o main_cgo_angle_gccgo$GKEXE ./cgo_hello_angle
+exec ./main_cgo_angle_gccgo$GKEXE
 stdout '^hello cgo\r?\n'
 
-go build -compiler=gccgo -overlay overlay.json -o main_call_asm_gccgo$GOEXE ./call_asm
-exec ./main_call_asm_gccgo$GOEXE
+go build -compiler=gccgo -overlay overlay.json -o main_call_asm_gccgo$GKEXE ./call_asm
+exec ./main_call_asm_gccgo$GKEXE
 ! stdout .
 
 -- m/go.mod --

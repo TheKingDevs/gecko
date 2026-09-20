@@ -32,14 +32,14 @@ var splitTests = []splitTest{
 	{"x", []string{"x"}},
 	{" a b\tc ", []string{"a", "b", "c"}},
 	{` " a " `, []string{" a "}},
-	{"$GOARCH", []string{runtime.GOARCH}},
-	{"$GOOS", []string{runtime.GOOS}},
+	{"$GKARCH", []string{runtime.GOARCH}},
+	{"$GKOS", []string{runtime.GOOS}},
 	{"$GOFILE", []string{"proc.go"}},
 	{"$GOPACKAGE", []string{"sys"}},
 	{"a $XXNOTDEFINEDXX b", []string{"a", "", "b"}},
 	{"/$XXNOTDEFINED/", []string{"//"}},
 	{"/$DOLLAR/", []string{"/$/"}},
-	{"yacc -o $GOARCH/yacc_$GOFILE", []string{"go", "tool", "yacc", "-o", runtime.GOARCH + "/yacc_proc.go"}},
+	{"yacc -o $GKARCH/yacc_$GOFILE", []string{"go", "tool", "yacc", "-o", runtime.GOARCH + "/yacc_proc.go"}},
 }
 
 func TestGenerateCommandParse(t *testing.T) {

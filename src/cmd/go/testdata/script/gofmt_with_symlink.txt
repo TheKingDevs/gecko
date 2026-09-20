@@ -1,7 +1,7 @@
 # Test that fmt-ing a symlink works correctly. See #79735.
 
 # Skip on systems without unix-style symlinks
-[GOOS:windows] skip
+[GKOS:windows] skip
 
 cd $WORK/a
 cp issue-original.go issue-expected.go

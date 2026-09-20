@@ -5,7 +5,7 @@ cp go.mod go.mod.orig
 cp $WORK/modules-1.13.txt $WORK/auto/modules.txt
 
 # An explicit -mod=vendor should force use of the vendor directory.
-env GOFLAGS=-mod=vendor
+env GKFLAGS=-mod=vendor
 
 # Pass -e to permit an error: tools.go imports a main package
 # "example.com/printversion".
@@ -22,11 +22,11 @@ stderr 'gecko: can''t compute ''all'' using the vendor directory\n\t\(Use -mod=m
 stderr 'gecko: can''t compute ''all'' using the vendor directory\n\t\(Use -mod=mod or -mod=readonly to bypass.\)'
 
 # An explicit -mod=mod should force the vendor directory to be ignored.
-env GOFLAGS=-mod=mod
+env GKFLAGS=-mod=mod
 
 go list -f {{.Dir}} -tags tools -e all
 stdout '^'$WORK'[/\\]auto$'
-stdout '^'$GOPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
+stdout '^'$GKPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
 stdout '^'$WORK'[/\\]auto[/\\]replacement-version$'
 
 go list -m all
@@ -36,21 +36,21 @@ stdout 'example.com/version v1.0.0'
 
 go list -m -f '{{.Dir}}' all
 stdout '^'$WORK'[/\\]auto$'
-stdout '^'$GOPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
+stdout '^'$GKPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
 stdout '^'$WORK'[/\\]auto[/\\]replacement-version$'
 
 # If the main module's "go" directive says 1.13, we should default to -mod=mod.
-env GOFLAGS=
+env GKFLAGS=
 go mod edit -go=1.13
 
 go list -f {{.Dir}} -tags tools -e all
 stdout '^'$WORK'[/\\]auto$'
-stdout '^'$GOPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
+stdout '^'$GKPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
 stdout '^'$WORK'[/\\]auto[/\\]replacement-version$'
 
 go list -m -f '{{.Dir}}' all
 stdout '^'$WORK'[/\\]auto$'
-stdout '^'$GOPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
+stdout '^'$GKPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
 stdout '^'$WORK'[/\\]auto[/\\]replacement-version$'
 
 # A 'go 1.14' directive in the main module's go.mod file should enable
@@ -72,11 +72,11 @@ go mod graph
 stdout '^example.com/printversion@v1.0.0 example.com/version@v1.0.0$'
 
 # An explicit -mod=mod should still force the vendor directory to be ignored.
-env GOFLAGS=-mod=mod
+env GKFLAGS=-mod=mod
 
 go list -f {{.Dir}} -tags tools -e all
 stdout '^'$WORK'[/\\]auto$'
-stdout '^'$GOPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
+stdout '^'$GKPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
 stdout '^'$WORK'[/\\]auto[/\\]replacement-version$'
 
 go list -m all
@@ -86,12 +86,12 @@ stdout 'example.com/version v1.0.0'
 
 go list -m -f '{{.Dir}}' all
 stdout '^'$WORK'[/\\]auto$'
-stdout '^'$GOPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
+stdout '^'$GKPATH'[/\\]pkg[/\\]mod[/\\]example.com[/\\]printversion@v1.0.0$'
 stdout '^'$WORK'[/\\]auto[/\\]replacement-version$'
 
 # 'go mod vendor' should repair vendor/modules.txt so that the implicit
 # -mod=vendor works again.
-env GOFLAGS=
+env GKFLAGS=
 
 go mod edit -go=1.14
 go mod vendor
@@ -110,7 +110,7 @@ stderr 'gecko: can''t compute ''all'' using the vendor directory\n\t\(Use -mod=m
 stderr 'gecko: can''t compute ''all'' using the vendor directory\n\t\(Use -mod=mod or -mod=readonly to bypass.\)'
 
 
-# 'go mod init' should work if there is already a GOPATH-mode vendor directory
+# 'go mod init' should work if there is already a GKPATH-mode vendor directory
 # present. If there are no module dependencies, -mod=vendor should be used by
 # default and should not fail the consistency check even though no module
 # information is present.

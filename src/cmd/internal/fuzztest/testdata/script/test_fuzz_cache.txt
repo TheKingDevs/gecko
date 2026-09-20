@@ -1,26 +1,26 @@
 [!fuzz-instrumented] skip
 
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # Fuzz cache should not exist after a regular test run.
 go test .
-exists $GOCACHE
-! exists $GOCACHE/fuzz
+exists $GKCACHE
+! exists $GKCACHE/fuzz
 
 # Fuzzing should write interesting values to the cache.
 go test -fuzz=FuzzY -fuzztime=100x .
-go run ./contains_files $GOCACHE/fuzz/example.com/y/FuzzY
+go run ./contains_files $GKCACHE/fuzz/example.com/y/FuzzY
 
 # 'go clean -cache' should not delete the fuzz cache.
 go clean -cache
-exists $GOCACHE/fuzz
+exists $GKCACHE/fuzz
 
 # 'go clean -fuzzcache' should delete the fuzz cache but not the build cache.
 go build -x ./empty
 stderr '(compile|gccgo)( |\.exe).*empty.go'
 go clean -fuzzcache
-! exists $GOCACHE/fuzz
+! exists $GKCACHE/fuzz
 go build -x ./empty
 ! stderr '(compile|gccgo)( |\.exe).*empty.go'
 

@@ -20,7 +20,7 @@ import (
 func TestPureGoTag(t *testing.T) {
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "list", "-e", "crypto/...", "math/big")
 	cmd = testenv.CleanCmdEnv(cmd)
-	cmd.Env = append(cmd.Environ(), "GOOS=linux", "GOFIPS140=off")
+	cmd.Env = append(cmd.Environ(), "GKOS=linux", "GKFIPS140=off")
 	cmd.Stderr = os.Stderr
 	out, err := cmd.Output()
 	if err != nil {

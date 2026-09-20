@@ -23,9 +23,9 @@ import (
 func execGoToolchain(gotoolchain, dir, exe string) {
 	os.Setenv(targetEnv, gotoolchain)
 	if dir == "" {
-		os.Unsetenv("GOROOT")
+		os.Unsetenv("GKROOT")
 	} else {
-		os.Setenv("GOROOT", dir)
+		os.Setenv("GKROOT", dir)
 	}
 	if toolchainTrace {
 		if dir == "" {

@@ -99,7 +99,7 @@ var findToolOnce sync.Once
 
 // findToolSub sets toolsub to the value used by the current go command.
 func findToolSub(t *testing.T) {
-	gocmd := testenv.Command(t, testenv.GoToolPath(t), "env", "GOHOSTARCH")
+	gocmd := testenv.Command(t, testenv.GoToolPath(t), "env", "GKHOSTARCH")
 	gocmd = testenv.CleanCmdEnv(gocmd)
 	goHostArchBytes, err := gocmd.CombinedOutput()
 	if err != nil {

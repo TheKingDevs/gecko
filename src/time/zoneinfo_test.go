@@ -140,7 +140,7 @@ func TestLoadLocationFromTZData(t *testing.T) {
 
 	gorootSource, ok := time.GorootZoneSource(testenv.GOROOT(t))
 	if !ok {
-		t.Fatal("Failed to locate tzinfo source in GOROOT.")
+		t.Fatal("Failed to locate tzinfo source in GKROOT.")
 	}
 	tzinfo, err := time.LoadTzinfo(locationName, gorootSource)
 	if err != nil {

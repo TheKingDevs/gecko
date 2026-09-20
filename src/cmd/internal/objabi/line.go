@@ -41,7 +41,7 @@ func AbsFile(dir, file, rewrites string) string {
 
 	abs, rewritten := ApplyRewrites(abs, rewrites)
 	if !rewritten && buildcfg.GOROOT != "" && hasPathPrefix(abs, buildcfg.GOROOT) {
-		abs = "$GOROOT" + abs[len(buildcfg.GOROOT):]
+		abs = "$GKROOT" + abs[len(buildcfg.GOROOT):]
 	}
 
 	// Rewrite paths to match the slash convention of the target.

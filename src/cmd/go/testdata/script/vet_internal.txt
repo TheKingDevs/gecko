@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # Issue 36173. Verify that "go vet" prints line numbers on load errors.
 

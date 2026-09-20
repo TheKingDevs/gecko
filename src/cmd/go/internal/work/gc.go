@@ -684,9 +684,9 @@ func (gcToolchain) ld(b *Builder, root *Action, targetPath, importcfg, mainpkg s
 	env := cfgChangedEnv
 	// When -trimpath is used, GOROOT is cleared
 	if cfg.BuildTrimpath {
-		env = append(env, "GOROOT=")
+		env = append(env, "GKROOT=")
 	} else {
-		env = append(env, "GOROOT="+cfg.GOROOT)
+		env = append(env, "GKROOT="+cfg.GOROOT)
 	}
 	return b.Shell(root).run(dir, root.Package.ImportPath, env, cfg.BuildToolexec, base.Tool("link"), "-o", targetPath, "-importcfg", importcfg, ldflags, mainpkg)
 }

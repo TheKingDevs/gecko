@@ -78,68 +78,70 @@ var (
 
 func MkEnv() []cfg.EnvVar {
 	envFile, envFileChanged, _ := cfg.EnvFile()
+	gkhome, gkhomeChanged, _ := cfg.GKHOME()
 	env := []cfg.EnvVar{
 		// NOTE: Keep this list (and in general, all lists in source code) sorted by name.
-		{Name: "GO111MODULE", Value: cfg.Getenv("GO111MODULE")},
-		{Name: "GOARCH", Value: cfg.Goarch, Changed: cfg.Goarch != runtime.GOARCH},
-		{Name: "GOAUTH", Value: cfg.GOAUTH, Changed: cfg.GOAUTHChanged},
-		{Name: "GOCACHE"},
-		{Name: "GOCACHEPROG", Value: cfg.GOCACHEPROG, Changed: cfg.GOCACHEPROGChanged},
+		{Name: "GK111MODULE", Value: cfg.Getenv("GK111MODULE")},
+		{Name: "GKARCH", Value: cfg.Goarch, Changed: cfg.Goarch != runtime.GOARCH},
+		{Name: "GKAUTH", Value: cfg.GOAUTH, Changed: cfg.GOAUTHChanged},
+		{Name: "GKCACHE"},
+		{Name: "GKCACHEPROG", Value: cfg.GOCACHEPROG, Changed: cfg.GOCACHEPROGChanged},
 		{Name: "GODEBUG", Value: os.Getenv("GODEBUG")},
-		{Name: "GOENV", Value: envFile, Changed: envFileChanged},
-		{Name: "GOEXE", Value: cfg.ExeSuffix},
+		{Name: "GKENV", Value: envFile, Changed: envFileChanged},
+		{Name: "GKEXE", Value: cfg.ExeSuffix},
 
 		// List the raw value of GOEXPERIMENT, not the cleaned one.
 		// The set of default experiments may change from one release
 		// to the next, so a GOEXPERIMENT setting that is redundant
 		// with the current toolchain might actually be relevant with
 		// a different version (for example, when bisecting a regression).
-		{Name: "GOEXPERIMENT", Value: cfg.RawGOEXPERIMENT},
+		{Name: "GKEXPERIMENT", Value: cfg.RawGOEXPERIMENT},
 
-		{Name: "GOFIPS140", Value: cfg.GOFIPS140, Changed: cfg.GOFIPS140Changed},
-		{Name: "GOFLAGS", Value: cfg.Getenv("GOFLAGS")},
-		{Name: "GOHOSTARCH", Value: runtime.GOARCH},
-		{Name: "GOHOSTOS", Value: runtime.GOOS},
-		{Name: "GOINSECURE", Value: cfg.GOINSECURE},
-		{Name: "GOMODCACHE", Value: cfg.GOMODCACHE, Changed: cfg.GOMODCACHEChanged},
-		{Name: "GONOPROXY", Value: cfg.GONOPROXY, Changed: cfg.GONOPROXYChanged},
-		{Name: "GONOSUMDB", Value: cfg.GONOSUMDB, Changed: cfg.GONOSUMDBChanged},
-		{Name: "GOOS", Value: cfg.Goos, Changed: cfg.Goos != runtime.GOOS},
+		{Name: "GKFIPS140", Value: cfg.GOFIPS140, Changed: cfg.GOFIPS140Changed},
+		{Name: "GKFLAGS", Value: cfg.Getenv("GKFLAGS")},
+		{Name: "GKHOME", Value: gkhome, Changed: gkhomeChanged},
+		{Name: "GKHOSTARCH", Value: runtime.GOARCH},
+		{Name: "GKHOSTOS", Value: runtime.GOOS},
+		{Name: "GKINSECURE", Value: cfg.GOINSECURE},
+		{Name: "GKMODCACHE", Value: cfg.GOMODCACHE, Changed: cfg.GOMODCACHEChanged},
+		{Name: "GKNOPROXY", Value: cfg.GONOPROXY, Changed: cfg.GONOPROXYChanged},
+		{Name: "GKNOSUMDB", Value: cfg.GONOSUMDB, Changed: cfg.GONOSUMDBChanged},
+		{Name: "GKOS", Value: cfg.Goos, Changed: cfg.Goos != runtime.GOOS},
 
 		// GOPACKAGESDRIVER isn't read or used by cmd/go, so it can only
 		// be sourced from environment variables.
 		// We include it for bug reports.
 		// go.dev/issue/75930
-		{Name: "GOPACKAGESDRIVER", Value: os.Getenv("GOPACKAGESDRIVER")},
+		{Name: "GKPACKAGESDRIVER", Value: os.Getenv("GKPACKAGESDRIVER")},
 
-		{Name: "GOPATH", Value: cfg.BuildContext.GOPATH, Changed: cfg.GOPATHChanged},
-		{Name: "GOPRIVATE", Value: cfg.GOPRIVATE},
-		{Name: "GOPROXY", Value: cfg.GOPROXY, Changed: cfg.GOPROXYChanged},
-		{Name: "GOROOT", Value: cfg.GOROOT},
-		{Name: "GOSUMDB", Value: cfg.GOSUMDB, Changed: cfg.GOSUMDBChanged},
+		{Name: "GKPATH", Value: cfg.BuildContext.GOPATH, Changed: cfg.GOPATHChanged},
+		{Name: "GKPRIVATE", Value: cfg.GOPRIVATE},
+		{Name: "GKPROXY", Value: cfg.GOPROXY, Changed: cfg.GOPROXYChanged},
+		{Name: "GKROOT", Value: cfg.GOROOT},
+		{Name: "GKSUMDB", Value: cfg.GOSUMDB, Changed: cfg.GOSUMDBChanged},
 		{Name: "GOTELEMETRY", Value: telemetry.Mode()},
 		{Name: "GOTELEMETRYDIR", Value: telemetry.Dir()},
-		{Name: "GOTMPDIR", Value: cfg.Getenv("GOTMPDIR")},
-		{Name: "GOTOOLCHAIN"},
-		{Name: "GOTOOLDIR", Value: build.ToolDir},
-		{Name: "GOVCS", Value: cfg.GOVCS},
+		{Name: "GKTMPDIR", Value: cfg.Getenv("GKTMPDIR")},
+		{Name: "GKTOOLCHAIN"},
+		{Name: "GKTOOLDIR", Value: build.ToolDir},
+		{Name: "GKVCS", Value: cfg.GOVCS},
 		{Name: "GOVERSION", Value: runtime.Version()},
 	}
 
 	for i := range env {
 		switch env[i].Name {
-		case "GO111MODULE":
+		case "GK111MODULE":
 			if env[i].Value != "on" && env[i].Value != "" {
 				env[i].Changed = true
 			}
-		case "GOEXPERIMENT", "GOFLAGS", "GOINSECURE", "GOPACKAGESDRIVER", "GOPRIVATE", "GOTMPDIR", "GOVCS":
+		case "GKEXPERIMENT", "GKFLAGS", "GKINSECURE", "GKPACKAGESDRIVER", "GKPRIVATE", "GKTMPDIR", "GKVCS":
 			if env[i].Value != "" {
 				env[i].Changed = true
 			}
-		case "GOCACHE":
+		case "GKCACHE":
 			env[i].Value, env[i].Changed, _ = cache.DefaultDir()
-		case "GOTOOLCHAIN":
-			env[i].Value, env[i].Changed = cfg.EnvOrAndChanged("GOTOOLCHAIN", "")
+		case "GKTOOLCHAIN":
+			env[i].Value, env[i].Changed = cfg.EnvOrAndChanged("GKTOOLCHAIN", "")
 		case "GODEBUG":
 			env[i].Changed = env[i].Value != ""
 		}
@@ -206,7 +208,7 @@ func ExtraEnvVars(ld *modload.Loader) []cfg.EnvVar {
 	ld.InitWorkfile()
 	gowork := modload.WorkFilePath(ld)
 	// As a special case, if a user set off explicitly, report that in GOWORK.
-	if cfg.Getenv("GOWORK") == "off" {
+	if cfg.Getenv("GKWORK") == "off" {
 		gowork = "off"
 	}
 	gobin := cfg.GOBIN
@@ -231,8 +233,8 @@ func ExtraEnvVars(ld *modload.Loader) []cfg.EnvVar {
 
 	return []cfg.EnvVar{
 		{Name: "GOMOD", Value: gomod},
-		{Name: "GOWORK", Value: gowork},
-		{Name: "GOBIN", Value: gobin, Changed: cfg.GOBINChanged},
+		{Name: "GKWORK", Value: gowork},
+		{Name: "GKBIN", Value: gobin, Changed: cfg.GOBINChanged},
 	}
 }
 
@@ -270,13 +272,13 @@ func ExtraEnvVarsCostly(ld *modload.Loader) []cfg.EnvVar {
 		{Name: "CGO_FFLAGS", Value: join(fflags)},
 		{Name: "CGO_LDFLAGS", Value: join(ldflags)},
 		{Name: "PKG_CONFIG", Value: b.PkgconfigCmd()},
-		{Name: "GOGCCFLAGS", Value: join(cmd[3:])},
+		{Name: "GKGCCFLAGS", Value: join(cmd[3:])},
 	}
 
 	for i := range ret {
 		ev := &ret[i]
 		switch ev.Name {
-		case "GOGCCFLAGS": // GOGCCFLAGS cannot be modified
+		case "GKGCCFLAGS": // GOGCCFLAGS cannot be modified
 		case "CGO_CPPFLAGS":
 			ev.Changed = ev.Value != ""
 		case "PKG_CONFIG":
@@ -357,7 +359,7 @@ func runEnv(ctx context.Context, cmd *base.Command, args []string) {
 				"CGO_FFLAGS",
 				"CGO_LDFLAGS",
 				"PKG_CONFIG",
-				"GOGCCFLAGS":
+				"GKGCCFLAGS":
 				needCostly = true
 				break checkCostly
 			}
@@ -441,10 +443,10 @@ func runEnvW(args []string) {
 		base.Fatal(err)
 	}
 
-	gotmp, okGOTMP := add["GOTMPDIR"]
+	gotmp, okGOTMP := add["GKTMPDIR"]
 	if okGOTMP {
 		if !filepath.IsAbs(gotmp) && gotmp != "" {
-			base.Fatalf("gecko: GOTMPDIR must be an absolute path")
+			base.Fatalf("gecko: GKTMPDIR must be an absolute path")
 		}
 	}
 
@@ -492,15 +494,15 @@ func checkBuildConfig(add map[string]string, del map[string]bool) error {
 		return cur, false
 	}
 
-	goos, okGOOS := get("GOOS", cfg.Goos, build.Default.GOOS)
-	goarch, okGOARCH := get("GOARCH", cfg.Goarch, build.Default.GOARCH)
+	goos, okGOOS := get("GKOS", cfg.Goos, build.Default.GOOS)
+	goarch, okGOARCH := get("GKARCH", cfg.Goarch, build.Default.GOARCH)
 	if okGOOS || okGOARCH {
 		if err := work.CheckGOOSARCHPair(goos, goarch); err != nil {
 			return err
 		}
 	}
 
-	goexperiment, okGOEXPERIMENT := get("GOEXPERIMENT", cfg.RawGOEXPERIMENT, buildcfg.DefaultGOEXPERIMENT)
+	goexperiment, okGOEXPERIMENT := get("GKEXPERIMENT", cfg.RawGOEXPERIMENT, buildcfg.DefaultGOEXPERIMENT)
 	if okGOEXPERIMENT {
 		if _, err := buildcfg.ParseGOEXPERIMENT(goos, goarch, goexperiment); err != nil {
 			return err
@@ -631,19 +633,19 @@ func getOrigEnv(key string) string {
 
 func checkEnvWrite(key, val string) error {
 	switch key {
-	case "GOEXE",
-		"GOGCCFLAGS",
-		"GOHOSTARCH",
-		"GOHOSTOS",
+	case "GKEXE",
+		"GKGCCFLAGS",
+		"GKHOSTARCH",
+		"GKHOSTOS",
 		"GOMOD",
-		"GOROOT",
+		"GKROOT",
 		"GOTELEMETRY",
 		"GOTELEMETRYDIR",
-		"GOTOOLDIR",
+		"GKTOOLDIR",
 		"GOVERSION",
-		"GOWORK":
+		"GKWORK":
 		return fmt.Errorf("%s cannot be modified", key)
-	case "GOENV", "GODEBUG":
+	case "GKENV", "GKHOME", "GODEBUG":
 		return fmt.Errorf("%s can only be set using the OS environment", key)
 	}
 
@@ -657,22 +659,22 @@ func checkEnvWrite(key, val string) error {
 	// invalid value, the next cmd/go invocation might fail immediately,
 	// even 'gecko env -w' itself.
 	switch key {
-	case "GO111MODULE":
+	case "GK111MODULE":
 		switch val {
 		case "", "auto", "on", "off":
 		default:
 			return fmt.Errorf("invalid %s value %q", key, val)
 		}
-	case "GOPATH":
+	case "GKPATH":
 		if strings.HasPrefix(val, "~") {
-			return fmt.Errorf("GOPATH entry cannot start with shell metacharacter '~': %q", val)
+			return fmt.Errorf("GKPATH entry cannot start with shell metacharacter '~': %q", val)
 		}
 		if !filepath.IsAbs(val) && val != "" {
-			return fmt.Errorf("GOPATH entry is relative; must be absolute path: %q", val)
+			return fmt.Errorf("GKPATH entry is relative; must be absolute path: %q", val)
 		}
-	case "GOMODCACHE":
+	case "GKMODCACHE":
 		if !filepath.IsAbs(val) && val != "" {
-			return fmt.Errorf("GOMODCACHE entry is relative; must be absolute path: %q", val)
+			return fmt.Errorf("GKMODCACHE entry is relative; must be absolute path: %q", val)
 		}
 	case "CC", "CXX":
 		if val == "" {

@@ -297,7 +297,7 @@ func defaultGOPATH() string {
 		env = "home"
 	}
 	if home := os.Getenv(env); home != "" {
-		def := filepath.Join(home, "go")
+		def := filepath.Join(home, "gecko")
 		if filepath.Clean(def) == filepath.Clean(runtime.GOROOT()) {
 			// Don't set the default GOPATH to GOROOT,
 			// as that will trigger warnings from the go tool.
@@ -338,7 +338,7 @@ func defaultContext() Context {
 	if goroot := runtime.GOROOT(); goroot != "" {
 		c.GOROOT = filepath.Clean(goroot)
 	}
-	c.GOPATH = envOr("GOPATH", defaultGOPATH())
+	c.GOPATH = envOr("GKPATH", defaultGOPATH())
 	c.Compiler = runtime.Compiler
 	c.ToolTags = append(c.ToolTags, buildcfg.ToolTags...)
 
@@ -809,17 +809,17 @@ func (ctxt *Context) Import(path string, srcDir string, mode ImportMode) (*Packa
 			format = "\t%s"
 		}
 		if tried.goroot != "" {
-			paths = append(paths, fmt.Sprintf("\t%s (from $GOROOT)", tried.goroot))
+			paths = append(paths, fmt.Sprintf("\t%s (from $GKROOT)", tried.goroot))
 		} else {
-			paths = append(paths, "\t($GOROOT not set)")
+			paths = append(paths, "\t($GKROOT not set)")
 		}
-		format = "\t%s (from $GOPATH)"
+		format = "\t%s (from $GKPATH)"
 		for _, dir := range tried.gopath {
 			paths = append(paths, fmt.Sprintf(format, dir))
 			format = "\t%s"
 		}
 		if len(tried.gopath) == 0 {
-			paths = append(paths, "\t($GOPATH not set. For more details see: 'go help gopath')")
+			paths = append(paths, "\t($GKPATH not set. For more details see: 'go help gopath')")
 		}
 		return p, fmt.Errorf("cannot find package %q in any of:\n%s", path, strings.Join(paths, "\n"))
 	}
@@ -1169,7 +1169,7 @@ func (ctxt *Context) importGo(p *Package, path, srcDir string, mode ImportMode) 
 	// GO111MODULE and looking for a go.mod file in the source directory or
 	// one of its parents. Running 'go env GOMOD' in the source directory would
 	// give a canonical answer, but we'd prefer not to execute another command.
-	go111Module := os.Getenv("GO111MODULE")
+	go111Module := os.Getenv("GK111MODULE")
 	switch go111Module {
 	case "off":
 		return errNoModules
@@ -1261,10 +1261,10 @@ func (ctxt *Context) importGo(p *Package, path, srcDir string, mode ImportMode) 
 		cgo = "1"
 	}
 	cmd.Env = append(cmd.Environ(),
-		"GOOS="+ctxt.GOOS,
-		"GOARCH="+ctxt.GOARCH,
-		"GOROOT="+ctxt.GOROOT,
-		"GOPATH="+ctxt.GOPATH,
+		"GKOS="+ctxt.GOOS,
+		"GKARCH="+ctxt.GOARCH,
+		"GKROOT="+ctxt.GOROOT,
+		"GKPATH="+ctxt.GOPATH,
 		"CGO_ENABLED="+cgo,
 	)
 

@@ -3,56 +3,56 @@
 # --------------------- clean executables -------------------------
 
 # case1: test file-named executable 'main'
-env GO111MODULE=on
+env GK111MODULE=on
 
-! exists main$GOEXE
+! exists main$GKEXE
 go build main.go
-exists -exec main$GOEXE
+exists -exec main$GKEXE
 go clean
-! exists main$GOEXE
+! exists main$GKEXE
 
 # case2: test module-named executable 'a.b.c'
-! exists a.b.c$GOEXE
+! exists a.b.c$GKEXE
 go build
-exists -exec a.b.c$GOEXE
+exists -exec a.b.c$GKEXE
 go clean
-! exists a.b.c$GOEXE
+! exists a.b.c$GKEXE
 
 # case3: directory-named executable 'src'
-env GO111MODULE=off
+env GK111MODULE=off
 
-! exists src$GOEXE
+! exists src$GKEXE
 go build
-exists -exec src$GOEXE
+exists -exec src$GKEXE
 go clean
-! exists src$GOEXE
+! exists src$GKEXE
 
 # --------------------- clean test files -------------------------
 
 # case1: test file-named test file
-env GO111MODULE=on
+env GK111MODULE=on
 
-! exists main.test$GOEXE
+! exists main.test$GKEXE
 go test -c main_test.go
-exists -exec main.test$GOEXE
+exists -exec main.test$GKEXE
 go clean
-! exists main.test$GOEXE
+! exists main.test$GKEXE
 
 # case2: test module-named test file
-! exists a.b.c.test$GOEXE
+! exists a.b.c.test$GKEXE
 go test -c
-exists -exec a.b.c.test$GOEXE
+exists -exec a.b.c.test$GKEXE
 go clean
-! exists a.b.c.test$GOEXE
+! exists a.b.c.test$GKEXE
 
 # case3: test directory-based test file
-env GO111MODULE=off
+env GK111MODULE=off
 
-! exists src.test$GOEXE
+! exists src.test$GKEXE
 go test -c
-exists -exec src.test$GOEXE
+exists -exec src.test$GKEXE
 go clean
-! exists src.test$GOEXE
+! exists src.test$GKEXE
 
 -- main.go --
 package main

@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 ! go build canonical/d
 stderr '^canonical[/\\]b[/\\]b.go:3:8: non-canonical import path "canonical/a/": should be "canonical/a"$'

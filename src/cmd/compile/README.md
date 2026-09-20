@@ -108,7 +108,7 @@ for loops. Some of these currently happen before the conversion to SSA due to
 historical reasons, but the long-term plan is to move all of them here.
 
 Then, a series of machine-independent passes and rules are applied. These do not
-concern any single computer architecture, and thus run on all `GOARCH` variants.
+concern any single computer architecture, and thus run on all `GKARCH` variants.
 These passes include dead code elimination, removal of
 unneeded nil checks, and removal of unused branches. The generic rewrite rules
 mainly concern expressions, such as replacing some expressions with constant
@@ -160,7 +160,7 @@ lazy decoding of parts of the whole (since most imports are used to
 provide only a handful of symbols). See [here](internal/noder/README.md)
 for details on making changes to unified IR.
 
-The GOROOT repository contains a reader and a writer for the unified
+The GKROOT repository contains a reader and a writer for the unified
 format; it encodes from/decodes to the compiler's IR.
 The golang.org/x/tools repository also provides a public API for an export
 data reader (using the go/types representation) that always supports the

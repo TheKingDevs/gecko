@@ -29,7 +29,7 @@ arguments must satisfy the following constraints:
  included in the module zip files downloaded by 'go install'.)
 
 If the arguments don't have version suffixes, "go install" may run in
-module-aware mode or GOPATH mode, depending on the GO111MODULE environment
+module-aware mode or GKPATH mode, depending on the GK111MODULE environment
 variable and the presence of a go.mod file. See 'go help modules' for details.
 If module-aware mode is enabled, "go install" runs in the context of the main
 module.
@@ -85,8 +85,8 @@ constraints:
 
 If the arguments don't have version
 suffixes, "go install" may run in
-module-aware mode or GOPATH mode,
-depending on the GO111MODULE environment
+module-aware mode or GKPATH mode,
+depending on the GK111MODULE environment
 variable and the presence of a go.mod
 file. See 'go help modules' for details.
 If module-aware mode is enabled,

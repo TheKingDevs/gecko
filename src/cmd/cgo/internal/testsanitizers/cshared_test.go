@@ -24,12 +24,12 @@ func TestShared(t *testing.T) {
 	t.Parallel()
 	requireOvercommit(t)
 
-	GOOS, err := goEnv("GOOS")
+	GOOS, err := goEnv("GKOS")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	GOARCH, err := goEnv("GOARCH")
+	GOARCH, err := goEnv("GKARCH")
 	if err != nil {
 		t.Fatal(err)
 	}

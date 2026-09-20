@@ -150,7 +150,7 @@ func scriptEnviron(homeDir string) []string {
 		}
 	}
 
-	if os.Getenv("GO_BUILDER_NAME") != "" || os.Getenv("GIT_TRACE_CURL") == "1" {
+	if os.Getenv("GK_BUILDER_NAME") != "" || os.Getenv("GIT_TRACE_CURL") == "1" {
 		// To help diagnose https://go.dev/issue/52545,
 		// enable tracing for Git HTTPS requests.
 		env = append(env,

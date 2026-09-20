@@ -30,7 +30,6 @@ import (
 	"cmd/go/internal/list"
 	"cmd/go/internal/modfetch"
 	"cmd/go/internal/modget"
-	"cmd/go/internal/modload"
 	"cmd/go/internal/run"
 	"cmd/go/internal/telemetrycmd"
 	"cmd/go/internal/telemetrystats"
@@ -47,7 +46,7 @@ import (
 )
 
 func init() {
-	base.Go.Commands = []*base.Command{
+	cmds := []*base.Command{
 		bug.CmdBug,
 		work.CmdBuild,
 		clean.CmdClean,
@@ -56,7 +55,6 @@ func init() {
 		vet.CmdFix,
 		fmtcmd.CmdFmt,
 		generate.CmdGenerate,
-		modget.CmdGet,
 		work.CmdInstall,
 		list.CmdList,
 		run.CmdRun,
@@ -75,11 +73,9 @@ func init() {
 		help.HelpEnvironment,
 		help.HelpFileType,
 		help.HelpGoAuth,
-		modload.HelpGoMod,
 		help.HelpGopath,
 		modfetch.HelpGoproxy,
 		help.HelpImportPath,
-		modload.HelpModules,
 		modfetch.HelpModuleAuth,
 		help.HelpPackages,
 		modfetch.HelpPrivate,
@@ -87,6 +83,8 @@ func init() {
 		test.HelpTestfunc,
 		modget.HelpVCS,
 	}
+
+	base.Go.Commands = cmds
 }
 
 var _ = go11tag
@@ -124,11 +122,11 @@ func main() {
 	}
 
 	if cfg.GOROOT == "" {
-		fmt.Fprintf(os.Stderr, "gecko: cannot find GOROOT directory: 'gecko' binary is trimmed and GOROOT is not set\n")
+		fmt.Fprintf(os.Stderr, "gecko: cannot find GKROOT directory: 'gecko' binary is trimmed and GKROOT is not set\n")
 		os.Exit(2)
 	}
 	if fi, err := os.Stat(cfg.GOROOT); err != nil || !fi.IsDir() {
-		fmt.Fprintf(os.Stderr, "gecko: cannot find GOROOT directory: %v\n", cfg.GOROOT)
+		fmt.Fprintf(os.Stderr, "gecko: cannot find GKROOT directory: %v\n", cfg.GOROOT)
 		os.Exit(2)
 	}
 	switch strings.ToLower(cfg.GOROOT) {
@@ -150,7 +148,7 @@ func main() {
 	// This setting is equivalent to not setting GOPATH at all,
 	// which is not what most people want when they do it.
 	if gopath := cfg.BuildContext.GOPATH; filepath.Clean(gopath) == filepath.Clean(cfg.GOROOT) {
-		fmt.Fprintf(os.Stderr, "warning: both GOPATH and GOROOT are the same directory (%s); see https://go.dev/wiki/InstallTroubleshooting\n", gopath)
+		fmt.Fprintf(os.Stderr, "warning: both GKPATH and GKROOT are the same directory (%s); see https://go.dev/wiki/InstallTroubleshooting\n", gopath)
 	} else {
 		for _, p := range filepath.SplitList(gopath) {
 			// Some GOPATHs have empty directory elements - ignore them.
@@ -162,17 +160,17 @@ func main() {
 			// in the middle of directory elements, such as /tmp/git-1.8.2~rc3
 			// or C:\PROGRA~1. Only ~ as a path prefix has meaning to the shell.
 			if strings.HasPrefix(p, "~") {
-				fmt.Fprintf(os.Stderr, "gecko: GOPATH entry cannot start with shell metacharacter '~': %q\n", p)
+				fmt.Fprintf(os.Stderr, "gecko: GKPATH entry cannot start with shell metacharacter '~': %q\n", p)
 				os.Exit(2)
 			}
 			if !filepath.IsAbs(p) {
-				if cfg.Getenv("GOPATH") == "" {
+				if cfg.Getenv("GKPATH") == "" {
 					// We inferred $GOPATH from $HOME and did a bad job at it.
 					// Instead of dying, uninfer it.
 					cfg.BuildContext.GOPATH = ""
 				} else {
 					counterErrorsGOPATHEntryRelative.Inc()
-					fmt.Fprintf(os.Stderr, "gecko: GOPATH entry is relative; must be absolute path: %q.\nFor more details see: 'gecko help gopath'\n", p)
+					fmt.Fprintf(os.Stderr, "gecko: GKPATH entry is relative; must be absolute path: %q.\nFor more details see: 'gecko help gopath'\n", p)
 					os.Exit(2)
 				}
 			}

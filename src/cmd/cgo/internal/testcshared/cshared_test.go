@@ -46,7 +46,7 @@ func testMain(m *testing.M) int {
 	log.SetFlags(log.Lshortfile)
 	flag.Parse()
 	if testing.Short() && testenv.Builder() == "" {
-		globalSkip = func(t *testing.T) { t.Skip("short mode and $GO_BUILDER_NAME not set") }
+		globalSkip = func(t *testing.T) { t.Skip("short mode and $GK_BUILDER_NAME not set") }
 		return m.Run()
 	}
 	if runtime.GOOS == "linux" {
@@ -61,17 +61,17 @@ func testMain(m *testing.M) int {
 		return m.Run()
 	}
 
-	GOOS = goEnv("GOOS")
-	GOARCH = goEnv("GOARCH")
-	GOROOT = goEnv("GOROOT")
+	GOOS = goEnv("GKOS")
+	GOARCH = goEnv("GKARCH")
+	GOROOT = goEnv("GKROOT")
 
 	if _, err := os.Stat(GOROOT); os.IsNotExist(err) {
-		log.Fatalf("Unable able to find GOROOT at '%s'", GOROOT)
+		log.Fatalf("Unable able to find GKROOT at '%s'", GOROOT)
 	}
 
 	cc = []string{goEnv("CC")}
 
-	out := goEnv("GOGCCFLAGS")
+	out := goEnv("GKGCCFLAGS")
 	quote := '\000'
 	start := 0
 	lastSpace := true
@@ -138,7 +138,7 @@ func testMain(m *testing.M) int {
 		log.Panic(err)
 	}
 	defer os.RemoveAll(GOPATH)
-	os.Setenv("GOPATH", GOPATH)
+	os.Setenv("GKPATH", GOPATH)
 
 	modRoot := filepath.Join(GOPATH, "src", "testcshared")
 	if err := cgotest.OverlayDir(modRoot, "testdata"); err != nil {
@@ -714,9 +714,9 @@ func TestCachedInstall(t *testing.T) {
 	cmd := exec.Command(buildcmd[0], buildcmd[1:]...)
 	cmd.Dir = filepath.Join(tmpdir, "src", "testcshared")
 	env := append(cmd.Environ(),
-		"GOPATH="+tmpdir,
-		"GOBIN="+filepath.Join(tmpdir, "bin"),
-		"GO111MODULE=off", // 'go install' only works in GOPATH mode
+		"GKPATH="+tmpdir,
+		"GKBIN="+filepath.Join(tmpdir, "bin"),
+		"GK111MODULE=off", // 'go install' only works in GOPATH mode
 	)
 	cmd.Env = env
 	t.Log(buildcmd)

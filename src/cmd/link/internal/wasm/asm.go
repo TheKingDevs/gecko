@@ -466,7 +466,7 @@ func writeExportSec(ctxt *ld.Link, ldr *loader.Loader, lenHostImports int) {
 		ctxt.Out.WriteByte(0x02)   // mem export
 		writeUleb128(ctxt.Out, 0)  // memidx
 	default:
-		ld.Exitf("internal error: writeExportSec: unrecognized GOOS %s", buildcfg.GOOS)
+		ld.Exitf("internal error: writeExportSec: unrecognized GKOS %s", buildcfg.GOOS)
 	}
 
 	writeSecSize(ctxt, sizeOffset)

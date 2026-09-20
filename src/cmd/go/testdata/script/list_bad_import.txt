@@ -1,9 +1,9 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
-# This test matches mod_list_bad_import, but in GOPATH mode.
+# This test matches mod_list_bad_import, but in GKPATH mode.
 # Please keep them in sync.
 
-env GO111MODULE=off
+env GK111MODULE=off
 cd example.com
 
 # Without -e, listing an otherwise-valid package with an unsatisfied direct import should fail.

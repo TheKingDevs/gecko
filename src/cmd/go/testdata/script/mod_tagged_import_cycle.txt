@@ -8,12 +8,12 @@ stdout '^example.com/right$'
 go list -deps example.com/right
 ! stdout left
 
-env GOFLAGS=-tags=mirror
+env GKFLAGS=-tags=mirror
 go list -deps example.com/left
 ! stdout right
 go list -deps example.com/right
 stdout '^example.com/left$'
-env GOFLAGS=''
+env GKFLAGS=''
 
 # 'go mod why' should be agnostic to build tags.
 go mod why example.com/left
@@ -21,15 +21,15 @@ stdout '^example.com/chiral$\n^example.com/left$'
 go mod why example.com/right
 stdout '^example.com/chiral$\n^example.com/right$'
 
-env GOFLAGS='-tags=mirror'
+env GKFLAGS='-tags=mirror'
 go mod why example.com/left
 stdout '^example.com/chiral$\n^example.com/left$'
 go mod why example.com/right
 stdout '^example.com/chiral$\n^example.com/right$'
-env GOFLAGS=''
+env GKFLAGS=''
 
 # 'go mod tidy' should successfully handle the cycle.
-env GOFLAGS=-mod=readonly
+env GKFLAGS=-mod=readonly
 go mod tidy
 
 # 'go mod vendor' should copy in both packages without crashing.

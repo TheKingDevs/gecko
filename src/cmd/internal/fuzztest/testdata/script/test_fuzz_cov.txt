@@ -4,7 +4,7 @@
 
 [short] skip
 [!fuzz-instrumented] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # TODO(#51484): enabled debugging info to help diagnose a deadlock in the fuzzer
 env GODEBUG=fuzzdebug=1

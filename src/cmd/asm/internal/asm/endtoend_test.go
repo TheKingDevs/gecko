@@ -385,7 +385,7 @@ func Test386EndToEnd(t *testing.T) {
 func TestARMEndToEnd(t *testing.T) {
 	defer func(old int) { buildcfg.GOARM.Version = old }(buildcfg.GOARM.Version)
 	for _, goarm := range []int{5, 6, 7} {
-		t.Logf("GOARM=%d", goarm)
+		t.Logf("GKARM=%d", goarm)
 		buildcfg.GOARM.Version = goarm
 		testEndToEnd(t, "arm", "arm")
 		if goarm == 6 {
@@ -416,14 +416,14 @@ func TestARM64Encoder(t *testing.T) {
 
 func TestARM64SVEEncoder(t *testing.T) {
 	if !buildcfg.Experiment.SIMD {
-		t.Skip("test requires GOEXPERIMENT=simd")
+		t.Skip("test requires GKEXPERIMENT=simd")
 	}
 	testEndToEnd(t, "arm64", "arm64sveenc")
 }
 
 func TestARM64SVEErrors(t *testing.T) {
 	if !buildcfg.Experiment.SIMD {
-		t.Skip("test requires GOEXPERIMENT=simd")
+		t.Skip("test requires GKEXPERIMENT=simd")
 	}
 	testErrors(t, "arm64", "arm64sveerror")
 }
@@ -497,7 +497,7 @@ func TestLOONG64Errors(t *testing.T) {
 func TestPPC64EndToEnd(t *testing.T) {
 	defer func(old int) { buildcfg.GOPPC64 = old }(buildcfg.GOPPC64)
 	for _, goppc64 := range []int{8, 9, 10} {
-		t.Logf("GOPPC64=power%d", goppc64)
+		t.Logf("GKPPC64=power%d", goppc64)
 		buildcfg.GOPPC64 = goppc64
 		// Some pseudo-ops may assemble differently depending on GOPPC64
 		testEndToEnd(t, "ppc64", "ppc64")

@@ -71,7 +71,7 @@ func runVendor(ctx context.Context, cmd *base.Command, args []string) {
 	moduleLoader := modload.NewLoader()
 	moduleLoader.InitWorkfile()
 	if modload.WorkFilePath(moduleLoader) != "" {
-		base.Fatalf("gecko: 'gecko mod vendor' cannot be run in workspace mode. Run 'gecko work vendor' to vendor the workspace or set 'GOWORK=off' to exit workspace mode.")
+		base.Fatalf("gecko: 'gecko mod vendor' cannot be run in workspace mode. Run 'gecko work vendor' to vendor the workspace or set 'GKWORK=off' to exit workspace mode.")
 	}
 	RunVendor(moduleLoader, ctx, vendorE, vendorO, args)
 }

@@ -50,7 +50,7 @@ func TestForCompiler(t *testing.T) {
 		// https://github.com/golang/go#28995
 		mathBigInt := pkg.Scope().Lookup("Int")
 		posn := fset.Position(mathBigInt.Pos()) // "$GOROOT/src/math/big/int.go:25:1"
-		filename := strings.Replace(posn.Filename, "$GOROOT", testenv.GOROOT(t), 1)
+		filename := strings.Replace(posn.Filename, "$GKROOT", testenv.GOROOT(t), 1)
 		data, err := os.ReadFile(filename)
 		if err != nil {
 			t.Fatalf("can't read file containing declaration of math/big.Int: %v", err)
@@ -68,7 +68,7 @@ func TestForCompiler(t *testing.T) {
 		// need to support importing "math/big" as "math/bigger", for
 		// example. cmd/link no longer supports that.
 		if true /* was buildcfg.Experiment.Unified */ {
-			t.Skip("not supported by GOEXPERIMENT=unified; see go.dev/cl/406319")
+			t.Skip("not supported by GKEXPERIMENT=unified; see go.dev/cl/406319")
 		}
 
 		lookup := func(path string) (io.ReadCloser, error) {

@@ -37,7 +37,7 @@ func isSoftFloat(s string) bool {
 }
 
 func main() {
-	for _, env := range []string{"GO386", "GOMIPS", "GOMIPS64", "GOARM"} {
+	for _, env := range []string{"GK386", "GKMIPS", "GKMIPS64", "GKARM"} {
 		if isSoftFloat(os.Getenv(env)) {
 			return
 		}

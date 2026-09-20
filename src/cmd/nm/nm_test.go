@@ -220,7 +220,7 @@ func testGoLib(t *testing.T, iscgo bool) {
 
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "build", "-buildmode=archive", "-o", "mylib.a", ".")
 	cmd.Dir = libpath
-	cmd.Env = append(os.Environ(), "GOPATH="+gopath)
+	cmd.Env = append(os.Environ(), "GKPATH="+gopath)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("building test lib failed: %s %s", err, out)

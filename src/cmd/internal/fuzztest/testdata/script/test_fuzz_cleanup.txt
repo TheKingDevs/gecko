@@ -1,6 +1,6 @@
 [!fuzz] skip
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # Cleanup should run after F.Skip.
 go test -run=FuzzTargetSkip

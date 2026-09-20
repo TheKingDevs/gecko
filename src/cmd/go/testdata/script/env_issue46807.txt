@@ -1,12 +1,12 @@
 ! go mod tidy
-stderr '^gecko: warning: ignoring go.mod in \$GOPATH'
+stderr '^gecko: warning: ignoring go.mod in \$GKPATH'
 stderr '^gecko: go.mod file not found in current directory or any parent directory; see ''gecko help modules'''
 
 go env
-stdout 'GOPATH='
-stderr '^gecko: warning: ignoring go.mod in \$GOPATH'
+stdout 'GKPATH='
+stderr '^gecko: warning: ignoring go.mod in \$GKPATH'
 
--- $GOPATH/go.mod --
+-- $GKPATH/go.mod --
 module bug
 
 go 1.21

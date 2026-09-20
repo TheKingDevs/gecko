@@ -1,8 +1,8 @@
 # Relative imports in go test
-env GO111MODULE=off # relative import not supported in module mode
+env GK111MODULE=off # relative import not supported in module mode
 
-# Run tests outside GOPATH.
-env GOPATH=$WORK/tmp
+# Run tests outside GKPATH.
+env GKPATH=$WORK/tmp
 
 go test ./testimport
 stdout '^ok'

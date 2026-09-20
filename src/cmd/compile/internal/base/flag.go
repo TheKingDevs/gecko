@@ -607,7 +607,7 @@ func parseSpectre(s string) {
 		case "amd64":
 			// ok
 		default:
-			log.Fatalf("GOARCH=%s does not support -spectre=index", buildcfg.GOARCH)
+			log.Fatalf("GKARCH=%s does not support -spectre=index", buildcfg.GOARCH)
 		}
 	}
 }

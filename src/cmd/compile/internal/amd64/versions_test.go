@@ -39,7 +39,7 @@ func TestGoAMD64v1(t *testing.T) {
 	}
 	for _, tag := range build.Default.ToolTags {
 		if tag == "amd64.v2" {
-			t.Skip("compiling for GOAMD64=v2 or higher")
+			t.Skip("compiling for GKAMD64=v2 or higher")
 		}
 	}
 	if os.Getenv("TESTGOAMD64V1") != "" {

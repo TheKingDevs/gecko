@@ -16,6 +16,6 @@ for p in $(go list std cmd); do
 	go build -o /dev/null -gcflags=-cpuprofile=$PWD/prof.$h $p
 done
 
-go tool pprof -proto prof.* > $(go env GOROOT)/src/cmd/compile/default.pgo
+go tool pprof -proto prof.* > $(go env GKROOT)/src/cmd/compile/default.pgo
 
 rm -r $dir

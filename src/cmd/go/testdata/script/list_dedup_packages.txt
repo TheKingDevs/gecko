@@ -1,9 +1,9 @@
 # Setup
-env GO111MODULE=off
+env GK111MODULE=off
 mkdir $WORK/tmp/testdata/src/xtestonly
 cp f.go $WORK/tmp/testdata/src/xtestonly/f.go
 cp f_test.go $WORK/tmp/testdata/src/xtestonly/f_test.go
-env GOPATH=$WORK/tmp/testdata
+env GKPATH=$WORK/tmp/testdata
 cd $WORK
 
 # Check output of go list to ensure no duplicates

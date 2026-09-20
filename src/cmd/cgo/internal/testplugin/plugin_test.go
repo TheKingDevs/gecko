@@ -24,7 +24,7 @@ import (
 
 var globalSkip = func(t *testing.T) {}
 
-var gcflags string = os.Getenv("GO_GCFLAGS")
+var gcflags string = os.Getenv("GK_GCFLAGS")
 var goroot string
 
 func TestMain(m *testing.M) {
@@ -47,7 +47,7 @@ func prettyPrintf(format string, args ...any) {
 
 func testMain(m *testing.M) int {
 	if testing.Short() && testenv.Builder() == "" {
-		globalSkip = func(t *testing.T) { t.Skip("short mode and $GO_BUILDER_NAME not set") }
+		globalSkip = func(t *testing.T) { t.Skip("short mode and $GK_BUILDER_NAME not set") }
 		return m.Run()
 	}
 	if !platform.BuildModeSupported(runtime.Compiler, "plugin", runtime.GOOS, runtime.GOARCH) {
@@ -94,7 +94,7 @@ func testMain(m *testing.M) int {
 		prettyPrintf("echo 'module testplugin' > %s/go.mod\n", dstRoot)
 	}
 
-	os.Setenv("GOPATH", filepath.Join(GOPATH, "alt"))
+	os.Setenv("GKPATH", filepath.Join(GOPATH, "alt"))
 	if err := os.Chdir(altRoot); err != nil {
 		log.Panic(err)
 	} else {
@@ -103,7 +103,7 @@ func testMain(m *testing.M) int {
 	os.Setenv("PWD", altRoot)
 	goCmd(nil, "build", "-buildmode=plugin", "-o", filepath.Join(modRoot, "plugin-mismatch.so"), "./plugin-mismatch")
 
-	os.Setenv("GOPATH", GOPATH)
+	os.Setenv("GKPATH", GOPATH)
 	if err := os.Chdir(modRoot); err != nil {
 		log.Panic(err)
 	} else {
@@ -172,7 +172,7 @@ func asCommandLine(cwd string, cmd *exec.Cmd) string {
 	// These EVs are relevant to this test.
 	for _, e := range os.Environ() {
 		if strings.HasPrefix(e, "PWD=") ||
-			strings.HasPrefix(e, "GOPATH=") ||
+			strings.HasPrefix(e, "GKPATH=") ||
 			strings.HasPrefix(e, "LD_LIBRARY_PATH=") {
 			s += " "
 			s += escape(e)

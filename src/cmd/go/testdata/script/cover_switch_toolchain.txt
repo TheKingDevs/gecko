@@ -1,6 +1,6 @@
 go test -cover -n ./...
-[!GOOS:windows] stderr $GOROOT'/bin/gecko tool covdata'
-[GOOS:windows] stderr '\\\\bin\\\\gecko" tool covdata'
+[!GKOS:windows] stderr $GKROOT'/bin/gecko tool covdata'
+[GKOS:windows] stderr '\\\\bin\\\\gecko" tool covdata'
 
 -- go.mod --
 module example.com/m

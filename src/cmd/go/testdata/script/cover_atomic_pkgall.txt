@@ -1,13 +1,13 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
-[GOARCH:riscv64] skip 'broken on riscv64: #81175'
+[GKARCH:riscv64] skip 'broken on riscv64: #81175'
 
 go test -coverpkg=all -covermode=atomic x
 stdout ok[\s\S]+?coverage
 
 [!race] stop
 
-[GOARCH:loong64] skip 'broken on loong64: #78219'
+[GKARCH:loong64] skip 'broken on loong64: #78219'
 
 go test -coverpkg=all -race x
 stdout ok[\s\S]+?coverage

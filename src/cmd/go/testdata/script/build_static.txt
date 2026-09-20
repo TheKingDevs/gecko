@@ -5,8 +5,8 @@
 [!cgo] skip 'requires a C linker'
 
 # Only run on Unix systems.
-[GOOS:windows] skip
-[GOOS:plan9] skip
+[GKOS:windows] skip
+[GKOS:plan9] skip
 
 # Ordinary build should work.
 go build
@@ -21,8 +21,8 @@ exec ./hello
 stdout Hello
 
 # Some targets don't support -static
-[GOOS:darwin] skip 'no static linking on Darwin'
-[GOOS:solaris] skip 'no static linking on Solaris'
+[GKOS:darwin] skip 'no static linking on Darwin'
+[GKOS:solaris] skip 'no static linking on Solaris'
 
 # Building with -linkmode=external -extldflags=-static should work.
 go build -ldflags='-linkmode=external -extldflags=-static'

@@ -1,16 +1,16 @@
 # Verify that go bug creates the appropriate URL issue body
 
-[!GOOS:linux] skip
+[!GKOS:linux] skip
 [short] skip
 
 go install
 go build -o $TMPDIR/go ./go
-env BROWSER=$GOPATH/bin/browser PATH=$TMPDIR:$PATH
+env BROWSER=$GKPATH/bin/browser PATH=$TMPDIR:$PATH
 go bug
 exists $TMPDIR/browser
 grep '^gecko version' $TMPDIR/browser
-grep '^GOROOT/bin/gecko version: gecko version' $TMPDIR/browser
-grep '^GOROOT/bin/gecko tool compile -V: compile version' $TMPDIR/browser
+grep '^GKROOT/bin/gecko version: gecko version' $TMPDIR/browser
+grep '^GKROOT/bin/gecko tool compile -V: compile version' $TMPDIR/browser
 grep '^uname -sr: Linux' $TMPDIR/browser
 
 -- go.mod --

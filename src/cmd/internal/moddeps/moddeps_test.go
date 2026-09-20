@@ -58,7 +58,7 @@ func TestAllDependencies(t *testing.T) {
 				// 'go list -deps' will fail when attempting to load it.
 				cmd := testenv.Command(t, goBin, "list", "-mod=vendor", "-deps", "./...")
 				cmd.Dir = m.Dir
-				cmd.Env = append(cmd.Environ(), "GO111MODULE=on", "GOWORK=off")
+				cmd.Env = append(cmd.Environ(), "GK111MODULE=on", "GKWORK=off")
 				cmd.Stderr = new(strings.Builder)
 				_, err := cmd.Output()
 				if err != nil {
@@ -72,7 +72,7 @@ func TestAllDependencies(t *testing.T) {
 			// Check that the list of active modules contains only the main module.
 			cmd := testenv.Command(t, goBin, "list", "-mod=readonly", "-m", "all")
 			cmd.Dir = m.Dir
-			cmd.Env = append(cmd.Environ(), "GO111MODULE=on", "GOWORK=off")
+			cmd.Env = append(cmd.Environ(), "GK111MODULE=on", "GKWORK=off")
 			cmd.Stderr = new(strings.Builder)
 			out, err := cmd.Output()
 			if err != nil {
@@ -132,9 +132,9 @@ func TestAllDependencies(t *testing.T) {
 	// GO_TEST_SHORT=0 causes it to run this portion of the test.)
 	var modcacheEnv []string
 	{
-		out, err := testenv.Command(t, goBin, "env", "GOMODCACHE").Output()
+		out, err := testenv.Command(t, goBin, "env", "GKMODCACHE").Output()
 		if err != nil {
-			t.Fatalf("%s env GOMODCACHE: %v", goBin, err)
+			t.Fatalf("%s env GKMODCACHE: %v", goBin, err)
 		}
 		modcacheOk := false
 		if gomodcache := string(bytes.TrimSpace(out)); gomodcache != "" {
@@ -144,8 +144,8 @@ func TestAllDependencies(t *testing.T) {
 		}
 		if !modcacheOk {
 			modcacheEnv = []string{
-				"GOMODCACHE=" + t.TempDir(),
-				"GOFLAGS=" + os.Getenv("GOFLAGS") + " -modcacherw", // Allow t.TempDir() to clean up subdirectories.
+				"GKMODCACHE=" + t.TempDir(),
+				"GKFLAGS=" + os.Getenv("GKFLAGS") + " -modcacherw", // Allow t.TempDir() to clean up subdirectories.
 			}
 		}
 	}
@@ -194,11 +194,11 @@ func TestAllDependencies(t *testing.T) {
 				Dir: filepath.Join(gorootCopyDir, rel),
 				Env: append(append(os.Environ(), modcacheEnv...),
 					// Set GOROOT.
-					"GOROOT="+gorootCopyDir,
+					"GKROOT="+gorootCopyDir,
 					// Add GOROOTcopy/bin and bundleDir to front of PATH.
 					"PATH="+filepath.Join(gorootCopyDir, "bin")+string(filepath.ListSeparator)+
 						bundleDir+string(filepath.ListSeparator)+os.Getenv("PATH"),
-					"GOWORK=off",
+					"GKWORK=off",
 				),
 			}
 			goBinCopy := filepath.Join(gorootCopyDir, "bin", "gecko")
@@ -313,7 +313,7 @@ func makeGOROOTCopy(t *testing.T) string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("copied GOROOT from %s to %s", testenv.GOROOT(t), gorootCopyDir)
+	t.Logf("copied GKROOT from %s to %s", testenv.GOROOT(t), gorootCopyDir)
 	return gorootCopyDir
 }
 
@@ -410,7 +410,7 @@ func TestDependencyVersionsConsistent(t *testing.T) {
 	// Now verify that we saw only one distinct version for each module.
 	for path, versions := range seen {
 		if len(versions) > 1 {
-			t.Errorf("Modules within GOROOT require different versions of %s.", path)
+			t.Errorf("Modules within GKROOT require different versions of %s.", path)
 			for r, mods := range versions {
 				desc := new(strings.Builder)
 				desc.WriteString(r.Required.Version)
@@ -478,7 +478,7 @@ func findGorootModules(t *testing.T) []gorootModule {
 			// not its dependencies).
 			cmd := testenv.Command(t, goBin, "list", "-json", "-m")
 			cmd.Dir = dir
-			cmd.Env = append(cmd.Environ(), "GO111MODULE=on", "GOWORK=off")
+			cmd.Env = append(cmd.Environ(), "GK111MODULE=on", "GKWORK=off")
 			cmd.Stderr = new(strings.Builder)
 			out, err := cmd.Output()
 			if err != nil {

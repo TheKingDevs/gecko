@@ -29,7 +29,7 @@ type ExperimentFlags struct {
 // default in the current toolchain. This is, in effect, the "control"
 // configuration and any variation from this is an experiment.
 var Experiment ExperimentFlags = func() ExperimentFlags {
-	flags, err := ParseGOEXPERIMENT(GOOS, GOARCH, envOr("GOEXPERIMENT", defaultGOEXPERIMENT))
+	flags, err := ParseGOEXPERIMENT(GOOS, GOARCH, envOr("GKEXPERIMENT", defaultGOEXPERIMENT))
 	if err != nil {
 		Error = err
 		return ExperimentFlags{}
@@ -132,7 +132,7 @@ func ParseGOEXPERIMENT(goos, goarch, goexp string) (*ExperimentFlags, error) {
 			}
 			set, ok := names[f]
 			if !ok {
-				return nil, fmt.Errorf("unknown GOEXPERIMENT %s", f)
+				return nil, fmt.Errorf("unknown GKEXPERIMENT %s", f)
 			}
 			set(val)
 		}
@@ -149,7 +149,7 @@ func ParseGOEXPERIMENT(goos, goarch, goexp string) (*ExperimentFlags, error) {
 	}
 	// Check regabi dependencies.
 	if flags.RegabiArgs && !flags.RegabiWrappers {
-		return nil, fmt.Errorf("GOEXPERIMENT regabiargs requires regabiwrappers")
+		return nil, fmt.Errorf("GKEXPERIMENT regabiargs requires regabiwrappers")
 	}
 	return flags, nil
 }

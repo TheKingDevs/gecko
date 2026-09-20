@@ -1,8 +1,8 @@
 # Tests Issue #3562
 # go get foo.io (not foo.io/subdir) was not working consistently.
 
-env GO111MODULE=off
-env GOPATH=$WORK/gopath1${:}$WORK/gopath2
+env GK111MODULE=off
+env GKPATH=$WORK/gopath1${:}$WORK/gopath2
 
 mkdir $WORK/gopath1/src/test
 mkdir $WORK/gopath2/src/test

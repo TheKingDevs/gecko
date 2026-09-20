@@ -22,7 +22,7 @@ must not already exist.
 
 Init accepts one optional argument, the module path for the new module. If the
 module path argument is omitted, init will attempt to infer the module path
-using import comments in .go files and the current directory (if in GOPATH).
+using import comments in .go files and the current directory (if in GKPATH).
 
 See https://go.dev/ref/mod#go-mod-init for more about 'gecko mod init'.
 `,

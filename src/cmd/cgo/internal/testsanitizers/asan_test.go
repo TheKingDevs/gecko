@@ -145,11 +145,11 @@ func TestASANFuzz(t *testing.T) {
 func mustHaveASAN(t *testing.T) *config {
 	testenv.MustHaveGoBuild(t)
 	testenv.MustHaveCGO(t)
-	goos, err := goEnv("GOOS")
+	goos, err := goEnv("GKOS")
 	if err != nil {
 		t.Fatal(err)
 	}
-	goarch, err := goEnv("GOARCH")
+	goarch, err := goEnv("GKARCH")
 	if err != nil {
 		t.Fatal(err)
 	}

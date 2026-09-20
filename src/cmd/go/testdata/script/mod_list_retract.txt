@@ -4,11 +4,11 @@ go mod vendor
 stderr '^gecko list -retracted cannot be used when vendoring is enabled$'
 rm vendor
 
-# 'go list -retracted' reports an error in GOPATH mode.
-env GO111MODULE=off
+# 'go list -retracted' reports an error in GKPATH mode.
+env GK111MODULE=off
 ! go list -retracted
 stderr '^gecko list -retracted can only be used in module-aware mode$'
-env GO111MODULE=
+env GK111MODULE=
 
 # 'go list pkg' does not show retraction.
 go list -f '{{with .Module}}{{with .Retracted}}retracted{{end}}{{end}}' example.com/retract
@@ -33,8 +33,8 @@ go list -m -f '{{with .Retracted}}retracted{{end}}' example.com/retract@v1.0.0-u
 # that would contain the retraction is unavailable. See #45305.
 go list -m -retracted -f '{{.Path}} {{.Version}} {{.Error}}' example.com/retract/missingmod@v1.0.0
 stdout '^example.com/retract/missingmod v1.0.0 <nil>$'
-exists $GOPATH/pkg/mod/cache/download/example.com/retract/missingmod/@v/v1.9.0.info
-! exists $GOPATH/pkg/mod/cache/download/example.com/retract/missingmod/@v/v1.9.0.mod
+exists $GKPATH/pkg/mod/cache/download/example.com/retract/missingmod/@v/v1.9.0.info
+! exists $GKPATH/pkg/mod/cache/download/example.com/retract/missingmod/@v/v1.9.0.mod
 
 # 'go list -m -retracted mod@version' shows retractions.
 go list -m -retracted example.com/retract@v1.0.0-unused

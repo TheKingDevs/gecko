@@ -1,48 +1,48 @@
-# Regression test for 'go install' locations in GOPATH mode.
-env GO111MODULE=off
+# Regression test for 'go install' locations in GKPATH mode.
+env GK111MODULE=off
 
-# Without $GOBIN set, binaries should be installed into the GOPATH bin directory.
-env GOBIN=
-rm $GOPATH/bin/go-cmd-test$GOEXE
+# Without $GKBIN set, binaries should be installed into the GKPATH bin directory.
+env GKBIN=
+rm $GKPATH/bin/go-cmd-test$GKEXE
 go install go-cmd-test
-exists $GOPATH/bin/go-cmd-test$GOEXE
+exists $GKPATH/bin/go-cmd-test$GKEXE
 
-# With $GOBIN set, binaries should be installed to $GOBIN.
-env GOBIN=$WORK/bin1
-mkdir -p $GOBIN
+# With $GKBIN set, binaries should be installed to $GKBIN.
+env GKBIN=$WORK/bin1
+mkdir -p $GKBIN
 go install go-cmd-test
-exists $GOBIN/go-cmd-test$GOEXE
+exists $GKBIN/go-cmd-test$GKEXE
 
 # Issue 11065: installing to the current directory should create an executable.
 cd go-cmd-test
-env GOBIN=$PWD
+env GKBIN=$PWD
 go install
-exists ./go-cmd-test$GOEXE
+exists ./go-cmd-test$GKEXE
 cd ..
 
-# Without $GOBIN set, installing a program outside $GOPATH should fail
+# Without $GKBIN set, installing a program outside $GKPATH should fail
 # (there is nowhere to install it).
-env GOPATH= # reset to default ($HOME/go, which does not exist)
-env GOBIN=
+env GKPATH= # reset to default ($HOME/go, which does not exist)
+env GKBIN=
 ! go install go-cmd-test/helloworld.gk
-stderr '^gecko: no install location for \.gk files listed on command line \(GOBIN not set\)$'
+stderr '^gecko: no install location for \.gk files listed on command line \(GKBIN not set\)$'
 
-# With $GOBIN set, should install there.
-env GOBIN=$WORK/bin1
+# With $GKBIN set, should install there.
+env GKBIN=$WORK/bin1
 go install go-cmd-test/helloworld.gk
-exists $GOBIN/helloworld$GOEXE
+exists $GKBIN/helloworld$GKEXE
 
-# We can't assume that we can write to GOROOT, because it may not be writable.
+# We can't assume that we can write to GKROOT, because it may not be writable.
 # However, we can check its install location using 'go list'.
-# cmd/fix should be installed to GOROOT/pkg, not GOPATH/bin.
-env GOPATH=$PWD
+# cmd/fix should be installed to GKROOT/pkg, not GKPATH/bin.
+env GKPATH=$PWD
 go list -f '{{.Target}}' cmd/fix
-stdout $GOROOT'[/\\]pkg[/\\]tool[/\\]'$GOOS'_'$GOARCH'[/\\]fix'$GOEXE'$'
+stdout $GKROOT'[/\\]pkg[/\\]tool[/\\]'$GKOS'_'$GKARCH'[/\\]fix'$GKEXE'$'
 
-# GOBIN should not affect toolchain install locations.
-env GOBIN=$WORK/bin1
+# GKBIN should not affect toolchain install locations.
+env GKBIN=$WORK/bin1
 go list -f '{{.Target}}' cmd/fix
-stdout $GOROOT'[/\\]pkg[/\\]tool[/\\]'$GOOS'_'$GOARCH'[/\\]fix'$GOEXE'$'
+stdout $GKROOT'[/\\]pkg[/\\]tool[/\\]'$GKOS'_'$GKARCH'[/\\]fix'$GKEXE'$'
 
 -- go-cmd-test/helloworld.gk --
 package main

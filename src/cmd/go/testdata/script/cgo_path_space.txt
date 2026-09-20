@@ -10,14 +10,14 @@
 [exec:gcc] env CC=gcc
 [!exec:clang] [!exec:gcc] skip 'Unknown C compiler'
 
-[!GOOS:windows] chmod 0755 $WORK/'program files'/clang
-[!GOOS:windows] chmod 0755 $WORK/'program files'/gcc
-[!GOOS:windows] exists -exec $WORK/'program files'/clang
-[!GOOS:windows] exists -exec $WORK/'program files'/gcc
-[!GOOS:windows] env PATH=$WORK/'program files':$PATH
-[GOOS:windows] exists -exec $WORK/'program files'/gcc.bat
-[GOOS:windows] exists -exec $WORK/'program files'/clang.bat
-[GOOS:windows] env PATH=$WORK\'program files';%PATH%
+[!GKOS:windows] chmod 0755 $WORK/'program files'/clang
+[!GKOS:windows] chmod 0755 $WORK/'program files'/gcc
+[!GKOS:windows] exists -exec $WORK/'program files'/clang
+[!GKOS:windows] exists -exec $WORK/'program files'/gcc
+[!GKOS:windows] env PATH=$WORK/'program files':$PATH
+[GKOS:windows] exists -exec $WORK/'program files'/gcc.bat
+[GKOS:windows] exists -exec $WORK/'program files'/clang.bat
+[GKOS:windows] env PATH=$WORK\'program files';%PATH%
 
 ! exists $WORK/log.txt
 ? go build -x
@@ -28,8 +28,8 @@ rm $WORK/log.txt
 # contain spaces separating arguments, and it should be possible to quote
 # arguments with spaces (including the path), as in CGO_CFLAGS and other
 # variables. For now, this doesn't work.
-[!GOOS:windows] env CC=$WORK/'program files'/gcc
-[GOOS:windows] env CC=$WORK\'program files'\gcc.bat
+[!GKOS:windows] env CC=$WORK/'program files'/gcc
+[GKOS:windows] env CC=$WORK\'program files'\gcc.bat
 ! go build -x
 ! exists $WORK/log.txt
 

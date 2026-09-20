@@ -21,7 +21,7 @@ func runAssembler(t *testing.T, srcdata string) []byte {
 	outfile := filepath.Join(dir, "testdata.o")
 	os.WriteFile(srcfile, []byte(srcdata), 0644)
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "asm", "-S", "-o", outfile, srcfile)
-	cmd.Env = append(os.Environ(), "GOOS=linux", "GOARCH=arm64")
+	cmd.Env = append(os.Environ(), "GKOS=linux", "GKARCH=arm64")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Errorf("The build failed: %v, output:\n%s", err, out)

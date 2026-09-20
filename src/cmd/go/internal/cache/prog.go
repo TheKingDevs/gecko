@@ -74,7 +74,7 @@ func startCacheProg(progAndArgs string, fuzzDirCache Cache) Cache {
 	}
 	args, err := quoted.Split(progAndArgs)
 	if err != nil {
-		base.Fatalf("GOCACHEPROG args: %v", err)
+		base.Fatalf("GKCACHEPROG args: %v", err)
 	}
 	var prog string
 	if len(args) > 0 {
@@ -87,11 +87,11 @@ func startCacheProg(progAndArgs string, fuzzDirCache Cache) Cache {
 	cmd := exec.CommandContext(ctx, prog, args...)
 	out, err := cmd.StdoutPipe()
 	if err != nil {
-		base.Fatalf("StdoutPipe to GOCACHEPROG: %v", err)
+		base.Fatalf("StdoutPipe to GKCACHEPROG: %v", err)
 	}
 	in, err := cmd.StdinPipe()
 	if err != nil {
-		base.Fatalf("StdinPipe to GOCACHEPROG: %v", err)
+		base.Fatalf("StdinPipe to GKCACHEPROG: %v", err)
 	}
 	cmd.Stderr = os.Stderr
 	// On close, we cancel the context. Rather than killing the helper,
@@ -99,7 +99,7 @@ func startCacheProg(progAndArgs string, fuzzDirCache Cache) Cache {
 	cmd.Cancel = in.Close
 
 	if err := cmd.Start(); err != nil {
-		base.Fatalf("error starting GOCACHEPROG program %q: %v", prog, err)
+		base.Fatalf("error starting GKCACHEPROG program %q: %v", prog, err)
 	}
 
 	pc := &ProgCache{
@@ -130,14 +130,14 @@ func startCacheProg(progAndArgs string, fuzzDirCache Cache) Cache {
 	for {
 		select {
 		case <-timer.C:
-			log.Printf("# still waiting for GOCACHEPROG %v ...", prog)
+			log.Printf("# still waiting for GKCACHEPROG %v ...", prog)
 		case capRes := <-capResc:
 			can := map[cacheprog.Cmd]bool{}
 			for _, cmd := range capRes.KnownCommands {
 				can[cmd] = true
 			}
 			if len(can) == 0 {
-				base.Fatalf("GOCACHEPROG %v declared no supported commands", prog)
+				base.Fatalf("GKCACHEPROG %v declared no supported commands", prog)
 			}
 			pc.can = can
 			return pc
@@ -164,9 +164,9 @@ func (c *ProgCache) readLoop(readLoopDone chan<- struct{}) {
 				c.mu.Lock()
 				inFlight := len(c.inFlight)
 				c.mu.Unlock()
-				base.Fatalf("GOCACHEPROG exited pre-Close with %v pending requests", inFlight)
+				base.Fatalf("GKCACHEPROG exited pre-Close with %v pending requests", inFlight)
 			}
-			base.Fatalf("error reading JSON from GOCACHEPROG: %v", err)
+			base.Fatalf("error reading JSON from GKCACHEPROG: %v", err)
 		}
 		c.mu.Lock()
 		ch, ok := c.inFlight[res.ID]
@@ -175,12 +175,12 @@ func (c *ProgCache) readLoop(readLoopDone chan<- struct{}) {
 		if ok {
 			ch <- res
 		} else {
-			base.Fatalf("GOCACHEPROG sent response for unknown request ID %v", res.ID)
+			base.Fatalf("GKCACHEPROG sent response for unknown request ID %v", res.ID)
 		}
 	}
 }
 
-var errCacheprogClosed = errors.New("GOCACHEPROG program closed unexpectedly")
+var errCacheprogClosed = errors.New("GKCACHEPROG program closed unexpectedly")
 
 func (c *ProgCache) send(ctx context.Context, req *cacheprog.Request) (*cacheprog.Response, error) {
 	resc := make(chan *cacheprog.Response, 1)
@@ -244,7 +244,7 @@ func (c *ProgCache) writeToChild(req *cacheprog.Request, resc chan<- *cacheprog.
 			return err
 		}
 		if wrote != req.BodySize {
-			return fmt.Errorf("short write writing body to GOCACHEPROG for action %x, output %x: wrote %v; expected %v",
+			return fmt.Errorf("short write writing body to GKCACHEPROG for action %x, output %x: wrote %v; expected %v",
 				req.ActionID, req.OutputID, wrote, req.BodySize)
 		}
 		if _, err := c.bw.WriteString("\"\n"); err != nil {
@@ -287,7 +287,7 @@ func (c *ProgCache) Get(a ActionID) (Entry, error) {
 		e.Time = time.Now()
 	}
 	if res.DiskPath == "" {
-		return Entry{}, &entryNotFoundError{errors.New("GOCACHEPROG didn't populate DiskPath on get hit")}
+		return Entry{}, &entryNotFoundError{errors.New("GKCACHEPROG didn't populate DiskPath on get hit")}
 	}
 	if copy(e.OutputID[:], res.OutputID) != len(res.OutputID) {
 		return Entry{}, &entryNotFoundError{errors.New("incomplete ProgResponse OutputID")}
@@ -341,7 +341,7 @@ func (c *ProgCache) Put(a ActionID, file io.ReadSeeker) (_ OutputID, size int64,
 		return OutputID{}, 0, err
 	}
 	if res.DiskPath == "" {
-		return OutputID{}, 0, errors.New("GOCACHEPROG didn't return DiskPath in put response")
+		return OutputID{}, 0, errors.New("GKCACHEPROG didn't return DiskPath in put response")
 	}
 	c.noteOutputFile(out, res.DiskPath)
 	return out, size, err

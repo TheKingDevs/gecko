@@ -11,7 +11,7 @@ grep '^rsc.io/quote v1.1.0 h1:' b/go.sum
 grep '^rsc.io/quote v1.1.0/go.mod ' b/go.sum
 
 # ... so b still builds outside the workspace.
-env GOWORK=off
+env GKWORK=off
 go -C b build ./...
 
 -- go.work --

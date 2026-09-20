@@ -108,7 +108,7 @@ func TestGoDefs(t *testing.T) {
 	// this test can pass on mobile builders, which do not copy artifacts back
 	// from remote invocations.
 	cmd := exec.Command(testenv.GoToolPath(t), "run", ".")
-	cmd.Env = append(os.Environ(), "GOPATH="+gopath)
+	cmd.Env = append(os.Environ(), "GKPATH="+gopath)
 	cmd.Dir = dir
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("%#q [%s]: %v\n%s", cmd, dir, err, out)

@@ -263,7 +263,7 @@ func initScriptDirs(t testing.TB, s *script.State) (telemetryDir string) {
 	must(s.Setenv(tempEnvName(), filepath.Join(work, "tmp")))
 
 	gopath := filepath.Join(work, "gopath")
-	must(s.Setenv("GOPATH", gopath))
+	must(s.Setenv("GKPATH", gopath))
 	gopathSrc := filepath.Join(gopath, "src")
 	must(os.MkdirAll(gopathSrc, 0777))
 	must(s.Chdir(gopathSrc))
@@ -283,18 +283,18 @@ func scriptEnv(srv *vcstest.Server, srvCertFile string) ([]string, error) {
 		pathEnvName() + "=" + testBin + string(filepath.ListSeparator) + os.Getenv(pathEnvName()),
 		homeEnvName() + "=/no-home",
 		"CCACHE_DISABLE=1", // ccache breaks with non-existent HOME
-		"GOARCH=" + runtime.GOARCH,
+		"GKARCH=" + runtime.GOARCH,
 		"TESTGO_GOHOSTARCH=" + goHostArch,
-		"GOCACHE=" + testGOCACHE,
+		"GKCACHE=" + testGOCACHE,
 		"GOCOVERDIR=" + os.Getenv("GOCOVERDIR"),
 		"GODEBUG=" + os.Getenv("GODEBUG"),
-		"GOEXE=" + cfg.ExeSuffix,
-		"GOEXPERIMENT=" + os.Getenv("GOEXPERIMENT"),
-		"GOOS=" + runtime.GOOS,
+		"GKEXE=" + cfg.ExeSuffix,
+		"GKEXPERIMENT=" + os.Getenv("GKEXPERIMENT"),
+		"GKOS=" + runtime.GOOS,
 		"TESTGO_GOHOSTOS=" + goHostOS,
-		"GOPROXY=" + proxyURL,
-		"GOPRIVATE=",
-		"GOROOT=" + testGOROOT,
+		"GKPROXY=" + proxyURL,
+		"GKPRIVATE=",
+		"GKROOT=" + testGOROOT,
 		"GOTRACEBACK=system",
 		"TESTGONETWORK=panic", // allow only local connections by default; the [net] condition resets this
 		"TESTGO_GOROOT=" + testGOROOT,
@@ -303,16 +303,16 @@ func scriptEnv(srv *vcstest.Server, srvCertFile string) ([]string, error) {
 		"TESTGO_VCSTEST_TLS_HOST=" + httpsURL.Host,
 		"TESTGO_VCSTEST_CERT=" + srvCertFile,
 		"TESTGONETWORK=panic", // cleared by the [net] condition
-		"GOSUMDB=" + testSumDBVerifierKey,
+		"GKSUMDB=" + testSumDBVerifierKey,
 		"TESTGO_SUMDB=" + testSumDBName,
-		"GONOPROXY=",
-		"GONOSUMDB=",
-		"GOVCS=*:all",
+		"GKNOPROXY=",
+		"GKNOSUMDB=",
+		"GKVCS=*:all",
 		"devnull=" + os.DevNull,
 		"goversion=" + gover.Local(),
 		"CMDGO_TEST_RUN_MAIN=true",
 		"HGRCPATH=",
-		"GOTOOLCHAIN=auto",
+		"GKTOOLCHAIN=auto",
 		"newline=\n",
 	}
 

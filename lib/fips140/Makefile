@@ -34,12 +34,12 @@ v%.zip:
 # copy from the module cache.
 v%.rm:
 	rm -f v$*.zip
-	chmod -R u+w $$(go env GOMODCACHE)/golang.org/fips140@v$* 2>/dev/null || true
-	rm -rf $$(go env GOMODCACHE)/golang.org/fips140@v$*
+	chmod -R u+w $$(go env GKMODCACHE)/golang.org/fips140@v$* 2>/dev/null || true
+	rm -rf $$(go env GKMODCACHE)/golang.org/fips140@v$*
 
 # make v1.2.3.test runs the crypto tests using that snapshot.
 v%.test:
-	GOFIPS140=v$* go test -short crypto...
+	GKFIPS140=v$* go test -short crypto...
 
 # make updatesum updates the fips140.sum file.
 updatesum:

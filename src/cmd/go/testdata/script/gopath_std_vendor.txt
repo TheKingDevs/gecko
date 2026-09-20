@@ -1,31 +1,31 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 [!compiler:gc] skip
 
 go list -f '{{.Dir}}' vendor/golang.org/x/net/http2/hpack
-stdout $GOPATH[/\\]src[/\\]vendor
+stdout $GKPATH[/\\]src[/\\]vendor
 
 # A package importing 'net/http' should resolve its dependencies
-# to the package 'vendor/golang.org/x/net/http2/hpack' within GOROOT.
+# to the package 'vendor/golang.org/x/net/http2/hpack' within GKROOT.
 cd importnethttp
 go list -deps -f '{{.ImportPath}} {{.Dir}}'
 stdout ^vendor/golang.org/x/net/http2/hpack
-stdout $GOROOT[/\\]src[/\\]vendor[/\\]golang.org[/\\]x[/\\]net[/\\]http2[/\\]hpack
-! stdout $GOPATH[/\\]src[/\\]vendor
+stdout $GKROOT[/\\]src[/\\]vendor[/\\]golang.org[/\\]x[/\\]net[/\\]http2[/\\]hpack
+! stdout $GKPATH[/\\]src[/\\]vendor
 
-# In the presence of $GOPATH/src/vendor/golang.org/x/net/http2/hpack,
-# a package in GOPATH importing 'golang.org/x/net/http2/hpack' should
-# resolve its dependencies in GOPATH/src.
+# In the presence of $GKPATH/src/vendor/golang.org/x/net/http2/hpack,
+# a package in GKPATH importing 'golang.org/x/net/http2/hpack' should
+# resolve its dependencies in GKPATH/src.
 cd ../issue16333
 go build .
 
 go list -deps -f '{{.ImportPath}} {{.Dir}}' .
-stdout $GOPATH[/\\]src[/\\]vendor[/\\]golang.org[/\\]x[/\\]net[/\\]http2[/\\]hpack
-! stdout $GOROOT[/\\]src[/\\]vendor
+stdout $GKPATH[/\\]src[/\\]vendor[/\\]golang.org[/\\]x[/\\]net[/\\]http2[/\\]hpack
+! stdout $GKROOT[/\\]src[/\\]vendor
 
 go list -test -deps -f '{{.ImportPath}} {{.Dir}}' .
-stdout $GOPATH[/\\]src[/\\]vendor[/\\]golang.org[/\\]x[/\\]net[/\\]http2[/\\]hpack
-! stdout $GOROOT[/\\]src[/\\]vendor
+stdout $GKPATH[/\\]src[/\\]vendor[/\\]golang.org[/\\]x[/\\]net[/\\]http2[/\\]hpack
+! stdout $GKROOT[/\\]src[/\\]vendor
 
 -- issue16333/issue16333.go --
 package vendoring17
@@ -40,5 +40,5 @@ import _ "golang.org/x/net/http2/hpack"
 package importnethttp
 
 import _ "net/http"
--- $GOPATH/src/vendor/golang.org/x/net/http2/hpack/hpack.go --
+-- $GKPATH/src/vendor/golang.org/x/net/http2/hpack/hpack.go --
 package hpack

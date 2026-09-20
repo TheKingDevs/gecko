@@ -24,10 +24,10 @@ grep '^go 1.50$' go.work
 env TESTGO_VERSION=go1.21
 env TESTGO_VERSION_SWITCH=switch
 rm go.work
-env GOTOOLCHAIN=local
+env GKTOOLCHAIN=local
 ! go work init ./m1_22_0
-stderr '^gecko: m1_22_0'${/}'go.mod requires go >= 1.22.0 \(running go 1.21; GOTOOLCHAIN=local\)$'
-env GOTOOLCHAIN=auto
+stderr '^gecko: m1_22_0'${/}'go.mod requires go >= 1.22.0 \(running go 1.21; GKTOOLCHAIN=local\)$'
+env GKTOOLCHAIN=auto
 go work init ./m1_22_0
 stderr '^gecko: m1_22_0'${/}'go.mod requires go >= 1.22.0; switching to go1.22.9$'
 cat go.work

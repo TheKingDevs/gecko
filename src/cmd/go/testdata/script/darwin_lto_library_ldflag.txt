@@ -1,4 +1,4 @@
-[!GOOS:darwin] skip
+[!GKOS:darwin] skip
 [!cgo] skip
 
 ! go build

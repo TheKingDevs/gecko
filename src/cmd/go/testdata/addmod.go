@@ -74,9 +74,9 @@ func main() {
 		return string(out)
 	}
 
-	gopath := strings.TrimSpace(run("go", "env", "GOPATH"))
+	gopath := strings.TrimSpace(run("go", "env", "GKPATH"))
 	if gopath == "" {
-		fatalf("cannot find GOPATH")
+		fatalf("cannot find GKPATH")
 	}
 
 	exitCode := 0

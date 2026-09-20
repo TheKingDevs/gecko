@@ -1,8 +1,8 @@
-[!GOOS:windows] [short] stop 'this test only applies to Windows'
-env GO111MODULE=off
+[!GKOS:windows] [short] stop 'this test only applies to Windows'
+env GK111MODULE=off
 
 go build run_go.go
-exec ./run_go$GOEXE $GOPATH $GOPATH/src/vend/hello
+exec ./run_go$GKEXE $GKPATH $GKPATH/src/vend/hello
 stdout 'hello, world'
 
 -- run_go.go --
@@ -26,7 +26,7 @@ func main() {
 	dir := changeVolume(os.Args[2], strings.ToUpper)
 	cmd := exec.Command("go", "run", "hello.go")
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GOPATH="+gopath)
+	cmd.Env = append(os.Environ(), "GKPATH="+gopath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

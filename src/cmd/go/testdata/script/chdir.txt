@@ -1,7 +1,7 @@
 env OLD=$PWD
 
 # basic -C functionality
-cd $GOROOT/src/math
+cd $GKROOT/src/math
 go list -C ../strings
 stdout strings
 ! go list -C ../nonexist

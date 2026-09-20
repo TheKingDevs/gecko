@@ -1,15 +1,15 @@
 # 'go install pkg@version' works outside a module.
-env GO111MODULE=auto
+env GK111MODULE=auto
 go install example.com/cmd/a@v1.0.0
-exists $GOPATH/bin/a$GOEXE
-rm $GOPATH/bin
+exists $GKPATH/bin/a$GKEXE
+rm $GKPATH/bin
 
 
 # 'go install pkg@version' reports an error if modules are disabled.
-env GO111MODULE=off
+env GK111MODULE=off
 ! go install example.com/cmd/a@v1.0.0
-stderr '^gecko: modules disabled by GO111MODULE=off; see ''gecko help modules''$'
-env GO111MODULE=auto
+stderr '^gecko: modules disabled by GK111MODULE=off; see ''gecko help modules''$'
+env GK111MODULE=auto
 
 
 # 'go install pkg@version' ignores go.mod in current directory.
@@ -20,19 +20,19 @@ stderr '^gecko: example.com/cmd@v1.1.0-doesnotexist: reading http.*/mod/example.
 stderr '^gecko: example.com/cmd@v1.1.0-doesnotexist: missing go.sum entry for go.mod file; to add it:\n\tgecko mod download example.com/cmd$'
 go install example.com/cmd/a@latest
 cmp go.mod go.mod.orig
-exists $GOPATH/bin/a$GOEXE
-go version -m $GOPATH/bin/a$GOEXE
+exists $GKPATH/bin/a$GKEXE
+go version -m $GKPATH/bin/a$GKEXE
 stdout '^\tmod\texample.com/cmd\tv1.0.0\t' # "latest", not from go.mod
-rm $GOPATH/bin/a
+rm $GKPATH/bin/a
 cd ..
 
 
 # 'go install -modfile=x.mod pkg@version' reports an error, but only if
 # -modfile is specified explicitly on the command line.
 cd m
-env GOFLAGS=-modfile=go.mod
+env GKFLAGS=-modfile=go.mod
 go install example.com/cmd/a@latest  # same as above
-env GOFLAGS=
+env GKFLAGS=
 ! go install -modfile=go.mod example.com/cmd/a@latest
 stderr '^gecko: -modfile cannot be used with commands that ignore the current module$'
 cd ..
@@ -48,18 +48,18 @@ cd ..
 # With a proxy, the two cases are indistinguishable.
 go install rsc.io/fortune@v1.0.0
 stderr '^gecko: found rsc.io/quote in rsc.io/quote v1.5.2$'
-exists $GOPATH/bin/fortune$GOEXE
-! exists $GOPATH/pkg/mod/rsc.io/fortune@v1.0.0/go.mod # no go.mod file
-go version -m $GOPATH/bin/fortune$GOEXE
+exists $GKPATH/bin/fortune$GKEXE
+! exists $GKPATH/pkg/mod/rsc.io/fortune@v1.0.0/go.mod # no go.mod file
+go version -m $GKPATH/bin/fortune$GKEXE
 stdout '^\tdep\trsc.io/quote\tv1.5.2\t' # latest version of fortune's dependency
-rm $GOPATH/bin
+rm $GKPATH/bin
 
 
 # 'go install dir@version' works like a normal 'go install' command if
 # dir is a relative or absolute path.
-env GO111MODULE=on
+env GK111MODULE=on
 go mod download rsc.io/fortune@v1.0.0
-! go install $GOPATH/pkg/mod/rsc.io/fortune@v1.0.0
+! go install $GKPATH/pkg/mod/rsc.io/fortune@v1.0.0
 stderr '^gecko: go\.mod file not found in current directory or any parent directory; see ''gecko help modules''$'
 ! go install ../pkg/mod/rsc.io/fortune@v1.0.0
 stderr '^gecko: go\.mod file not found in current directory or any parent directory; see ''gecko help modules''$'
@@ -67,17 +67,17 @@ mkdir tmp
 cd tmp
 go mod init tmp
 go mod edit -require=rsc.io/fortune@v1.0.0
-! go install -mod=readonly $GOPATH/pkg/mod/rsc.io/fortune@v1.0.0
+! go install -mod=readonly $GKPATH/pkg/mod/rsc.io/fortune@v1.0.0
 stderr '^missing go\.sum entry for module providing package rsc\.io/fortune; to add:\n\tgecko mod download rsc\.io/fortune$'
 ! go install -mod=readonly ../../pkg/mod/rsc.io/fortune@v1.0.0
 stderr '^missing go\.sum entry for module providing package rsc\.io/fortune; to add:\n\tgecko mod download rsc\.io/fortune$'
 go get rsc.io/fortune@v1.0.0
-go install -mod=readonly $GOPATH/pkg/mod/rsc.io/fortune@v1.0.0
-exists $GOPATH/bin/fortune$GOEXE
+go install -mod=readonly $GKPATH/pkg/mod/rsc.io/fortune@v1.0.0
+exists $GKPATH/bin/fortune$GKEXE
 cd ..
 rm tmp
-rm $GOPATH/bin
-env GO111MODULE=auto
+rm $GKPATH/bin
+env GK111MODULE=auto
 
 # 'go install pkg@version' reports errors for meta packages, std packages,
 # and directories.
@@ -89,7 +89,7 @@ stderr '^gecko: fmt@v1.0.0: argument must not be a package in the standard libra
 stderr '^gecko: example.com//cmd/a@v1.0.0: argument must be a clean package path$'
 ! go install example.com/cmd/a@v1.0.0 ./x@v1.0.0
 stderr '^gecko: ./x@v1.0.0: argument must be a package path, not a relative path$'
-! go install example.com/cmd/a@v1.0.0 $GOPATH/src/x@v1.0.0
+! go install example.com/cmd/a@v1.0.0 $GKPATH/src/x@v1.0.0
 stderr '^gecko: '$WORK'[/\\]gopath/src/x@v1.0.0: argument must be a package path, not an absolute path$'
 ! go install example.com/cmd/a@v1.0.0 cmd/...@v1.0.0
 stderr '^package cmd/go not provided by module example.com/cmd@v1.0.0$'
@@ -97,14 +97,14 @@ stderr '^package cmd/go not provided by module example.com/cmd@v1.0.0$'
 # 'go install pkg@version' should accept multiple arguments but report an error
 # if the version suffixes are different, even if they refer to the same version.
 go install example.com/cmd/a@v1.0.0 example.com/cmd/b@v1.0.0
-exists $GOPATH/bin/a$GOEXE
-exists $GOPATH/bin/b$GOEXE
-rm $GOPATH/bin
+exists $GKPATH/bin/a$GKEXE
+exists $GKPATH/bin/b$GKEXE
+rm $GKPATH/bin
 
-env GO111MODULE=on
+env GK111MODULE=on
 go list -m example.com/cmd@latest
 stdout '^example.com/cmd v1.0.0$'
-env GO111MODULE=auto
+env GK111MODULE=auto
 
 ! go install example.com/cmd/a@v1.0.0 example.com/cmd/b@latest
 stderr '^gecko: example.com/cmd/b@latest: all arguments must refer to packages in the same module at the same version \(@v1.0.0\)$'
@@ -132,9 +132,9 @@ stderr 'err[/\\]err.go:3:9: undefined: DoesNotCompile( .*)?$'
 cd ..
 
 go install example.com/cmd/...@v1.0.0
-exists $GOPATH/bin/a$GOEXE
-exists $GOPATH/bin/b$GOEXE
-rm $GOPATH/bin
+exists $GKPATH/bin/a$GKEXE
+exists $GKPATH/bin/b$GKEXE
+rm $GKPATH/bin
 
 # If a wildcard matches no packages, we should see a warning.
 ! go install example.com/cmd/nomatch...@v1.0.0
@@ -165,18 +165,18 @@ stderr '^gecko: example.com/cmd/a@v1.0.0-newerself: version constraints conflict
 
 # 'go install pkg@version' will only match a retracted version if it's
 # explicitly requested.
-env GO111MODULE=on
+env GK111MODULE=on
 go list -m -versions example.com/cmd
 ! stdout v1.9.0
 go list -m -versions -retracted example.com/cmd
 stdout v1.9.0
 go install example.com/cmd/a@latest
-go version -m $GOPATH/bin/a$GOEXE
+go version -m $GKPATH/bin/a$GKEXE
 stdout '^\tmod\texample.com/cmd\tv1.0.0\t'
 go install example.com/cmd/a@v1.9.0
-go version -m $GOPATH/bin/a$GOEXE
+go version -m $GKPATH/bin/a$GKEXE
 stdout '^\tmod\texample.com/cmd\tv1.9.0\t'
-env GO111MODULE=
+env GK111MODULE=
 
 # 'go install pkg@version' succeeds when -mod=readonly is set explicitly.
 # Verifies #43278.
@@ -184,7 +184,7 @@ go install -mod=readonly example.com/cmd/a@v1.0.0
 
 
 # 'go install pkg@version' should show a deprecation message if the module is deprecated.
-env GO111MODULE=on
+env GK111MODULE=on
 go install example.com/deprecated/a/cmd/a@latest
 stderr '^gecko: module example.com/deprecated/a is deprecated: in example.com/deprecated/a@v1.9.0$'
 go install example.com/deprecated/a/cmd/a@v1.0.0

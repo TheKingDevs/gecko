@@ -2,7 +2,7 @@
 go list -f '{{.Target}}' fmt
 ! stdout .
 go list -export -f '{{.Export}}' fmt
-stdout $GOCACHE
+stdout $GKCACHE
 
 # With GODEBUG=installgoroot=all, fmt has a target.
 # (Though we can't try installing it without modifying goroot).
@@ -22,4 +22,4 @@ env CGO_ENABLED=0
 go list -f '{{.Target}}' runtime/cgo
 ! stdout .
 go list -export -f '{{.Export}}' runtime/cgo
-stdout $GOCACHE
+stdout $GKCACHE

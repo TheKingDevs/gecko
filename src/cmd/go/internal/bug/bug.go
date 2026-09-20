@@ -113,8 +113,8 @@ func printGoEnv(ld *modload.Loader, w io.Writer) {
 
 func printGoDetails(w io.Writer) {
 	gocmd := filepath.Join(runtime.GOROOT(), "bin", "gecko")
-	printCmdOut(w, "GOROOT/bin/gecko version: ", gocmd, "version")
-	printCmdOut(w, "GOROOT/bin/gecko tool compile -V: ", gocmd, "tool", "compile", "-V")
+	printCmdOut(w, "GKROOT/bin/gecko version: ", gocmd, "version")
+	printCmdOut(w, "GKROOT/bin/gecko tool compile -V: ", gocmd, "tool", "compile", "-V")
 }
 
 func printOSDetails(w io.Writer) {

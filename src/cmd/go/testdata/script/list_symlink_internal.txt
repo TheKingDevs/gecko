@@ -1,11 +1,11 @@
 [!symlink] skip
-env GO111MODULE=off
+env GK111MODULE=off
 
 mkdir $WORK/tmp/gopath/src/dir1/internal/v
 cp p.go $WORK/tmp/gopath/src/dir1/p.go
 cp v.go $WORK/tmp/gopath/src/dir1/internal/v/v.go
 symlink $WORK/tmp/symdir1 -> $WORK/tmp/gopath/src/dir1
-env GOPATH=$WORK/tmp/gopath
+env GKPATH=$WORK/tmp/gopath
 cd $WORK/tmp/symdir1
 go list -f '{{.Root}}' .
 stdout '^'$WORK/tmp/gopath'$'

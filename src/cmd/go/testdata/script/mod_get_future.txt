@@ -1,7 +1,7 @@
 env TESTGO_VERSION=go1.21
-env GOTOOLCHAIN=local
+env GKTOOLCHAIN=local
 ! go mod download rsc.io/future@v1.0.0
-stderr '^gecko: rsc.io/future@v1.0.0 requires go >= 1.999 \(running go 1.21; GOTOOLCHAIN=local\)$'
+stderr '^gecko: rsc.io/future@v1.0.0 requires go >= 1.999 \(running go 1.21; GKTOOLCHAIN=local\)$'
 
 -- go.mod --
 module m

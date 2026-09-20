@@ -36,7 +36,7 @@ func getCCAndCCFLAGS(t *testing.T, env []string) (string, []string) {
 	}
 	cc := strings.TrimSpace(string(ccb))
 
-	cmd = testenv.Command(t, goTool, "env", "GOGCCFLAGS")
+	cmd = testenv.Command(t, goTool, "env", "GKGCCFLAGS")
 	cmd.Env = env
 	cflagsb, err := cmd.Output()
 	if err != nil {
@@ -81,8 +81,8 @@ func TestSectionsWithSameName(t *testing.T) {
 
 	dir := t.TempDir()
 
-	gopath := filepath.Join(dir, "GOPATH")
-	gopathEnv := "GOPATH=" + gopath
+	gopath := filepath.Join(dir, "GKPATH")
+	gopathEnv := "GKPATH=" + gopath
 	env := append(os.Environ(), gopathEnv)
 
 	if err := os.WriteFile(filepath.Join(dir, "go.mod"), []byte("module elf_test\n"), 0666); err != nil {
@@ -151,8 +151,8 @@ func TestMinusRSymsWithSameName(t *testing.T) {
 
 	dir := t.TempDir()
 
-	gopath := filepath.Join(dir, "GOPATH")
-	gopathEnv := "GOPATH=" + gopath
+	gopath := filepath.Join(dir, "GKPATH")
+	gopathEnv := "GKPATH=" + gopath
 	env := append(os.Environ(), gopathEnv)
 
 	if err := os.WriteFile(filepath.Join(dir, "go.mod"), []byte("module elf_test\n"), 0666); err != nil {

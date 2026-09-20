@@ -28,7 +28,7 @@ func TestStackCheckOutput(t *testing.T) {
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "build", "-o", os.DevNull, "./testdata/stackcheck")
 	// The rules for computing frame sizes on all of the
 	// architectures are complicated, so just do this on amd64.
-	cmd.Env = append(os.Environ(), "GOARCH=amd64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=amd64", "GKOS=linux")
 	outB, err := cmd.CombinedOutput()
 
 	if err == nil {

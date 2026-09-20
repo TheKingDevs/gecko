@@ -293,7 +293,7 @@ func subdir() (pkgpath string, underGoRoot bool, err error) {
 		}
 	}
 	return "", false, fmt.Errorf(
-		"working directory %q is not in either GOROOT(%q) or GOPATH(%q)",
+		"working directory %q is not in either GKROOT(%q) or GKPATH(%q)",
 		cwd,
 		runtime.GOROOT(),
 		build.Default.GOPATH,

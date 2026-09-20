@@ -47,7 +47,7 @@ TEXT asmtest(SB),DUPOK|NOSPLIT,$0
 	MOVD $2199090364416, R5         // 60058001
 	// Hex constant 0xFFFFFE0004000000
 	MOVD $-2198956146688, R5        // 38a08001
-	// TODO: On GOPPC64={power8,power9}, this is preprocessed into MOVD $-1, R5; RLDC R5, $33, $63, R5.
+	// TODO: On GKPPC64={power8,power9}, this is preprocessed into MOVD $-1, R5; RLDC R5, $33, $63, R5.
 	//       This only captures the MOVD. Should the RLDC be appended to the encoding by the test?
 	// Hex constant 0xFFFFFFFE00000001
 	MOVD $-8589934591, R5           // 38a0ffff or 0602000038a00001

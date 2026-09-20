@@ -1,9 +1,9 @@
-env GO111MODULE=off
-env GOPATH=$WORK/gopath/src/shadow/root1${:}$WORK/gopath/src/shadow/root2
+env GK111MODULE=off
+env GKPATH=$WORK/gopath/src/shadow/root1${:}$WORK/gopath/src/shadow/root2
 
 # The math in root1 is not "math" because the standard math is.
 go list -f '({{.ImportPath}}) ({{.ConflictDir}})' ./shadow/root1/src/math
-stdout '^\(.*(\\|/)src(\\|/)shadow(\\|/)root1(\\|/)src(\\|/)math\) \('$GOROOT'(\\|/)?src(\\|/)math\)$'
+stdout '^\(.*(\\|/)src(\\|/)shadow(\\|/)root1(\\|/)src(\\|/)math\) \('$GKROOT'(\\|/)?src(\\|/)math\)$'
 
 # The foo in root1 is "foo".
 go list -f '({{.ImportPath}}) ({{.ConflictDir}})' ./shadow/root1/src/foo

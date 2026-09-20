@@ -22,7 +22,7 @@ func init() {
 	// which breaks many tests here - they can't use non-git, non-hg VCS at all!
 	// Change to fully permissive.
 	// The tests of the GOVCS setting itself are in ../../testdata/script/govcs.txt.
-	os.Setenv("GOVCS", "*:all")
+	os.Setenv("GKVCS", "*:all")
 }
 
 // Test that RepoRootForImportPath determines the correct RepoRoot for a given importPath.
@@ -639,21 +639,21 @@ var govcsErrors = []struct {
 	s   string
 	err string
 }{
-	{`,`, `empty entry in GOVCS`},
-	{`,x`, `empty entry in GOVCS`},
-	{`x,`, `malformed entry in GOVCS (missing colon): "x"`},
-	{`x:y,`, `empty entry in GOVCS`},
-	{`x`, `malformed entry in GOVCS (missing colon): "x"`},
-	{`x:`, `empty VCS list in GOVCS: "x:"`},
-	{`x:|`, `empty VCS name in GOVCS: "x:|"`},
-	{`x:y|`, `empty VCS name in GOVCS: "x:y|"`},
-	{`x:|y`, `empty VCS name in GOVCS: "x:|y"`},
-	{`x:y,z:`, `empty VCS list in GOVCS: "z:"`},
-	{`x:y,z:|`, `empty VCS name in GOVCS: "z:|"`},
-	{`x:y,z:|w`, `empty VCS name in GOVCS: "z:|w"`},
-	{`x:y,z:w|`, `empty VCS name in GOVCS: "z:w|"`},
-	{`x:y,z:w||v`, `empty VCS name in GOVCS: "z:w||v"`},
-	{`x:y,x:z`, `unreachable pattern in GOVCS: "x:z" after "x:y"`},
+	{`,`, `empty entry in GKVCS`},
+	{`,x`, `empty entry in GKVCS`},
+	{`x,`, `malformed entry in GKVCS (missing colon): "x"`},
+	{`x:y,`, `empty entry in GKVCS`},
+	{`x`, `malformed entry in GKVCS (missing colon): "x"`},
+	{`x:`, `empty VCS list in GKVCS: "x:"`},
+	{`x:|`, `empty VCS name in GKVCS: "x:|"`},
+	{`x:y|`, `empty VCS name in GKVCS: "x:y|"`},
+	{`x:|y`, `empty VCS name in GKVCS: "x:|y"`},
+	{`x:y,z:`, `empty VCS list in GKVCS: "z:"`},
+	{`x:y,z:|`, `empty VCS name in GKVCS: "z:|"`},
+	{`x:y,z:|w`, `empty VCS name in GKVCS: "z:|w"`},
+	{`x:y,z:w|`, `empty VCS name in GKVCS: "z:w|"`},
+	{`x:y,z:w||v`, `empty VCS name in GKVCS: "z:w||v"`},
+	{`x:y,x:z`, `unreachable pattern in GKVCS: "x:z" after "x:y"`},
 }
 
 func TestGOVCSErrors(t *testing.T) {

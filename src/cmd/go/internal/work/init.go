@@ -38,11 +38,11 @@ var cfgChangedEnv []string
 
 func makeCfgChangedEnv() []string {
 	var env []string
-	if cfg.Getenv("GOOS") != cfg.Goos {
-		env = append(env, "GOOS="+cfg.Goos)
+	if cfg.Getenv("GKOS") != cfg.Goos {
+		env = append(env, "GKOS="+cfg.Goos)
 	}
-	if cfg.Getenv("GOARCH") != cfg.Goarch {
-		env = append(env, "GOARCH="+cfg.Goarch)
+	if cfg.Getenv("GKARCH") != cfg.Goarch {
+		env = append(env, "GKARCH="+cfg.Goarch)
 	}
 	if archenv, val, changed := cfg.GetArchEnv(); changed {
 		env = append(env, archenv+"="+val)
@@ -67,7 +67,7 @@ func BuildInit(ld *modload.Loader) {
 		base.Fatal(err)
 	}
 	if from, replaced := fsys.DirContainsReplacement(cfg.GOMODCACHE); replaced {
-		base.Fatalf("gecko: overlay contains a replacement for %s. Files beneath GOMODCACHE (%s) must not be replaced.", from, cfg.GOMODCACHE)
+		base.Fatalf("gecko: overlay contains a replacement for %s. Files beneath GKMODCACHE (%s) must not be replaced.", from, cfg.GOMODCACHE)
 	}
 
 	// Make sure -pkgdir is absolute, because we run commands

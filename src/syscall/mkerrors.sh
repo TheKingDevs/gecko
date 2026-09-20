@@ -13,7 +13,7 @@ export LC_CTYPE=C
 
 CC=${CC:-gcc}
 
-if [[ "$GOOS" -eq "solaris" ]]; then
+if [[ "$GKOS" -eq "solaris" ]]; then
 	# Assumes GNU versions of utilities in PATH.
 	export PATH=/usr/gnu/bin:$PATH
 fi

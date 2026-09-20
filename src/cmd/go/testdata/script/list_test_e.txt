@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # issue 25980: crash in go list -e -test
 go list -e -test -deps -f '{{.Error}}' p

@@ -1,6 +1,6 @@
 [!fuzz] skip
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # This test uses -vet=off to suppress vet, as vet's "tests" analyzer would
 # otherwise statically report the problems we are trying to observe dynamically.

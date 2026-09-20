@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 go list -e -f '{{.Incomplete}}' m/runbad1.go
 stdout true
@@ -15,7 +15,7 @@ stdout false
 go run m/runok.go
 
 cd m
-env GO111MODULE=on
+env GK111MODULE=on
 
 go list -e -f '{{.Incomplete}}' runbad1.go
 stdout true

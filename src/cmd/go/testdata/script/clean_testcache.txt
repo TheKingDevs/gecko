@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # go clean -testcache
 # should work (see golang.org/issue/29757).
@@ -14,7 +14,7 @@ stderr 'gecko: clean -testcache cannot be used with package arguments'
 # if the cache directory doesn't exist at all.
 # It should not write a testexpire.txt file, since there are no
 # test results that need to be invalidated in the first place.
-env GOCACHE=$WORK/nonexistent
+env GKCACHE=$WORK/nonexistent
 go clean -testcache
 ! exists $WORK/nonexistent
 

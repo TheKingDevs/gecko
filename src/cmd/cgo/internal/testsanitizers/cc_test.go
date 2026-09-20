@@ -104,11 +104,11 @@ func appendExperimentEnv(cmd *exec.Cmd, experiments []string) {
 	exps := strings.Join(experiments, ",")
 	for _, evar := range cmd.Env {
 		c := strings.SplitN(evar, "=", 2)
-		if c[0] == "GOEXPERIMENT" {
+		if c[0] == "GKEXPERIMENT" {
 			exps = c[1] + "," + exps
 		}
 	}
-	cmd.Env = append(cmd.Env, "GOEXPERIMENT="+exps)
+	cmd.Env = append(cmd.Env, "GKEXPERIMENT="+exps)
 }
 
 func appendASANOptions(cmd *exec.Cmd, opts ...string) {
@@ -162,7 +162,7 @@ func cc(ctx context.Context, args ...string) (*exec.Cmd, error) {
 		return nil, err
 	}
 
-	GOGCCFLAGS, err := goEnv("GOGCCFLAGS")
+	GOGCCFLAGS, err := goEnv("GKGCCFLAGS")
 	if err != nil {
 		return nil, err
 	}

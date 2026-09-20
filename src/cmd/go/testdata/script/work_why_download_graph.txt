@@ -2,22 +2,22 @@
 # TODO(bcmills): clarify the interaction with #44435
 
 go mod download rsc.io/quote
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.info
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.info
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
 grep '^rsc\.io/quote v1\.5\.2/go\.mod h1:' go.work.sum
 grep '^rsc\.io/quote v1\.5\.2 h1:' go.work.sum
 
 go clean -modcache
 rm go.work.sum
 go mod download
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.info
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
-exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
-! exists $GOPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.info
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.mod
+exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.2.zip
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.info
+! exists $GKPATH/pkg/mod/cache/download/rsc.io/quote/@v/v1.5.0.mod
 grep '^rsc\.io/quote v1\.5\.2/go\.mod h1:' go.work.sum
 grep '^rsc\.io/quote v1\.5\.2 h1:' go.work.sum
 

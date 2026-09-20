@@ -469,7 +469,7 @@ func d()
 	}
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "build", "-ldflags=-linkmode=internal")
 	cmd.Dir = tmpDir
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("Build failed: %v, output: %s", err, out)
@@ -477,7 +477,7 @@ func d()
 
 	// Check what trampolines exist.
 	cmd = testenv.Command(t, testenv.GoToolPath(t), "tool", "nm", filepath.Join(tmpDir, "riscvtramp"))
-	cmd.Env = append(os.Environ(), "GOARCH=riscv64", "GOOS=linux")
+	cmd.Env = append(os.Environ(), "GKARCH=riscv64", "GKOS=linux")
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("nm failure: %s\n%s\n", err, string(out))

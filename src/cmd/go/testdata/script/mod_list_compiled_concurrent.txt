@@ -3,8 +3,8 @@
 # Regression test for golang.org/issue/29667:
 # spurious 'failed to cache compiled Go files' errors.
 
-env GOCACHE=$WORK/gocache
-mkdir $GOCACHE
+env GKCACHE=$WORK/gocache
+mkdir $GKCACHE
 
 go list -json -compiled -test=false -export=false -deps=true -- . &
 go list -json -compiled -test=false -export=false -deps=true -- . &

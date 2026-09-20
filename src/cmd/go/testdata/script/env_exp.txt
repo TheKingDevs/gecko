@@ -1,17 +1,17 @@
-# Test GOEXPERIMENT variable
+# Test GKEXPERIMENT variable
 
-# go env shows default empty GOEXPERIMENT
+# go env shows default empty GKEXPERIMENT
 go env
-stdout GOEXPERIMENT=
+stdout GKEXPERIMENT=
 
 # go env shows valid experiments
-env GOEXPERIMENT=fieldtrack,staticlockranking
-go env GOEXPERIMENT
+env GKEXPERIMENT=fieldtrack,staticlockranking
+go env GKEXPERIMENT
 stdout '.*fieldtrack.*staticlockranking.*'
 go env
-stdout 'GOEXPERIMENT=.*fieldtrack.*staticlockranking.*'
+stdout 'GKEXPERIMENT=.*fieldtrack.*staticlockranking.*'
 
 # go env rejects unknown experiments
-env GOEXPERIMENT=bad
-! go env GOEXPERIMENT
-stderr 'unknown GOEXPERIMENT bad'
+env GKEXPERIMENT=bad
+! go env GKEXPERIMENT
+stderr 'unknown GKEXPERIMENT bad'

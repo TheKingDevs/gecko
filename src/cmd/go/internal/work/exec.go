@@ -314,7 +314,7 @@ func (b *Builder) buildActionID(a *Action) cache.ActionID {
 		fmt.Fprintf(h, "%s=%s\n", key, val)
 
 		if cfg.CleanGOEXPERIMENT != "" {
-			fmt.Fprintf(h, "GOEXPERIMENT=%q\n", cfg.CleanGOEXPERIMENT)
+			fmt.Fprintf(h, "GKEXPERIMENT=%q\n", cfg.CleanGOEXPERIMENT)
 		}
 
 		// TODO(rsc): Convince compiler team not to add more magic environment variables,
@@ -1951,7 +1951,7 @@ func (b *Builder) printLinkerConfig(h io.Writer, p *load.Package) {
 		fmt.Fprintf(h, "%s=%s\n", key, val)
 
 		if cfg.CleanGOEXPERIMENT != "" {
-			fmt.Fprintf(h, "GOEXPERIMENT=%q\n", cfg.CleanGOEXPERIMENT)
+			fmt.Fprintf(h, "GKEXPERIMENT=%q\n", cfg.CleanGOEXPERIMENT)
 		}
 
 		// The linker writes source file paths that refer to GOROOT,
@@ -1960,10 +1960,10 @@ func (b *Builder) printLinkerConfig(h io.Writer, p *load.Package) {
 		if cfg.BuildTrimpath {
 			gorootFinal = ""
 		}
-		fmt.Fprintf(h, "GOROOT=%s\n", gorootFinal)
+		fmt.Fprintf(h, "GKROOT=%s\n", gorootFinal)
 
 		// GO_EXTLINK_ENABLED controls whether the external linker is used.
-		fmt.Fprintf(h, "GO_EXTLINK_ENABLED=%s\n", cfg.Getenv("GO_EXTLINK_ENABLED"))
+		fmt.Fprintf(h, "GK_EXTLINK_ENABLED=%s\n", cfg.Getenv("GK_EXTLINK_ENABLED"))
 
 		// TODO(rsc): Do cgo settings and flags need to be included?
 		// Or external linker settings and flags?
@@ -2696,10 +2696,10 @@ func (b *Builder) ccompile(a *Action, outfile string, flags []string, file strin
 					toPath = p.ImportPath
 				} else if p.Goroot {
 					from = p.Root
-					toPath = "GOROOT"
+					toPath = "GKROOT"
 				} else {
 					from = p.Root
-					toPath = "GOPATH"
+					toPath = "GKPATH"
 				}
 			} else if m.Dir == "" {
 				// The module is in the vendor directory. Replace the entire vendor
@@ -2758,7 +2758,7 @@ func (b *Builder) ccompile(a *Action, outfile string, flags []string, file strin
 		}
 	}
 
-	if len(output) > 0 && err == nil && os.Getenv("GO_BUILDER_NAME") != "" {
+	if len(output) > 0 && err == nil && os.Getenv("GK_BUILDER_NAME") != "" {
 		output = append(output, "C compiler warning promoted to error on Go builders\n"...)
 		err = errors.New("warning promoted to error")
 	}
@@ -2873,9 +2873,9 @@ func (b *Builder) compilerCmd(compiler []string, incdir, workdir string) []strin
 		}
 		workdir = strings.TrimSuffix(workdir, string(filepath.Separator))
 		if b.gccSupportsFlag(compiler, "-ffile-prefix-map=a=b") {
-			a = append(a, "-ffile-prefix-map="+workdir+"=/tmp/go-build")
+			a = append(a, "-ffile-prefix-map="+workdir+"=/tmp/gecko-build")
 		} else {
-			a = append(a, "-fdebug-prefix-map="+workdir+"=/tmp/go-build")
+			a = append(a, "-fdebug-prefix-map="+workdir+"=/tmp/gecko-build")
 		}
 	}
 
@@ -4083,7 +4083,7 @@ func useResponseFile(path string, argLen int) bool {
 
 	// On the Go build system, use response files about 10% of the
 	// time, just to exercise this codepath.
-	isBuilder := os.Getenv("GO_BUILDER_NAME") != ""
+	isBuilder := os.Getenv("GK_BUILDER_NAME") != ""
 	if isBuilder && rand.Intn(10) == 0 {
 		return true
 	}

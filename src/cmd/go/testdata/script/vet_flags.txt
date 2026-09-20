@@ -27,20 +27,20 @@ go vet -n -- .
 
 [short] stop
 
-# Analyzer flags should be included from GOFLAGS, and should override
+# Analyzer flags should be included from GKFLAGS, and should override
 # the defaults.
 go vet .
-env GOFLAGS='-tags=buggy'
+env GKFLAGS='-tags=buggy'
 ! go vet .
 stderr 'possible Printf formatting directive'
 
-# Enabling one analyzer in GOFLAGS should disable the rest implicitly...
-env GOFLAGS='-tags=buggy -unsafeptr'
+# Enabling one analyzer in GKFLAGS should disable the rest implicitly...
+env GKFLAGS='-tags=buggy -unsafeptr'
 go vet .
 
 # ...but enabling one on the command line should not disable the analyzers
-# enabled via GOFLAGS.
-env GOFLAGS='-tags=buggy -printf'
+# enabled via GKFLAGS.
+env GKFLAGS='-tags=buggy -printf'
 ! go vet -unsafeptr
 stderr 'possible Printf formatting directive'
 
@@ -48,31 +48,31 @@ stderr 'possible Printf formatting directive'
 # and we shouldn't run the vet tool to discover them otherwise.
 # (Maybe someday we'll hard-code the analyzer flags for the default vet
 # tool to make this work, but not right now.)
-env GOFLAGS='-unsafeptr'
+env GKFLAGS='-unsafeptr'
 ! go list .
-stderr 'gecko: parsing \$GOFLAGS: unknown flag -unsafeptr'
-env GOFLAGS=
+stderr 'gecko: parsing \$GKFLAGS: unknown flag -unsafeptr'
+env GKFLAGS=
 
 # "go test" on a user package should by default enable an explicit list of analyzers.
 go test -n -run=none .
-stderr '[/\\]vet'$GOEXE'["]? .* -errorsas .* ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
+stderr '[/\\]vet'$GKEXE'["]? .* -errorsas .* ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
 
 # An explicitly-empty -vet argument should imply the default analyzers.
 go test -n -vet= -run=none .
-stderr '[/\\]vet'$GOEXE'["]? .* -errorsas .* ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
+stderr '[/\\]vet'$GKEXE'["]? .* -errorsas .* ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
 
 # "go test" on a standard package should by default disable an explicit list.
 go test -a -n -run=none encoding/binary
-stderr '[/\\]vet'$GOEXE'["]? -unsafeptr=false -unreachable=false ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
+stderr '[/\\]vet'$GKEXE'["]? -unsafeptr=false -unreachable=false ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
 
 go test -a -n -vet= -run=none encoding/binary
-stderr '[/\\]vet'$GOEXE'["]? -unsafeptr=false -unreachable=false ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
+stderr '[/\\]vet'$GKEXE'["]? -unsafeptr=false -unreachable=false ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
 
 # Both should allow users to override via the -vet flag.
 go test -a -n -vet=unreachable -run=none .
-stderr '[/\\]vet'$GOEXE'["]? -unreachable ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
+stderr '[/\\]vet'$GKEXE'["]? -unreachable ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
 go test -a -n -vet=unreachable -run=none encoding/binary
-stderr '[/\\]vet'$GOEXE'["]? -unreachable ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
+stderr '[/\\]vet'$GKEXE'["]? -unreachable ["]?\$WORK[/\\][^ ]*[/\\]vet\.cfg'
 
 -- go.mod --
 module example.com/x

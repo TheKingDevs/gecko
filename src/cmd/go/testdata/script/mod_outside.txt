@@ -31,7 +31,7 @@ go list -deps cmd
 stdout '^fmt$'
 stdout '^cmd/go$'
 
-go list $GOROOT/src/fmt
+go list $GKROOT/src/fmt
 stdout '^fmt$'
 
 # 'go list' should work with file arguments.
@@ -101,10 +101,10 @@ stderr '^gecko: go.mod file not found in current directory or any parent directo
 stderr 'no modules specified'
 
 # 'go mod download' should download exactly the requested module without dependencies.
-rm -r $GOPATH/pkg/mod/cache/download/example.com
+rm -r $GKPATH/pkg/mod/cache/download/example.com
 go mod download example.com/printversion@v1.0.0
-exists $GOPATH/pkg/mod/cache/download/example.com/printversion/@v/v1.0.0.zip
-! exists $GOPATH/pkg/mod/cache/download/example.com/version/@v/v1.0.0.zip
+exists $GKPATH/pkg/mod/cache/download/example.com/printversion/@v/v1.0.0.zip
+! exists $GKPATH/pkg/mod/cache/download/example.com/version/@v/v1.0.0.zip
 
 # 'go mod download all' should fail. "all" is not meaningful outside of a module.
 ! go mod download all
@@ -144,8 +144,8 @@ go clean -modcache
 ! go get example.com/printversion@v1.0.0
 stderr '^gecko: go.mod file not found in current directory or any parent directory.$'
 stderr '^\t''go get'' is no longer supported outside a module.$'
-! exists $GOPATH/pkg/mod/example.com/printversion@v1.0.0
-! exists $GOPATH/pkg/mod/example.com/version@v1.0.0
+! exists $GKPATH/pkg/mod/example.com/printversion@v1.0.0
+! exists $GKPATH/pkg/mod/example.com/version@v1.0.0
 
 
 # 'go build' without arguments implicitly operates on the current directory, and should fail.
@@ -191,9 +191,9 @@ stderr 'doc: no required module provides package example.com/version: go.mod fil
 
 # 'go install' with a version should succeed if all constraints are met.
 # See mod_install_pkg_version.
-rm $GOPATH/bin
+rm $GKPATH/bin
 go install example.com/printversion@v0.1.0
-exists $GOPATH/bin/printversion$GOEXE
+exists $GKPATH/bin/printversion$GKEXE
 
 # 'go install' should fail if a package argument must be resolved to a module.
 ! go install example.com/printversion

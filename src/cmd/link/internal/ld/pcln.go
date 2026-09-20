@@ -990,8 +990,8 @@ func (ctxt *Link) pclntab(container loader.Bitmap) *pclntab {
 }
 
 func expandGoroot(s string) string {
-	const n = len("$GOROOT")
-	if len(s) >= n+1 && s[:n] == "$GOROOT" && (s[n] == '/' || s[n] == '\\') {
+	const n = len("$GKROOT")
+	if len(s) >= n+1 && s[:n] == "$GKROOT" && (s[n] == '/' || s[n] == '\\') {
 		if final := buildcfg.GOROOT; final != "" {
 			return filepath.ToSlash(filepath.Join(final, s[n:]))
 		}

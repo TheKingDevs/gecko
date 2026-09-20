@@ -1,6 +1,6 @@
 [!cgo] skip
 
-env GOCACHE=$WORK/gocache  # Looking for compile flags, so need a clean cache.
+env GKCACHE=$WORK/gocache  # Looking for compile flags, so need a clean cache.
 go build -x -n main.go
 stderr '"-I[^"]+c flags"' # find quoted c flags
 ! stderr '"-I[^"]+c flags".*"-I[^"]+c flags"' # don't find too many quoted c flags per line

@@ -141,8 +141,8 @@ var _K = []uint64{
 
 func main() {
 	// https://github.com/mmcloughlin/avo/issues/450
-	os.Setenv("GOOS", "linux")
-	os.Setenv("GOARCH", "amd64")
+	os.Setenv("GKOS", "linux")
+	os.Setenv("GKARCH", "amd64")
 
 	Package("crypto/internal/fips140/sha512")
 	ConstraintExpr("!purego")

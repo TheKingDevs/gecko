@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 [!compiler:gc] skip
 
@@ -8,7 +8,7 @@ stdout net/http # from .TestImports
 
 # 'go list' should report standard-vendored packages by path.
 go list -f '{{.Dir}}' vendor/golang.org/x/net/http2/hpack
-stdout $GOROOT[/\\]src[/\\]vendor
+stdout $GKROOT[/\\]src[/\\]vendor
 
 # 'go list -test' should report vendored transitive dependencies of _test.go
 # imports in the Deps field, with a 'vendor' prefix on their import paths.

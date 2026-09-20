@@ -1,9 +1,9 @@
 [short] skip
 [!exec:hg] skip
 
-env GOPROXY=direct
-env GOSUMDB=off
-env GOMODCACHE=$WORK/modcache
+env GKPROXY=direct
+env GKSUMDB=off
+env GKMODCACHE=$WORK/modcache
 
 # go mod download vcstest/prefixtagtests should invoke hg, print origin info
 go mod download -x -json vcs-test.golang.org/hg/prefixtagtests.hg/sub@latest

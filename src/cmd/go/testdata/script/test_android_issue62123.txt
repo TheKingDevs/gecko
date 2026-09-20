@@ -1,4 +1,4 @@
-env GOOS=android GOARCH=amd64 CGO_ENABLED=0
+env GKOS=android GKARCH=amd64 CGO_ENABLED=0
 
 ! go build -o $devnull cmd/buildid
 stderr 'android/amd64 requires external \(cgo\) linking, but cgo is not enabled'
@@ -8,7 +8,7 @@ stderr 'android/amd64 requires external \(cgo\) linking, but cgo is not enabled'
 stderr '# os\nandroid/amd64 requires external \(cgo\) linking, but cgo is not enabled'
 ! stderr 'cannot find runtime/cgo'
 
-env GOOS=ios GOARCH=arm64 CGO_ENABLED=0
+env GKOS=ios GKARCH=arm64 CGO_ENABLED=0
 
 ! go build -o $devnull cmd/buildid
 stderr 'ios/arm64 requires external \(cgo\) linking, but cgo is not enabled'

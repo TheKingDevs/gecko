@@ -1,6 +1,6 @@
 [!git] skip
 
-env GOPROXY=direct
+env GKPROXY=direct
 
 # Control case: fetching a nested module at a tag that exists should
 # emit Origin metadata for that tag and commit, and the origin should

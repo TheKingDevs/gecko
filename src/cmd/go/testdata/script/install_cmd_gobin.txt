@@ -1,10 +1,10 @@
-# Check that commands in cmd are install to $GOROOT/bin, not $GOBIN.
+# Check that commands in cmd are install to $GKROOT/bin, not $GKBIN.
 # Verifies golang.org/issue/32674.
-env GOBIN=gobin
+env GKBIN=gobin
 mkdir gobin
 go list -f '{{.Target}}' cmd/go
-stdout $GOROOT${/}bin${/}go$GOEXE
+stdout $GKROOT${/}bin${/}go$GKEXE
 
-# Check that tools are installed to $GOTOOLDIR, not $GOBIN.
+# Check that tools are installed to $GKTOOLDIR, not $GKBIN.
 go list -f '{{.Target}}' cmd/compile
-stdout $GOROOT${/}pkg${/}tool${/}${GOOS}_${GOARCH}${/}compile$GOEXE
+stdout $GKROOT${/}pkg${/}tool${/}${GKOS}_${GKARCH}${/}compile$GKEXE

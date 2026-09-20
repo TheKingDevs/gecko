@@ -6,8 +6,8 @@
 [short] skip
 [GODEBUG:gocacheverify=1] skip
 
-# We're testing cache behavior, so start with a clean GOCACHE.
-env GOCACHE=$WORK/cache
+# We're testing cache behavior, so start with a clean GKCACHE.
+env GKCACHE=$WORK/cache
 
 # Create a project structure with multiple packages
 # proj/

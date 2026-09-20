@@ -1,7 +1,7 @@
 go get rsc.io/quote@v1.5.1
 go mod vendor
-env GOPATH=$WORK/empty
-env GOPROXY=file:///nonexist
+env GKPATH=$WORK/empty
+env GKPROXY=file:///nonexist
 
 go list -mod=vendor
 go list -mod=vendor -f '{{with .Module}}{{.Path}} {{.Version}}{{end}} {{.Dir}}' all

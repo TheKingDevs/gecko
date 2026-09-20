@@ -1,4 +1,4 @@
-# This is the case reported in issue #69203. Setting GO111MODULE
+# This is the case reported in issue #69203. Setting GK111MODULE
 # off sets the Go version used to determine default GODEBUG settings
 # to Go 1.20, flipping the httplaxcontentlength godebug's value to "1".
 # Doing so causes net/http.TestReadResponseErrors to fail.
@@ -16,13 +16,13 @@
 [short] skip 'runs go test'
 
 # Baseline: ensure TestReadResponseErrors fails with GODEBUG httplaxcontentlength=1.
-env GO111MODULE=off
+env GK111MODULE=off
 ! go test net/http -run=^TestReadResponseErrors$
 
 # Ensure that it passes without httplaxcontentlength=1.
-env GO111MODULE=on
+env GK111MODULE=on
 go test net/http -run=^TestReadResponseErrors$
 
 # Make sure that the previous cached pass isn't reused when setting httplaxcontentlength=1.
-env GO111MODULE=off
+env GK111MODULE=off
 ! go test net/http -run=^TestReadResponseErrors$

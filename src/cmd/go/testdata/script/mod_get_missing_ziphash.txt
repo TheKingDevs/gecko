@@ -5,8 +5,8 @@
 # With a tidy go.sum, go build succeeds. This also populates the module cache.
 cp go.sum.tidy go.sum
 go build -n use
-env GOPROXY=off
-env GOSUMDB=off
+env GKPROXY=off
+env GKSUMDB=off
 
 # Control case: if we delete the hash for rsc.io/quote v1.5.2,
 # 'go build' reports an error. 'go get' adds the sum.

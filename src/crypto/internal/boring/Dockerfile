@@ -51,16 +51,16 @@ RUN \
 	make && make install
 
 # Download, validate, unpack, and install Go.
-ARG GOARCH
+ARG GKARCH
 ENV GoV=1.18.1
 ENV GoHamd64=b3b815f47ababac13810fc6021eb73d65478e0b2db4b09d348eefad9581a2334
 ENV GoHarm64=56a91851c97fb4697077abbca38860f735c32b38993ff79b088dac46e4735633
 RUN \
-	eval GoH=\${GoH$GOARCH} && \
-	wget https://golang.org/dl/go$GoV.linux-$GOARCH.tar.gz && \
-	echo "$GoH go$GoV.linux-$GOARCH.tar.gz" >sha && sha256sum -c sha && \
-	tar -C /usr/local -xzf go$GoV.linux-$GOARCH.tar.gz && \
-	rm go$GoV.linux-$GOARCH.tar.gz && \
+	eval GoH=\${GoH$GKARCH} && \
+	wget https://golang.org/dl/go$GoV.linux-$GKARCH.tar.gz && \
+	echo "$GoH go$GoV.linux-$GKARCH.tar.gz" >sha && sha256sum -c sha && \
+	tar -C /usr/local -xzf go$GoV.linux-$GKARCH.tar.gz && \
+	rm go$GoV.linux-$GKARCH.tar.gz && \
 	ln -s /usr/local/go/bin/go /usr/local/bin/
 
 # Download, validate, and unpack BoringCrypto.

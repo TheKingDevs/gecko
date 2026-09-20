@@ -635,31 +635,31 @@ func parseGOVCS(s string) (govcsConfig, error) {
 	for item := range strings.SplitSeq(s, ",") {
 		item = strings.TrimSpace(item)
 		if item == "" {
-			return nil, fmt.Errorf("empty entry in GOVCS")
+			return nil, fmt.Errorf("empty entry in GKVCS")
 		}
 		pattern, list, found := strings.Cut(item, ":")
 		if !found {
-			return nil, fmt.Errorf("malformed entry in GOVCS (missing colon): %q", item)
+			return nil, fmt.Errorf("malformed entry in GKVCS (missing colon): %q", item)
 		}
 		pattern, list = strings.TrimSpace(pattern), strings.TrimSpace(list)
 		if pattern == "" {
-			return nil, fmt.Errorf("empty pattern in GOVCS: %q", item)
+			return nil, fmt.Errorf("empty pattern in GKVCS: %q", item)
 		}
 		if list == "" {
-			return nil, fmt.Errorf("empty VCS list in GOVCS: %q", item)
+			return nil, fmt.Errorf("empty VCS list in GKVCS: %q", item)
 		}
 		if search.IsRelativePath(pattern) {
-			return nil, fmt.Errorf("relative pattern not allowed in GOVCS: %q", pattern)
+			return nil, fmt.Errorf("relative pattern not allowed in GKVCS: %q", pattern)
 		}
 		if old := have[pattern]; old != "" {
-			return nil, fmt.Errorf("unreachable pattern in GOVCS: %q after %q", item, old)
+			return nil, fmt.Errorf("unreachable pattern in GKVCS: %q after %q", item, old)
 		}
 		have[pattern] = item
 		allowed := strings.Split(list, "|")
 		for i, a := range allowed {
 			a = strings.TrimSpace(a)
 			if a == "" {
-				return nil, fmt.Errorf("empty VCS name in GOVCS: %q", item)
+				return nil, fmt.Errorf("empty VCS name in GKVCS: %q", item)
 			}
 			allowed[i] = a
 		}
@@ -732,7 +732,7 @@ func checkGOVCS(vcs *Cmd, root string) error {
 	}
 
 	govcsOnce.Do(func() {
-		govcs, govcsErr = parseGOVCS(os.Getenv("GOVCS"))
+		govcs, govcsErr = parseGOVCS(os.Getenv("GKVCS"))
 		govcs = append(govcs, defaultGOVCS...)
 	})
 	if govcsErr != nil {
@@ -745,7 +745,7 @@ func checkGOVCS(vcs *Cmd, root string) error {
 		if private {
 			what = "private"
 		}
-		return fmt.Errorf("GOVCS disallows using %s for %s %s; see 'gecko help vcs'", vcs.Cmd, what, root)
+		return fmt.Errorf("GKVCS disallows using %s for %s %s; see 'gecko help vcs'", vcs.Cmd, what, root)
 	}
 
 	return nil
@@ -756,7 +756,7 @@ func checkGOVCS(vcs *Cmd, root string) error {
 // root path.
 func checkGOINSECURE(vcs *Cmd, repoURL, path string) error {
 	if !vcs.IsSecure(repoURL) && !module.MatchPrefixPatterns(cfg.GOINSECURE, path) {
-		return fmt.Errorf("go-import meta tag specifies repository URL %q with insecure scheme, but module path %q is not matched by the GOINSECURE environment variable; see 'gecko help environment'", repoURL, path)
+		return fmt.Errorf("go-import meta tag specifies repository URL %q with insecure scheme, but module path %q is not matched by the GKINSECURE environment variable; see 'gecko help environment'", repoURL, path)
 	}
 	return nil
 }

@@ -1,8 +1,8 @@
 [!symlink] skip
-env GO111MODULE=off
+env GK111MODULE=off
 
 # Issue 35941: suppress symlink warnings when running 'go list all'.
-symlink goproj/css -> $GOPATH/src/css
+symlink goproj/css -> $GKPATH/src/css
 
 go list all
 ! stderr 'warning: ignoring symlink'

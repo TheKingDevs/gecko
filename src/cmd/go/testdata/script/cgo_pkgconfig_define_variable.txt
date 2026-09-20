@@ -1,7 +1,7 @@
 [!cgo] skip
 
-go build -o $WORK/pkg-config$GOEXE ./pkgconfig
-env PKG_CONFIG=$WORK/pkg-config$GOEXE
+go build -o $WORK/pkg-config$GKEXE ./pkgconfig
+env PKG_CONFIG=$WORK/pkg-config$GKEXE
 go build ./p
 
 -- go.mod --

@@ -786,7 +786,7 @@ index2to16next:
 	BGT        notfound        // If at end, then not found
 	VSLDOI     $1, V1, V10, V1 // Shift string left by 1 byte
 	BR         index2to16next  // Check the next partial string
-#endif // Tail processing if GOPPC64!=power10
+#endif // Tail processing if GKPPC64!=power10
 
 index17plus:
 	CMP      R6, $32       // Check if 17 < len(sep) <= 32

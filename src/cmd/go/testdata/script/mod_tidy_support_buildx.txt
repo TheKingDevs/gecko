@@ -2,13 +2,13 @@
 # commands tidy executes.
 # Verifies golang.org/issue/35849
 
-rm $GOPATH/pkg/mod/cache/download/rsc.io/quote
+rm $GKPATH/pkg/mod/cache/download/rsc.io/quote
 go mod tidy
-! stderr 'get '$GOPROXY
+! stderr 'get '$GKPROXY
 
-rm $GOPATH/pkg/mod/cache/download/rsc.io/quote
+rm $GKPATH/pkg/mod/cache/download/rsc.io/quote
 go mod tidy -x
-stderr 'get '$GOPROXY
+stderr 'get '$GKPROXY
 
 -- go.mod --
 module example.com/mod

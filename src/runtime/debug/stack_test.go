@@ -80,15 +80,15 @@ func TestStack(t *testing.T) {
 	// (for whatever value of GOROOT is baked into the binary, not the one
 	// that may be set in the environment).
 	fileGoroot := ""
-	if envGoroot := os.Getenv("GOROOT"); envGoroot != "" {
+	if envGoroot := os.Getenv("GKROOT"); envGoroot != "" {
 		// Since GOROOT is set explicitly in the environment, we can't be certain
 		// that it is the same GOROOT value baked into the binary, and we can't
 		// change the value in-process because runtime.GOROOT uses the value from
 		// initial (not current) environment. Spawn a subprocess to determine the
 		// real baked-in GOROOT.
-		t.Logf("found GOROOT %q from environment; checking embedded GOROOT value", envGoroot)
+		t.Logf("found GKROOT %q from environment; checking embedded GKROOT value", envGoroot)
 		cmd := exec.Command(testenv.Executable(t))
-		cmd.Env = append(os.Environ(), "GOROOT=", "GO_RUNTIME_DEBUG_TEST_ENTRYPOINT=dumpgoroot")
+		cmd.Env = append(os.Environ(), "GKROOT=", "GO_RUNTIME_DEBUG_TEST_ENTRYPOINT=dumpgoroot")
 		out, err := cmd.Output()
 		if err != nil {
 			t.Fatal(err)

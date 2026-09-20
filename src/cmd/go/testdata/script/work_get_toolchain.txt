@@ -1,7 +1,7 @@
 # go get should update the go line in go.work
 env TESTGO_VERSION=go1.21
 env TESTGO_VERSION_SWITCH=switch
-env GOTOOLCHAIN=auto
+env GKTOOLCHAIN=auto
 cp go.mod.new go.mod
 cp go.work.new go.work
 go get rsc.io/needgo121 rsc.io/needgo122 rsc.io/needgo123 rsc.io/needall

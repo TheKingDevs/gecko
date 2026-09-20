@@ -21,9 +21,9 @@ func FetchModule(t *testing.T, module, version string) string {
 
 	// If the default GOMODCACHE doesn't exist, use a temporary directory
 	// instead. (For example, run.bash sets GOPATH=/nonexist-gopath.)
-	out, err := testenv.CleanCmdEnv(testenv.Command(t, testenv.GoToolPath(t), "env", "GOMODCACHE")).Output()
+	out, err := testenv.CleanCmdEnv(testenv.Command(t, testenv.GoToolPath(t), "env", "GKMODCACHE")).Output()
 	if err != nil {
-		t.Errorf("%s env GOMODCACHE: %v\n%s", testenv.GoToolPath(t), err, out)
+		t.Errorf("%s env GKMODCACHE: %v\n%s", testenv.GoToolPath(t), err, out)
 		if ee, ok := err.(*exec.ExitError); ok {
 			t.Logf("%s", ee.Stderr)
 		}
@@ -36,9 +36,9 @@ func FetchModule(t *testing.T, module, version string) string {
 		}
 	}
 	if !modcacheOk {
-		t.Setenv("GOMODCACHE", t.TempDir())
+		t.Setenv("GKMODCACHE", t.TempDir())
 		// Allow t.TempDir() to clean up subdirectories.
-		t.Setenv("GOFLAGS", os.Getenv("GOFLAGS")+" -modcacherw")
+		t.Setenv("GKFLAGS", os.Getenv("GKFLAGS")+" -modcacherw")
 	}
 
 	t.Logf("fetching %s@%s\n", module, version)

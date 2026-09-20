@@ -2,8 +2,8 @@
 [short] skip
 
 # Testing hg->module converter's generation of +incompatible tags; turn off proxy.
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 
 # v1.2.0
 go get ...test.hg@07462d

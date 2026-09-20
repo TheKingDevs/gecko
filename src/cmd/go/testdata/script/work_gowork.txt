@@ -1,11 +1,11 @@
-env GOWORK=stop.work
+env GKWORK=stop.work
 ! go list a # require absolute path
 ! stderr panic
-env GOWORK=doesnotexist
+env GKWORK=doesnotexist
 ! go list a
 ! stderr panic
 
-env GOWORK=$GOPATH/src/stop.work
+env GKWORK=$GKPATH/src/stop.work
 go list -n a
 go build -n a
 go test -n a

@@ -188,10 +188,10 @@ func (cdr *CounterDataReader) readArgs() error {
 			cdr.osargs = append(cdr.osargs, arg)
 		}
 	}
-	if goos, ok := cdr.args["GOOS"]; ok {
+	if goos, ok := cdr.args["GKOS"]; ok {
 		cdr.goos = goos
 	}
-	if goarch, ok := cdr.args["GOARCH"]; ok {
+	if goarch, ok := cdr.args["GKARCH"]; ok {
 		cdr.goarch = goarch
 	}
 	return nil

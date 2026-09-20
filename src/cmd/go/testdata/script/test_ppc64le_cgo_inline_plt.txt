@@ -10,7 +10,7 @@
 # ignore it if binutils does not support the relocs.
 [!compiler:gc] skip
 [!cgo] skip
-[!GOARCH:ppc64le] skip
+[!GKARCH:ppc64le] skip
 
 env CGO_CFLAGS='-fno-plt -O2 -g'
 

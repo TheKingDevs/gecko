@@ -47,10 +47,10 @@ func (a *argstate) ArgsSummary() map[string]string {
 		}
 	}
 	if a.state.goos != "" {
-		m["GOOS"] = a.state.goos
+		m["GKOS"] = a.state.goos
 	}
 	if a.state.goarch != "" {
-		m["GOARCH"] = a.state.goarch
+		m["GKARCH"] = a.state.goarch
 	}
 	return m
 }

@@ -328,7 +328,7 @@ func lookupGorootExport(pkgDir string) (string, error) {
 			listOnce.Do(func() {
 				cmd := exec.Command(filepath.Join(build.Default.GOROOT, "bin", "gecko"), "list", "-export", "-f", "{{.Export}}", pkgDir)
 				cmd.Dir = build.Default.GOROOT
-				cmd.Env = append(os.Environ(), "PWD="+cmd.Dir, "GOROOT="+build.Default.GOROOT)
+				cmd.Env = append(os.Environ(), "PWD="+cmd.Dir, "GKROOT="+build.Default.GOROOT)
 				var output []byte
 				output, err = cmd.Output()
 				if err != nil {

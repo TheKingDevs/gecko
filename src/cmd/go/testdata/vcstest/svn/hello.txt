@@ -6,8 +6,8 @@ chmod 0755 hooks/pre-revprop-change
 
 env ROOT=$PWD
 cd .checkout
-[GOOS:windows] svn checkout file:///$ROOT .
-[!GOOS:windows] svn checkout file://$ROOT .
+[GKOS:windows] svn checkout file:///$ROOT .
+[!GKOS:windows] svn checkout file://$ROOT .
 
 svn add hello.go
 svn commit --file MSG
@@ -17,7 +17,7 @@ svn propset svn:date '2017-09-22T01:12:45.861368Z' --revprop -r1
 svn update
 svn log --xml
 
-[GOOS:windows] replace '\n' '\r\n' .svn-log
+[GKOS:windows] replace '\n' '\r\n' .svn-log
 cmp stdout .svn-log
 
 -- .checkout/MSG --

@@ -1,16 +1,16 @@
-# This test covers the HTTP authentication mechanism over GOAUTH by using a custom authenticator.
+# This test covers the HTTP authentication mechanism over GKAUTH by using a custom authenticator.
 # See golang.org/issue/26232
 
 [short] skip 'runs build to create authenticators'
 
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 mkdir $WORK/bin
 env PATH=$WORK/bin${:}$PATH
 
 # Without credentials, downloading a module from a path that requires HTTPS
 # basic auth should fail.
-env GOAUTH=off
+env GKAUTH=off
 cp go.mod.orig go.mod
 ! go get vcs-test.golang.org/auth/or401
 stderr '^\tserver response: ACCESS DENIED, buddy$'
@@ -19,9 +19,9 @@ stderr '^\tserver response: ACCESS DENIED, buddy$'
 stderr '^\tserver response: ACCESS DENIED, buddy$'
 
 # Initial invocation of authenticator is successful.
-go build -o $WORK/bin/basic$GOEXE scripts/basic.go
+go build -o $WORK/bin/basic$GKEXE scripts/basic.go
 # With credentials from the binary, it should succeed.
-env GOAUTH='basic'$GOEXE
+env GKAUTH='basic'$GKEXE
 cp go.mod.orig go.mod
 go get vcs-test.golang.org/auth/or401
 # go imports should resolve correctly as well.
@@ -30,9 +30,9 @@ go list all
 stdout vcs-test.golang.org/auth/or401
 
 # Second invocation of authenticator is successful.
-go build -o $WORK/bin/reinvocation$GOEXE scripts/reinvocation.go
+go build -o $WORK/bin/reinvocation$GKEXE scripts/reinvocation.go
 # With credentials from the binary, it should succeed.
-env GOAUTH='reinvocation'$GOEXE
+env GKAUTH='reinvocation'$GKEXE
 cp go.mod.orig go.mod
 go get vcs-test.golang.org/auth/or401
 # go imports should resolve correctly as well.
@@ -41,9 +41,9 @@ go list all
 stdout vcs-test.golang.org/auth/or401
 
 # Authenticator can parse arguments correctly.
-go build -o $WORK/bin/arguments$GOEXE scripts/arguments.go
+go build -o $WORK/bin/arguments$GKEXE scripts/arguments.go
 # With credentials from the binary, it should succeed.
-env GOAUTH='arguments'$GOEXE' --arg1 "value with spaces"'
+env GKAUTH='arguments'$GKEXE' --arg1 "value with spaces"'
 cp go.mod.orig go.mod
 go get vcs-test.golang.org/auth/or401
 # go imports should resolve correctly as well.
@@ -52,9 +52,9 @@ go list all
 stdout vcs-test.golang.org/auth/or401
 
 # Authenticator provides bad credentials.
-go build -o $WORK/bin/invalid$GOEXE scripts/invalid.go
+go build -o $WORK/bin/invalid$GKEXE scripts/invalid.go
 # With credentials from the binary, it should fail.
-env GOAUTH='invalid'$GOEXE
+env GKAUTH='invalid'$GKEXE
 cp go.mod.orig go.mod
 ! go get vcs-test.golang.org/auth/or401
 stderr '^\tserver response: ACCESS DENIED, buddy$'

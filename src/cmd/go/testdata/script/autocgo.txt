@@ -12,7 +12,7 @@ stdout 1
 # disable cgo: no C compiler anymore (unless the baked-in defaultCC is an
 # absolute path and exists.
 env CC=
-env PATH=$GOROOT/bin
+env PATH=$GKROOT/bin
 go env CGO_ENABLED
 [!abscc] stdout 0
 [abscc] stdout 1

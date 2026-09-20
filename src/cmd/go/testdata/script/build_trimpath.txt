@@ -1,11 +1,11 @@
 [short] skip
 
-# If GOROOT is set, 'go build -trimpath' bakes that into the resulting
+# If GKROOT is set, 'go build -trimpath' bakes that into the resulting
 # binary. Explicitly unset it here.
-env GOROOT=
+env GKROOT=
 
-# Set up two identical directories that can be used as GOPATH.
-env GO111MODULE=on
+# Set up two identical directories that can be used as GKPATH.
+env GK111MODULE=on
 mkdir $WORK/a/src/paths $WORK/b/src/paths
 cp paths.go $WORK/a/src/paths
 cp paths.go $WORK/b/src/paths
@@ -16,26 +16,26 @@ cp go.mod $WORK/b/src/paths/
 
 
 # A binary built without -trimpath should contain the module root dir
-# and GOROOT for debugging and stack traces.
+# and GKROOT for debugging and stack traces.
 cd $WORK/a/src/paths
 go build -o $WORK/paths-dbg.exe .
 exec $WORK/paths-dbg.exe $WORK/paths-dbg.exe
 stdout 'binary contains module root: true'
-stdout 'binary contains an empty GOROOT'
+stdout 'binary contains an empty GKROOT'
 
 # A binary built with -trimpath should not contain the current workspace.
 go build -trimpath -o $WORK/paths-a.exe .
 exec $WORK/paths-a.exe $WORK/paths-a.exe
 stdout 'binary contains module root: false'
-stdout 'binary contains an empty GOROOT'
+stdout 'binary contains an empty GKROOT'
 
 # A binary from an external module built with -trimpath should not contain
-# the current workspace or GOROOT.
+# the current workspace or GKROOT.
 go get rsc.io/fortune
 go install -trimpath rsc.io/fortune
-exec $WORK/paths-a.exe $GOPATH/bin/fortune$GOEXE
+exec $WORK/paths-a.exe $GKPATH/bin/fortune$GKEXE
 stdout 'binary contains module root: false'
-stdout 'binary contains an empty GOROOT'
+stdout 'binary contains an empty GKROOT'
 go mod edit -droprequire rsc.io/fortune
 
 # Two binaries built from identical packages in different directories
@@ -47,18 +47,18 @@ cmp -q $WORK/paths-a.exe $WORK/paths-b.exe
 
 # Same sequence of tests but with overlays.
 # A binary built without -trimpath should contain the module root dir
-# and GOROOT for debugging and stack traces.
+# and GKROOT for debugging and stack traces.
 cd $WORK/a/src/paths
 go build -overlay overlay.json -o $WORK/paths-dbg.exe ./overlaydir
 exec $WORK/paths-dbg.exe $WORK/paths-dbg.exe
 stdout 'binary contains module root: true'
-stdout 'binary contains an empty GOROOT'
+stdout 'binary contains an empty GKROOT'
 
 # A binary built with -trimpath should not contain the current workspace.
 go build -overlay overlay.json -trimpath -o $WORK/paths-a.exe ./overlaydir
 exec $WORK/paths-a.exe $WORK/paths-a.exe
 stdout 'binary contains module root: false'
-stdout 'binary contains an empty GOROOT'
+stdout 'binary contains an empty GKROOT'
 
 # Two binaries built from identical packages in different directories
 # should be identical.
@@ -67,25 +67,25 @@ go build -overlay overlay.json -trimpath -o $WORK/paths-b.exe ./overlaydir
 cmp -q $WORK/paths-a.exe $WORK/paths-b.exe
 
 
-# Same sequence of tests but in GOPATH mode.
-# A binary built without -trimpath should contain GOPATH and GOROOT.
-env GO111MODULE=off
+# Same sequence of tests but in GKPATH mode.
+# A binary built without -trimpath should contain GKPATH and GKROOT.
+env GK111MODULE=off
 cd $WORK
-env GOPATH=$WORK/a
+env GKPATH=$WORK/a
 go build -o paths-dbg.exe paths
 exec ./paths-dbg.exe paths-dbg.exe
-stdout 'binary contains GOPATH: true'
-stdout 'binary contains an empty GOROOT'
+stdout 'binary contains GKPATH: true'
+stdout 'binary contains an empty GKROOT'
 
-# A binary built with -trimpath should not contain GOPATH.
+# A binary built with -trimpath should not contain GKPATH.
 go build -trimpath -o paths-a.exe paths
 exec ./paths-a.exe paths-a.exe
-stdout 'binary contains GOPATH: false'
-stdout 'binary contains an empty GOROOT'
+stdout 'binary contains GKPATH: false'
+stdout 'binary contains an empty GKROOT'
 
-# Two binaries built from identical packages in different GOPATH roots
+# Two binaries built from identical packages in different GKPATH roots
 # should be identical.
-env GOPATH=$WORK/b
+env GKPATH=$WORK/b
 go build -trimpath -o paths-b.exe paths
 cmp -q paths-a.exe paths-b.exe
 
@@ -94,25 +94,25 @@ cmp -q paths-a.exe paths-b.exe
 # gccgo does not support builds in module mode.
 [!exec:gccgo] stop
 [cross] stop  # gccgo can't necessarily cross-compile
-env GOPATH=$WORK/a
+env GKPATH=$WORK/a
 
 # A binary built with gccgo without -trimpath should contain the current
-# GOPATH and GOROOT.
+# GKPATH and GKROOT.
 go build -compiler=gccgo -o paths-dbg.exe paths
 exec ./paths-dbg.exe paths-dbg.exe
-stdout 'binary contains GOPATH: true'
-stdout 'binary contains an empty GOROOT'
+stdout 'binary contains GKPATH: true'
+stdout 'binary contains an empty GKROOT'
 
-# gccgo doesn't load std from GOROOT.
-# A binary built with gccgo with -trimpath should not contain GOPATH or GOROOT.
+# gccgo doesn't load std from GKROOT.
+# A binary built with gccgo with -trimpath should not contain GKPATH or GKROOT.
 go build -compiler=gccgo -trimpath -o paths-a.exe paths
 exec ./paths-a.exe paths-a.exe
-stdout 'binary contains GOPATH: false'
-stdout 'binary contains an empty GOROOT'
+stdout 'binary contains GKPATH: false'
+stdout 'binary contains an empty GKROOT'
 
 # Two binaries built from identical packages in different directories
 # should be identical.
-env GOPATH=$WORK/b
+env GKPATH=$WORK/b
 go build -compiler=gccgo -trimpath -o paths-b.exe paths
 cmp -q paths-a.exe paths-b.exe
 
@@ -137,7 +137,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if os.Getenv("GO111MODULE") == "on" {
+	if os.Getenv("GK111MODULE") == "on" {
 		out, err := exec.Command("go", "env", "GOMOD").Output()
 		if err != nil {
 			log.Fatal(err)
@@ -145,9 +145,9 @@ func main() {
 		modRoot := filepath.Dir(strings.TrimSpace(string(out)))
 		check(data, "module root", modRoot)
 	} else {
-		check(data, "GOPATH", os.Getenv("GOPATH"))
+		check(data, "GKPATH", os.Getenv("GKPATH"))
 	}
-	check(data, "GOROOT", os.Getenv("GOROOT"))
+	check(data, "GKROOT", os.Getenv("GKROOT"))
 }
 
 func check(data []byte, desc, dir string) {

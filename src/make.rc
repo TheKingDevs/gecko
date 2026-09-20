@@ -7,19 +7,19 @@
 
 # Environment variables that control make.rc:
 #
-# GOHOSTARCH: The architecture for host tools (compilers and
+# GKHOSTARCH: The architecture for host tools (compilers and
 # binaries).  Binaries of this type must be executable on the current
 # system, so the only common reason to set this is to set
-# GOHOSTARCH=386 on an amd64 machine.
+# GKHOSTARCH=386 on an amd64 machine.
 #
-# GOARCH: The target architecture for installed packages and tools.
+# GKARCH: The target architecture for installed packages and tools.
 #
-# GOOS: The target operating system for installed packages and tools.
+# GKOS: The target operating system for installed packages and tools.
 #
-# GO_GCFLAGS: Additional go tool compile arguments to use when
+# GK_GCFLAGS: Additional go tool compile arguments to use when
 # building the packages and commands.
 #
-# GO_LDFLAGS: Additional go tool link arguments to use when
+# GK_LDFLAGS: Additional go tool link arguments to use when
 # building the commands.
 #
 # CGO_ENABLED: Controls cgo usage during the build. Set it to 1
@@ -28,7 +28,7 @@
 
 rfork e
 if(! test -f run.rc){
-	echo 'make.rc must be run from $GOROOT/src' >[1=2]
+	echo 'make.rc must be run from $GKROOT/src' >[1=2]
 	exit wrongdir
 }
 
@@ -45,55 +45,56 @@ if(~ $1 -v) {
 }
 
 fn bootstrapenv {
-	GOROOT=$GOROOT_BOOTSTRAP GO111MODULE=off GOENV=off GOOS=() GOARCH=() GOEXPERIMENT=() GOFLAGS=() $*
+	GOROOT=$GKROOT_BOOTSTRAP GO111MODULE=off GOENV=off GOOS=() GOARCH=() GOEXPERIMENT=() GOFLAGS=() GOTOOLCHAIN=local \
+		GKROOT=$GKROOT_BOOTSTRAP GK111MODULE=off GKENV=off GKOS=() GKARCH=() GKEXPERIMENT=() GKFLAGS=() GKTOOLCHAIN=local $*
 }
 
 bootgo = 1.26.0
-GOROOT = `{cd .. && pwd}
+GKROOT = `{cd .. && pwd}
 goroot_bootstrap_set = 'true'
-if(~ $"GOROOT_BOOTSTRAP ''){
+if(~ $"GKROOT_BOOTSTRAP ''){
 	goroot_bootstrap_set = 'false'
-	GOROOT_BOOTSTRAP = $home/go1.4
+	GKROOT_BOOTSTRAP = $home/go1.4
 	for(d in sdk/go$bootgo go$bootgo)
 		if(test -d $home/$d)
-			GOROOT_BOOTSTRAP = $home/$d
+			GKROOT_BOOTSTRAP = $home/$d
 }
 for(p in $path){
-	if(! test -x $GOROOT_BOOTSTRAP/bin/go){
+	if(! test -x $GKROOT_BOOTSTRAP/bin/go){
 		if(go_exe = `{path=$p whatis go}){
-			goroot_bootstrap = $GOROOT_BOOTSTRAP
-			GOROOT_BOOTSTRAP = ()
+			goroot_bootstrap = $GKROOT_BOOTSTRAP
+			GKROOT_BOOTSTRAP = ()
 			goroot = `{bootstrapenv $go_exe env GOROOT}
-			GOROOT_BOOTSTRAP = $goroot_bootstrap
-			if(! ~ $goroot $GOROOT){
+			GKROOT_BOOTSTRAP = $goroot_bootstrap
+			if(! ~ $goroot $GKROOT){
 				if(~ $goroot_bootstrap_set 'true'){
-					echo 'WARNING: '$GOROOT_BOOTSTRAP'/bin/go does not exist, found '$go_exe' from env' >[1=2]
-					echo 'WARNING: set '$goroot' as GOROOT_BOOTSTRAP' >[1=2]
+					echo 'WARNING: '$GKROOT_BOOTSTRAP'/bin/go does not exist, found '$go_exe' from env' >[1=2]
+					echo 'WARNING: set '$goroot' as GKROOT_BOOTSTRAP' >[1=2]
 				}
-				GOROOT_BOOTSTRAP = $goroot
+				GKROOT_BOOTSTRAP = $goroot
 			}
 		}
 	}
 }
-if(! test -x $GOROOT_BOOTSTRAP/bin/go){
-	echo 'ERROR: Cannot find '$GOROOT_BOOTSTRAP'/bin/go.' >[1=2]
-	echo 'Set $GOROOT_BOOTSTRAP to a working Go tree >= Go '$bootgo'.' >[1=2]
+if(! test -x $GKROOT_BOOTSTRAP/bin/go){
+	echo 'ERROR: Cannot find '$GKROOT_BOOTSTRAP'/bin/go.' >[1=2]
+	echo 'Set $GKROOT_BOOTSTRAP to a working Go tree >= Go '$bootgo'.' >[1=2]
 	exit bootstrap
 }
-if(~ $GOROOT_BOOTSTRAP $GOROOT){
-	echo 'ERROR: $GOROOT_BOOTSTRAP must not be set to $GOROOT' >[1=2]
-	echo 'Set $GOROOT_BOOTSTRAP to a working Go tree >= Go '$bootgo'.' >[1=2]
+if(~ $GKROOT_BOOTSTRAP $GKROOT){
+	echo 'ERROR: $GKROOT_BOOTSTRAP must not be set to $GKROOT' >[1=2]
+	echo 'Set $GKROOT_BOOTSTRAP to a working Go tree >= Go '$bootgo'.' >[1=2]
 	exit bootstrap
 }
 
 # Get the exact bootstrap toolchain version to help with debugging.
-# We clear GOOS and GOARCH to avoid an ominous but harmless warning if
+# We clear GKOS and GKARCH to avoid an ominous but harmless warning if
 # the bootstrap doesn't support them.
-GOROOT_BOOTSTRAP_VERSION=`{bootstrapenv $GOROOT_BOOTSTRAP/bin/go version | sed 's/go version //'}
-echo 'Building Go cmd/dist using '$GOROOT_BOOTSTRAP'. ('$"GOROOT_BOOTSTRAP_VERSION')'
+GOROOT_BOOTSTRAP_VERSION=`{bootstrapenv $GKROOT_BOOTSTRAP/bin/go version | sed 's/go version //'}
+echo 'Building Go cmd/dist using '$GKROOT_BOOTSTRAP'. ('$"GOROOT_BOOTSTRAP_VERSION')'
 if(~ $#vflag 1)
 	echo cmd/dist
-bootstrapenv $GOROOT_BOOTSTRAP/bin/go build -o cmd/dist/dist ./cmd/dist
+bootstrapenv $GKROOT_BOOTSTRAP/bin/go build -o cmd/dist/dist ./cmd/dist
 
 eval `{./cmd/dist/dist env -9}
 if(~ $#vflag 1)
@@ -101,10 +102,10 @@ if(~ $#vflag 1)
 
 if(~ $1 --dist-tool){
 	# Stop after building dist tool.
-	mkdir -p $GOTOOLDIR
+	mkdir -p $GKTOOLDIR
 	if(! ~ $2 '')
 		cp cmd/dist/dist $2
-	mv cmd/dist/dist $GOTOOLDIR/dist
+	mv cmd/dist/dist $GKTOOLDIR/dist
 	exit
 }
 

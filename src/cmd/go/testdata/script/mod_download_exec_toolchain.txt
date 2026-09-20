@@ -8,20 +8,20 @@ env TESTGO_VERSION_SWITCH=switch
 # go commands, but that's still preferable to failing entirely or downloading
 # a module zip that we don't understand.
 
-# GOTOOLCHAIN=auto should run the newer toolchain
-env GOTOOLCHAIN=auto
+# GKTOOLCHAIN=auto should run the newer toolchain
+env GKTOOLCHAIN=auto
 go mod download rsc.io/needgo121@latest rsc.io/needgo122@latest rsc.io/needgo123@latest rsc.io/needall@latest
 stderr '^gecko: rsc.io/needall@v0.0.1 requires go >= 1.23; switching to go1.23.9$'
 ! stderr '\(running'
 
-# GOTOOLCHAIN=min+auto should run the newer toolchain
-env GOTOOLCHAIN=go1.21+auto
+# GKTOOLCHAIN=min+auto should run the newer toolchain
+env GKTOOLCHAIN=go1.21+auto
 go mod download rsc.io/needgo121@latest rsc.io/needgo122@latest rsc.io/needgo123@latest rsc.io/needall@latest
 stderr '^gecko: rsc.io/needall@v0.0.1 requires go >= 1.23; switching to go1.23.9$'
 ! stderr '\(running'
 
-# GOTOOLCHAIN=go1.21 should NOT run the newer toolchain
-env GOTOOLCHAIN=go1.21
+# GKTOOLCHAIN=go1.21 should NOT run the newer toolchain
+env GKTOOLCHAIN=go1.21
 ! go mod download rsc.io/needgo121@latest rsc.io/needgo122@latest rsc.io/needgo123@latest rsc.io/needall@latest
 ! stderr switching
 stderr 'rsc.io/needgo122@v0.0.1 requires go >= 1.22'
@@ -33,7 +33,7 @@ stderr 'requires go >= 1.23'
 
 # JSON output should be emitted exactly once,
 # and non-JSON output should go to stderr instead of stdout.
-env GOTOOLCHAIN=auto
+env GKTOOLCHAIN=auto
 go mod download -json rsc.io/needgo121@latest rsc.io/needgo122@latest rsc.io/needgo123@latest rsc.io/needall@latest
 stderr '^gecko: rsc.io/needall@v0.0.1 requires go >= 1.23; switching to go1.23.9$'
 ! stderr '\(running'
@@ -42,13 +42,13 @@ stdout -count=1 '"Path": "rsc.io/needgo122",'
 stdout -count=1 '"Path": "rsc.io/needgo123",'
 stdout -count=1 '"Path": "rsc.io/needall",'
 
-# GOTOOLCHAIN=go1.21 should write the errors in the JSON Error fields, not to stderr.
-env GOTOOLCHAIN=go1.21
+# GKTOOLCHAIN=go1.21 should write the errors in the JSON Error fields, not to stderr.
+env GKTOOLCHAIN=go1.21
 ! go mod download -json rsc.io/needgo121@latest rsc.io/needgo122@latest rsc.io/needgo123@latest rsc.io/needall@latest
 ! stderr switching
-stdout -count=1 '"Error": "rsc.io/needgo122@v0.0.1 requires go .*= 1.22 \(running go 1.21; GOTOOLCHAIN=go1.21\)"'
-stdout -count=1 '"Error": "rsc.io/needgo123@v0.0.1 requires go .*= 1.23 \(running go 1.21; GOTOOLCHAIN=go1.21\)"'
-stdout -count=1 '"Error": "rsc.io/needall@v0.0.1 requires go .*= 1.23 \(running go 1.21; GOTOOLCHAIN=go1.21\)"'
+stdout -count=1 '"Error": "rsc.io/needgo122@v0.0.1 requires go .*= 1.22 \(running go 1.21; GKTOOLCHAIN=go1.21\)"'
+stdout -count=1 '"Error": "rsc.io/needgo123@v0.0.1 requires go .*= 1.23 \(running go 1.21; GKTOOLCHAIN=go1.21\)"'
+stdout -count=1 '"Error": "rsc.io/needall@v0.0.1 requires go .*= 1.23 \(running go 1.21; GKTOOLCHAIN=go1.21\)"'
 ! stdout '"Error": "rsc.io/needgo121'  # We can handle this one.
 ! stderr .
 
@@ -61,7 +61,7 @@ stdout -count=1 '"Error": "rsc.io/needall@v0.0.1 requires go .*= 1.23 \(running 
 cd example
 cp go.mod go.mod.orig
 
-env GOTOOLCHAIN=auto
+env GKTOOLCHAIN=auto
 go mod download rsc.io/needgo121@latest rsc.io/needgo122@latest rsc.io/needgo123@latest rsc.io/needall@latest
 stderr '^gecko: rsc.io/needall@v0.0.1 requires go >= 1.23; switching to go1.23.9$'
 ! stderr '\(running'
@@ -75,19 +75,19 @@ cmp go.mod go.mod.orig
 go mod edit -require=rsc.io/needall@v0.0.1
 cp go.mod go.mod.121
 
-# If an upgrade is needed, GOTOOLCHAIN=go1.21 should cause
+# If an upgrade is needed, GKTOOLCHAIN=go1.21 should cause
 # the command to fail without changing go.mod.
 
-env GOTOOLCHAIN=go1.21
+env GKTOOLCHAIN=go1.21
 ! go mod download
 stderr 'rsc.io/needall@v0.0.1 requires go >= 1.23'
 ! stderr switching
 cmp go.mod go.mod.121
 
-# If an upgrade is needed, GOTOOLCHAIN=auto should perform
+# If an upgrade is needed, GKTOOLCHAIN=auto should perform
 # the upgrade and record the resulting toolchain version.
 
-env GOTOOLCHAIN=auto
+env GKTOOLCHAIN=auto
 go mod download
 stderr '^gecko: module rsc.io/needall@v0.0.1 requires go >= 1.23; switching to go1.23.9$'
 cmp go.mod go.mod.final

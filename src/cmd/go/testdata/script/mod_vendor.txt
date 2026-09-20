@@ -106,10 +106,10 @@ exists dir2/relative-vendor-dir/a/foo/LICENSE
 go mod vendor -v -o ''
 exists vendor/modules.txt
 
-env GOFLAGS=-o=foo
+env GKFLAGS=-o=foo
 go mod vendor -v -o ''
 exists vendor/modules.txt
-env GOFLAGS=''
+env GKFLAGS=''
 
 mkdir -p nested/dir
 cd nested/dir

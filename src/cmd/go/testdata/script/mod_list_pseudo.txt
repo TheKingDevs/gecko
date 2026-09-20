@@ -1,17 +1,17 @@
 # Regression test for golang.org/issue/32715.
 
-# When using $GOPATH/pkg/mod/cache/download as a proxy,
+# When using $GKPATH/pkg/mod/cache/download as a proxy,
 # 'latest' queries should prefer tagged versions over pseudo-versions.
 
 go mod download github.com/dmitshur-test/modtest5@v0.0.0-20190619020302-197a620e0c9a
 go mod download github.com/dmitshur-test/modtest5@v0.5.0-alpha
 go mod download github.com/dmitshur-test/modtest5@v0.5.0-alpha.0.20190619023908-3da23a9deb9e
-cmp $GOPATH/pkg/mod/cache/download/github.com/dmitshur-test/modtest5/@v/list $WORK/modtest5.list
+cmp $GKPATH/pkg/mod/cache/download/github.com/dmitshur-test/modtest5/@v/list $WORK/modtest5.list
 
-env GOSUMDB=off # don't verify go.mod files when loading retractions
-env GOPROXY=file:///$GOPATH/pkg/mod/cache/download
-env GOPATH=$WORK/gopath2
-mkdir $GOPATH
+env GKSUMDB=off # don't verify go.mod files when loading retractions
+env GKPROXY=file:///$GKPATH/pkg/mod/cache/download
+env GKPATH=$WORK/gopath2
+mkdir $GKPATH
 
 go list -m -f '{{.Path}} {{.Version}} {{.Time.Format "2006-01-02"}}' github.com/dmitshur-test/modtest5@latest
 stdout '^github.com/dmitshur-test/modtest5 v0.5.0-alpha 2019-06-18$'
@@ -19,7 +19,7 @@ stdout '^github.com/dmitshur-test/modtest5 v0.5.0-alpha 2019-06-18$'
 # If the module proxy contains only pseudo-versions, 'latest' should stat
 # the version with the most recent timestamp — not the highest semantic
 # version — and return its metadata.
-env GOPROXY=file:///$WORK/tinyproxy
+env GKPROXY=file:///$WORK/tinyproxy
 go list -m -f '{{.Path}} {{.Version}} {{.Time.Format "2006-01-02"}}' dmitri.shuralyov.com/test/modtest3@latest
 stdout '^dmitri.shuralyov.com/test/modtest3 v0.0.0-20181023043359-a85b471d5412 2018-10-22$'
 

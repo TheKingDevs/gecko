@@ -2,7 +2,7 @@
 [short] skip
 
 # We clean the fuzz cache during this test. Don't clean the user's cache.
-env GOCACHE=$WORK/gocache
+env GKCACHE=$WORK/gocache
 
 # Test that fuzzminimizetime cannot be negative seconds
 ! go test -fuzz=FuzzMinimizerRecoverable -run=FuzzMinimizerRecoverable -fuzztime=10000x -fuzzminimizetime=-1ms .

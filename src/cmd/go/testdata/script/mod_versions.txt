@@ -1,11 +1,11 @@
-# Test rejection of pkg@version in GOPATH mode.
-env GO111MODULE=off
+# Test rejection of pkg@version in GKPATH mode.
+env GK111MODULE=off
 ! go get rsc.io/quote@v1.5.1
-stderr '^gecko: modules disabled by GO111MODULE=off'
+stderr '^gecko: modules disabled by GK111MODULE=off'
 ! go build rsc.io/quote@v1.5.1
 stderr '^package rsc.io/quote@v1.5.1: can only use path@version syntax with ''gecko get'' and ''gecko install'' in module-aware mode$'
 
-env GO111MODULE=on
+env GK111MODULE=on
 cd x
 ! go build rsc.io/quote@v1.5.1
 stderr '^package rsc.io/quote@v1.5.1: can only use path@version syntax with ''gecko get'' and ''gecko install'' in module-aware mode$'

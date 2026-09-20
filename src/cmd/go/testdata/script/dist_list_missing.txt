@@ -2,13 +2,13 @@
 # 'go tool dist list' should inject its output.
 
 
-# Set GOROOT to a directory that definitely does not include
+# Set GKROOT to a directory that definitely does not include
 # a compiled 'dist' tool. 'go tool dist list' should still
 # work, because 'cmd/go' itself can impersonate this command.
 
 mkdir $WORK/goroot/bin
-mkdir $WORK/goroot/pkg/tool/${GOOS}_${GOARCH}
-env GOROOT=$WORK/goroot
+mkdir $WORK/goroot/pkg/tool/${GKOS}_${GKARCH}
+env GKROOT=$WORK/goroot
 
 ! go tool -n dist
 stderr 'gecko: no such tool "dist"'
@@ -22,15 +22,15 @@ stdout linux/amd64
 cp stdout tool-v.txt
 
 go tool dist list -broken
-stdout $GOOS/$GOARCH
+stdout $GKOS/$GKARCH
 cp stdout tool-broken.txt
 
 go tool dist list -json
-stdout '"GOOS": "linux",\n\s*"GOARCH": "amd64",\n'
+stdout '"GKOS": "linux",\n\s*"GKARCH": "amd64",\n'
 cp stdout tool-json.txt
 
 go tool dist list -json -broken
-stdout '"GOOS": "'$GOOS'",\n\s*"GOARCH": "'$GOARCH'",\n'
+stdout '"GKOS": "'$GKOS'",\n\s*"GKARCH": "'$GKARCH'",\n'
 cp stdout tool-json-broken.txt
 
 [short] stop
@@ -38,7 +38,7 @@ cp stdout tool-json-broken.txt
 
 # Check against the real cmd/dist as the source of truth.
 
-env GOROOT=$TESTGO_GOROOT
+env GKROOT=$TESTGO_GOROOT
 go build -o dist.exe cmd/dist
 
 exec ./dist.exe list

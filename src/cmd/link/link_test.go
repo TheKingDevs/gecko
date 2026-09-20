@@ -267,7 +267,7 @@ TEXT ·x(SB),0,$0
 	cmd := goCmd(t, "build")
 	cmd.Dir = tmpdir
 	cmd.Env = append(cmd.Env,
-		"GOARCH=amd64", "GOOS=linux", "GOPATH="+filepath.Join(tmpdir, "_gopath"))
+		"GKARCH=amd64", "GKOS=linux", "GKPATH="+filepath.Join(tmpdir, "_gopath"))
 	out, err := cmd.CombinedOutput()
 	if err == nil {
 		t.Fatalf("expected build to fail, but it succeeded")
@@ -340,7 +340,7 @@ void foo() {
 `)
 
 	cc := strings.TrimSpace(runGo("env", "CC"))
-	cflags := strings.Fields(runGo("env", "GOGCCFLAGS"))
+	cflags := strings.Fields(runGo("env", "GKGCCFLAGS"))
 
 	importcfgfile := filepath.Join(tmpdir, "importcfg")
 	testenv.WriteImportcfg(t, importcfgfile, nil, "runtime")
@@ -374,7 +374,7 @@ func TestBuildForTvOS(t *testing.T) {
 		t.Skip("skipping on non-darwin platform")
 	}
 	if testing.Short() && testenv.Builder() == "" {
-		t.Skip("skipping in -short mode with $GO_BUILDER_NAME empty")
+		t.Skip("skipping in -short mode with $GK_BUILDER_NAME empty")
 	}
 	if err := testenv.Command(t, "xcrun", "--help").Run(); err != nil {
 		t.Skipf("error running xcrun, required for iOS cross build: %v", err)
@@ -402,8 +402,8 @@ func TestBuildForTvOS(t *testing.T) {
 	cmd := goCmd(t, "build", "-buildmode=c-archive", "-o", ar, lib)
 	env := []string{
 		"CGO_ENABLED=1",
-		"GOOS=ios",
-		"GOARCH=arm64",
+		"GKOS=ios",
+		"GKARCH=arm64",
 		"CC=" + strings.Join(CC, " "),
 		"CGO_CFLAGS=", // ensure CGO_CFLAGS does not contain any flags. Issue #35459
 		"CGO_LDFLAGS=" + strings.Join(CGO_LDFLAGS, " "),
@@ -615,7 +615,7 @@ func TestIssue34788Android386TLSSequence(t *testing.T) {
 
 	obj := filepath.Join(tmpdir, "blah.o")
 	cmd := testenv.Command(t, testenv.GoToolPath(t), "tool", "compile", "-p=blah", "-o", obj, src)
-	cmd.Env = append(os.Environ(), "GOARCH=386", "GOOS=android")
+	cmd.Env = append(os.Environ(), "GKARCH=386", "GKOS=android")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to compile blah.go: %v, output: %s\n", err, out)
 	}
@@ -1384,7 +1384,7 @@ func TestUnlinkableObj(t *testing.T) {
 	t.Parallel()
 
 	if true /* was buildcfg.Experiment.Unified */ {
-		t.Skip("TODO(mdempsky): Fix ICE when importing unlinkable objects for GOEXPERIMENT=unified")
+		t.Skip("TODO(mdempsky): Fix ICE when importing unlinkable objects for GKEXPERIMENT=unified")
 	}
 
 	tmpdir := t.TempDir()
@@ -1560,7 +1560,7 @@ func TestResponseFile(t *testing.T) {
 	}
 	sb.WriteString(`"'`)
 	cmd = testenv.CleanCmdEnv(cmd)
-	cmd.Env = append(cmd.Env, "GOFLAGS="+sb.String())
+	cmd.Env = append(cmd.Env, "GKFLAGS="+sb.String())
 
 	out, err := cmd.CombinedOutput()
 	if len(out) > 0 {

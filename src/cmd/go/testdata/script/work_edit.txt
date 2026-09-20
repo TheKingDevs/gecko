@@ -45,9 +45,9 @@ go work edit -dropgodebug key
 cmpenv go.work go.work.start
 
 # go work edit -print -fmt
-env GOWORK=$GOPATH/src/unformatted
+env GKWORK=$GKPATH/src/unformatted
 go work edit -print -fmt
-cmp stdout $GOPATH/src/formatted
+cmp stdout $GKPATH/src/formatted
 
 -- m/go.mod --
 module m

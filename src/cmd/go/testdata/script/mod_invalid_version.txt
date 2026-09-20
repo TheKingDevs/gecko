@@ -1,9 +1,9 @@
 [short] skip
 [!git] skip
 
-env GOPROXY=direct
-env GOSUMDB=off
-env GOFLAGS=-mod=mod
+env GKPROXY=direct
+env GKSUMDB=off
+env GKFLAGS=-mod=mod
 
 # Regression test for golang.org/issue/27173: if the user (or go.mod file)
 # requests a pseudo-version that does not match both the module path and commit

@@ -52,7 +52,7 @@ are elided from the presentation unless the -cmd flag is provided.
 
 When run with one argument, the argument is treated as a Go-syntax-like
 representation of the item to be documented. What the argument selects depends
-on what is installed in GOROOT and GOPATH, as well as the form of the argument,
+on what is installed in GKROOT and GKPATH, as well as the form of the argument,
 which is schematically one of these:
 
 	gecko doc <pkg>
@@ -66,8 +66,8 @@ letter it is assumed to identify a symbol or method in the current directory.
 
 For packages, the order of scanning is determined lexically in breadth-first order.
 That is, the package presented is the one that matches the search and is nearest
-the root and lexically first at its level of the hierarchy. The GOROOT tree is
-always scanned in its entirety before GOPATH.
+the root and lexically first at its level of the hierarchy. The GKROOT tree is
+always scanned in its entirety before GKPATH.
 
 If there is no package specified or matched, the package in the current
 directory is selected, so "gecko doc Foo" shows the documentation for symbol Foo in
@@ -222,12 +222,12 @@ func do(ctx context.Context, writer io.Writer, flagSet *flag.FlagSet, args []str
 		// depending on whether we're in a module or workspace. The pkgsite homepage
 		// is often not the most useful page.
 		if len(flagSet.Args()) == 0 {
-			mod, err := runCmd(append(os.Environ(), "GOWORK=off"), "go", "list", "-m")
+			mod, err := runCmd(append(os.Environ(), "GKWORK=off"), "go", "list", "-m")
 			if err == nil && mod != "" && mod != "command-line-arguments" {
 				// If there's a module, go to the module's doc page.
 				return doPkgsite(ctx, mod, "")
 			}
-			gowork, err := runCmd(nil, "go", "env", "GOWORK")
+			gowork, err := runCmd(nil, "go", "env", "GKWORK")
 			if err == nil && gowork != "" {
 				// Outside a module, but in a workspace, go to the home page
 				// with links to each of the modules' pages.

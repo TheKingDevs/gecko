@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # check for linker name in error message about linker crash
 [!compiler:gc] skip

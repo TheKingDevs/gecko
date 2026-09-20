@@ -108,9 +108,9 @@ var okgoos = []string{
 
 // xinit handles initialization of the various global state, like goroot and goarch.
 func xinit() {
-	b := os.Getenv("GOROOT")
+	b := os.Getenv("GKROOT")
 	if b == "" {
-		fatalf("$GOROOT must be set")
+		fatalf("$GKROOT must be set")
 	}
 	goroot = filepath.Clean(b)
 	gorootBin = pathf("%s/bin", goroot)
@@ -121,101 +121,101 @@ func xinit() {
 	// All exec calls rewrite "gecko" into gorootBinGo.
 	gorootBinGo = pathf("%s/bin/gecko", goroot)
 
-	b = os.Getenv("GOOS")
+	b = os.Getenv("GKOS")
 	if b == "" {
 		b = gohostos
 	}
 	goos = b
 	if slices.Index(okgoos, goos) < 0 {
-		fatalf("unknown $GOOS %s", goos)
+		fatalf("unknown $GKOS %s", goos)
 	}
 
-	b = os.Getenv("GOARM")
+	b = os.Getenv("GKARM")
 	if b == "" {
 		b = xgetgoarm()
 	}
 	goarm = b
 
-	b = os.Getenv("GOARM64")
+	b = os.Getenv("GKARM64")
 	if b == "" {
 		b = "v8.0"
 	}
 	goarm64 = b
 
-	b = os.Getenv("GO386")
+	b = os.Getenv("GK386")
 	if b == "" {
 		b = "sse2"
 	}
 	go386 = b
 
-	b = os.Getenv("GOAMD64")
+	b = os.Getenv("GKAMD64")
 	if b == "" {
 		b = "v1"
 	}
 	goamd64 = b
 
-	b = os.Getenv("GOMIPS")
+	b = os.Getenv("GKMIPS")
 	if b == "" {
 		b = "hardfloat"
 	}
 	gomips = b
 
-	b = os.Getenv("GOMIPS64")
+	b = os.Getenv("GKMIPS64")
 	if b == "" {
 		b = "hardfloat"
 	}
 	gomips64 = b
 
-	b = os.Getenv("GOPPC64")
+	b = os.Getenv("GKPPC64")
 	if b == "" {
 		b = "power8"
 	}
 	goppc64 = b
 
-	b = os.Getenv("GORISCV64")
+	b = os.Getenv("GKRISCV64")
 	if b == "" {
 		b = "rva20u64"
 	}
 	goriscv64 = b
 
-	b = os.Getenv("GOFIPS140")
+	b = os.Getenv("GKFIPS140")
 	if b == "" {
 		b = "off"
 	}
 	gofips140 = b
 
 	if p := pathf("%s/src/all.bash", goroot); !isfile(p) {
-		fatalf("$GOROOT is not set correctly or not exported\n"+
+		fatalf("$GKROOT is not set correctly or not exported\n"+
 			"\tGOROOT=%s\n"+
 			"\t%s does not exist", goroot, p)
 	}
 
-	b = os.Getenv("GOHOSTARCH")
+	b = os.Getenv("GKHOSTARCH")
 	if b != "" {
 		gohostarch = b
 	}
 	if slices.Index(okgoarch, gohostarch) < 0 {
-		fatalf("unknown $GOHOSTARCH %s", gohostarch)
+		fatalf("unknown $GKHOSTARCH %s", gohostarch)
 	}
 
-	b = os.Getenv("GOARCH")
+	b = os.Getenv("GKARCH")
 	if b == "" {
 		b = gohostarch
 	}
 	goarch = b
 	if slices.Index(okgoarch, goarch) < 0 {
-		fatalf("unknown $GOARCH %s", goarch)
+		fatalf("unknown $GKARCH %s", goarch)
 	}
 
-	b = os.Getenv("GO_EXTLINK_ENABLED")
+	b = os.Getenv("GK_EXTLINK_ENABLED")
 	if b != "" {
 		if b != "0" && b != "1" {
-			fatalf("unknown $GO_EXTLINK_ENABLED %s", b)
+			fatalf("unknown $GK_EXTLINK_ENABLED %s", b)
 		}
 		goextlinkenabled = b
 	}
 
-	goexperiment = os.Getenv("GOEXPERIMENT")
+	goexperiment = os.Getenv("GKEXPERIMENT")
 	// TODO(mdempsky): Validate known experiments?
 
 	gogcflags = os.Getenv("BOOT_GO_GCFLAGS")
@@ -230,37 +230,37 @@ func xinit() {
 	}
 	defaultpkgconfig = b
 
-	defaultldso = os.Getenv("GO_LDSO")
+	defaultldso = os.Getenv("GK_LDSO")
 
 	// For tools being invoked but also for os.ExpandEnv.
-	os.Setenv("GO386", go386)
-	os.Setenv("GOAMD64", goamd64)
-	os.Setenv("GOARCH", goarch)
-	os.Setenv("GOARM", goarm)
-	os.Setenv("GOARM64", goarm64)
-	os.Setenv("GOHOSTARCH", gohostarch)
-	os.Setenv("GOHOSTOS", gohostos)
-	os.Setenv("GOOS", goos)
-	os.Setenv("GOMIPS", gomips)
-	os.Setenv("GOMIPS64", gomips64)
-	os.Setenv("GOPPC64", goppc64)
-	os.Setenv("GORISCV64", goriscv64)
-	os.Setenv("GOROOT", goroot)
-	os.Setenv("GOFIPS140", gofips140)
+	os.Setenv("GK386", go386)
+	os.Setenv("GKAMD64", goamd64)
+	os.Setenv("GKARCH", goarch)
+	os.Setenv("GKARM", goarm)
+	os.Setenv("GKARM64", goarm64)
+	os.Setenv("GKHOSTARCH", gohostarch)
+	os.Setenv("GKHOSTOS", gohostos)
+	os.Setenv("GKOS", goos)
+	os.Setenv("GKMIPS", gomips)
+	os.Setenv("GKMIPS64", gomips64)
+	os.Setenv("GKPPC64", goppc64)
+	os.Setenv("GKRISCV64", goriscv64)
+	os.Setenv("GKROOT", goroot)
+	os.Setenv("GKFIPS140", gofips140)
 
 	// Set GOBIN to GOROOT/bin. The meaning of GOBIN has drifted over time
 	// (see https://go.dev/issue/3269, https://go.dev/cl/183058,
 	// https://go.dev/issue/31576). Since we want binaries installed by 'dist' to
 	// always go to GOROOT/bin anyway.
-	os.Setenv("GOBIN", gorootBin)
+	os.Setenv("GKBIN", gorootBin)
 
 	// Make the environment more predictable.
 	os.Setenv("LANG", "C")
 	os.Setenv("LANGUAGE", "en_US.UTF8")
-	os.Unsetenv("GO111MODULE")
-	os.Setenv("GOENV", "off")
-	os.Unsetenv("GOFLAGS")
-	os.Setenv("GOWORK", "off")
+	os.Unsetenv("GK111MODULE")
+	os.Setenv("GKENV", "off")
+	os.Unsetenv("GKFLAGS")
+	os.Setenv("GKWORK", "off")
 
 	// Create the go.mod for building toolchain2 and toolchain3. Toolchain1 and go_bootstrap are built with
 	// a separate go.mod (with a lower required go version to allow all allowed bootstrap toolchain versions)
@@ -446,7 +446,7 @@ func findgoversion() string {
 		version += chomp(run(goroot, CheckExit, "jj", "--no-pager", "--color=never", "log", "--no-graph", "-r", "@", "-T", jjTemplate))
 	default:
 		// Show a nicer error message if this isn't a Git or jj repo.
-		fatalf("FAILED: not a Git or jj repo; must put a VERSION file in $GOROOT")
+		fatalf("FAILED: not a Git or jj repo; must put a VERSION file in $GKROOT")
 	}
 
 	// Cache version.
@@ -590,7 +590,7 @@ func setup() {
 	xatexit(func() { xremove(obj) })
 
 	// Create build cache directory.
-	objGobuild := pathf("%s/pkg/obj/go-build", goroot)
+	objGobuild := pathf("%s/pkg/obj/gecko-build", goroot)
 	if rebuildall {
 		xremoveall(objGobuild)
 	}
@@ -1285,44 +1285,44 @@ func cmdenv() {
 		format = "set %s=%s\r\n"
 	}
 
-	xprintf(format, "GO111MODULE", "")
-	xprintf(format, "GOARCH", goarch)
-	xprintf(format, "GOBIN", gorootBin)
+	xprintf(format, "GK111MODULE", "")
+	xprintf(format, "GKARCH", goarch)
+	xprintf(format, "GKBIN", gorootBin)
 	xprintf(format, "GODEBUG", os.Getenv("GODEBUG"))
-	xprintf(format, "GOENV", "off")
-	xprintf(format, "GOFLAGS", "")
-	xprintf(format, "GOHOSTARCH", gohostarch)
-	xprintf(format, "GOHOSTOS", gohostos)
-	xprintf(format, "GOOS", goos)
-	xprintf(format, "GOPROXY", os.Getenv("GOPROXY"))
-	xprintf(format, "GOROOT", goroot)
-	xprintf(format, "GOTMPDIR", os.Getenv("GOTMPDIR"))
-	xprintf(format, "GOTOOLDIR", tooldir)
+	xprintf(format, "GKENV", "off")
+	xprintf(format, "GKFLAGS", "")
+	xprintf(format, "GKHOSTARCH", gohostarch)
+	xprintf(format, "GKHOSTOS", gohostos)
+	xprintf(format, "GKOS", goos)
+	xprintf(format, "GKPROXY", os.Getenv("GKPROXY"))
+	xprintf(format, "GKROOT", goroot)
+	xprintf(format, "GKTMPDIR", os.Getenv("GKTMPDIR"))
+	xprintf(format, "GKTOOLDIR", tooldir)
 	if goarch == "arm" {
-		xprintf(format, "GOARM", goarm)
+		xprintf(format, "GKARM", goarm)
 	}
 	if goarch == "arm64" {
-		xprintf(format, "GOARM64", goarm64)
+		xprintf(format, "GKARM64", goarm64)
 	}
 	if goarch == "386" {
-		xprintf(format, "GO386", go386)
+		xprintf(format, "GK386", go386)
 	}
 	if goarch == "amd64" {
-		xprintf(format, "GOAMD64", goamd64)
+		xprintf(format, "GKAMD64", goamd64)
 	}
 	if goarch == "mips" || goarch == "mipsle" {
-		xprintf(format, "GOMIPS", gomips)
+		xprintf(format, "GKMIPS", gomips)
 	}
 	if goarch == "mips64" || goarch == "mips64le" {
-		xprintf(format, "GOMIPS64", gomips64)
+		xprintf(format, "GKMIPS64", gomips64)
 	}
 	if goarch == "ppc64" || goarch == "ppc64le" {
-		xprintf(format, "GOPPC64", goppc64)
+		xprintf(format, "GKPPC64", goppc64)
 	}
 	if goarch == "riscv64" {
-		xprintf(format, "GORISCV64", goriscv64)
+		xprintf(format, "GKRISCV64", goriscv64)
 	}
-	xprintf(format, "GOWORK", "off")
+	xprintf(format, "GKWORK", "off")
 
 	if *path {
 		sep := ":"
@@ -1397,13 +1397,13 @@ func toolenv() []string {
 		// as the original build system.
 		env = append(env, "CGO_ENABLED=0")
 	}
-	if isRelease || os.Getenv("GO_BUILDER_NAME") != "" {
+	if isRelease || os.Getenv("GK_BUILDER_NAME") != "" {
 		// Add -trimpath for reproducible builds of releases.
 		// Include builders so that -trimpath is well-tested ahead of releases.
 		// Do not include local development, so that people working in the
 		// main branch for day-to-day work on the Go toolchain itself can
 		// still have full paths for stack traces for compiler crashes and the like.
-		env = append(env, "GOFLAGS=-trimpath -ldflags=-w -gcflags=cmd/...=-dwarf=false")
+		env = append(env, "GKFLAGS=-trimpath -ldflags=-w -gcflags=cmd/...=-dwarf=false")
 	}
 	return env
 }
@@ -1460,19 +1460,19 @@ func cmdbootstrap() {
 	// depend on modules outside of vendor directories, but if
 	// GOPATH points somewhere else (e.g., to GOROOT), the
 	// go tool may complain.
-	os.Setenv("GOPATH", pathf("%s/pkg/obj/gopath", goroot))
+	os.Setenv("GKPATH", pathf("%s/pkg/obj/gopath", goroot))
 
 	// Set GOPROXY=off to avoid downloading modules to the modcache in
 	// the GOPATH set above to be inside GOROOT. The modcache is read
 	// only so if we downloaded to the modcache, we'd create readonly
 	// files in GOROOT, which is undesirable. See #67463)
-	os.Setenv("GOPROXY", "off")
+	os.Setenv("GKPROXY", "off")
 
 	// Use a build cache separate from the default user one.
 	// Also one that will be wiped out during startup, so that
 	// make.bash really does start from a clean slate.
-	oldgocache = os.Getenv("GOCACHE")
-	os.Setenv("GOCACHE", pathf("%s/pkg/obj/go-build", goroot))
+	oldgocache = os.Getenv("GKCACHE")
+	os.Setenv("GKCACHE", pathf("%s/pkg/obj/gecko-build", goroot))
 
 	// Disable GOEXPERIMENT when building toolchain1 and
 	// go_bootstrap. We don't need any experiments for the
@@ -1486,11 +1486,11 @@ func cmdbootstrap() {
 	// toolchain and by dist consistent. Once go_bootstrap takes
 	// over the build process, we'll set this back to the original
 	// GOEXPERIMENT.
-	os.Setenv("GOEXPERIMENT", "none")
+	os.Setenv("GKEXPERIMENT", "none")
 
 	if isdir(pathf("%s/src/pkg", goroot)) {
 		fatalf("\n\n"+
-			"The Go package sources have moved to $GOROOT/src.\n"+
+			"The Go package sources have moved to $GKROOT/src.\n"+
 			"*** %s still exists. ***\n"+
 			"It probably contains stale files that may confuse the build.\n"+
 			"Please (check what's there and) remove it and try again.\n"+
@@ -1519,10 +1519,10 @@ func cmdbootstrap() {
 	oldgoarch = goarch
 	goos = gohostos
 	goarch = gohostarch
-	os.Setenv("GOHOSTARCH", gohostarch)
-	os.Setenv("GOHOSTOS", gohostos)
-	os.Setenv("GOARCH", goarch)
-	os.Setenv("GOOS", goos)
+	os.Setenv("GKHOSTARCH", gohostarch)
+	os.Setenv("GKHOSTOS", gohostos)
+	os.Setenv("GKARCH", goarch)
+	os.Setenv("GKOS", goos)
 
 	timelog("build", "go_bootstrap")
 	xprintf("Building Go bootstrap cmd/go (go_bootstrap) using Go toolchain1.\n")
@@ -1533,9 +1533,9 @@ func cmdbootstrap() {
 		xprintf("\n")
 	}
 
-	gogcflags = os.Getenv("GO_GCFLAGS") // we were using $BOOT_GO_GCFLAGS until now
+	gogcflags = os.Getenv("GK_GCFLAGS") // we were using $BOOT_GO_GCFLAGS until now
 	setNoOpt()
-	goldflags = os.Getenv("GO_LDFLAGS") // we were using $BOOT_GO_LDFLAGS until now
+	goldflags = os.Getenv("GK_LDFLAGS") // we were using $BOOT_GO_LDFLAGS until now
 	goBootstrap := pathf("%s/go_bootstrap", tooldir)
 	if debug {
 		run("", ShowOutput|CheckExit, pathf("%s/compile", tooldir), "-V=full")
@@ -1565,7 +1565,7 @@ func cmdbootstrap() {
 	xprintf("Building Go toolchain2 using go_bootstrap and Go toolchain1.\n")
 	os.Setenv("CC", compilerEnvLookup("CC", defaultcc, goos, goarch))
 	// Now that cmd/go is in charge of the build process, enable GOEXPERIMENT.
-	os.Setenv("GOEXPERIMENT", goexperiment)
+	os.Setenv("GKEXPERIMENT", goexperiment)
 	goInstall(toolenv(), goBootstrap, toolchain...)
 	if debug {
 		run("", ShowOutput|CheckExit, pathf("%s/compile", tooldir), "-V=full")
@@ -1604,7 +1604,7 @@ func cmdbootstrap() {
 	// be used as the final toolchain (or the final host toolchain in the
 	// case of a cross compile). Otherwise we need to do one more build.
 	if goexperiment != "" {
-		xprintf("Building commands for GOEXPERIMENT=%s convergence for %s/%s.\n", goexperiment, goos, goarch)
+		xprintf("Building commands for GKEXPERIMENT=%s convergence for %s/%s.\n", goexperiment, goos, goarch)
 		goInstall(toolenv(), goBootstrap, append([]string{"-a"}, toolsToInstall...)...)
 		if debug {
 			run("", ShowOutput|CheckExit, pathf("%s/compile", tooldir), "-V=full")
@@ -1637,8 +1637,8 @@ func cmdbootstrap() {
 		}
 		goos = oldgoos
 		goarch = oldgoarch
-		os.Setenv("GOOS", goos)
-		os.Setenv("GOARCH", goarch)
+		os.Setenv("GKOS", goos)
+		os.Setenv("GKARCH", goarch)
 		os.Setenv("CC", compilerEnvLookup("CC", defaultcc, goos, goarch))
 		xprintf("Building commands for target, %s/%s.\n", goos, goarch)
 		goInstall(toolenv(), goBootstrap, append([]string{"-a"}, toolsToInstall...)...)
@@ -1669,7 +1669,7 @@ func cmdbootstrap() {
 		}
 		elem := strings.TrimSuffix(filepath.Base(f), ".exe")
 		if !ok[f] && elem != "gecko" && elem != "fmt" && elem != "gpm" && elem != goos+"_"+goarch {
-			fatalf("unexpected new file in $GOROOT/bin: %s", elem)
+			fatalf("unexpected new file in $GKROOT/bin: %s", elem)
 		}
 	}
 
@@ -1683,14 +1683,14 @@ func cmdbootstrap() {
 
 	if wrapperPath := wrapperPathFor(goos, goarch); wrapperPath != "" {
 		oldcc := os.Getenv("CC")
-		os.Setenv("GOOS", gohostos)
-		os.Setenv("GOARCH", gohostarch)
+		os.Setenv("GKOS", gohostos)
+		os.Setenv("GKARCH", gohostarch)
 		os.Setenv("CC", compilerEnvLookup("CC", defaultcc, gohostos, gohostarch))
 		goCmd(nil, gorootBinGo, "build", "-o", pathf("%s/go_%s_%s_exec%s", gorootBin, goos, goarch, exe), wrapperPath)
 		// Restore environment.
 		// TODO(elias.naur): support environment variables in goCmd?
-		os.Setenv("GOOS", goos)
-		os.Setenv("GOARCH", goarch)
+		os.Setenv("GKOS", goos)
+		os.Setenv("GKARCH", goarch)
 		os.Setenv("CC", oldcc)
 	}
 

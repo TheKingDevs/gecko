@@ -1,4 +1,4 @@
-env GOSUMDB=$sumdb' '$proxy/sumdb-wrong
+env GKSUMDB=$sumdb' '$proxy/sumdb-wrong
 
 # download -json with version should print JSON on sumdb failure
 ! go mod download -json 'rsc.io/quote@<=v1.5.0'

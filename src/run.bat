@@ -11,10 +11,10 @@ if not exist ..\bin\go.exe (
 
 setlocal
 
-set GOENV=off
+set GKENV=off
 ..\bin\go tool dist env > env.bat || exit /b 1
 call .\env.bat
 del env.bat
 
-set GOPATH=c:\nonexist-gopath
+set GKPATH=c:\nonexist-gopath
 ..\bin\go tool dist test --rebuild %* || exit /b 1

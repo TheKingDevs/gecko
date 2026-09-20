@@ -126,7 +126,7 @@ func doPkgsite(ctx context.Context, urlPath, fragment string) error {
 
 	// Prepend the local download cache to GOPROXY to get around deprecation checks.
 	env := os.Environ()
-	vars, err := runCmd(env, goCmd(), "env", "GOPROXY", "GOMODCACHE")
+	vars, err := runCmd(env, goCmd(), "env", "GKPROXY", "GKMODCACHE")
 	fields := strings.Fields(vars)
 	if err == nil && len(fields) == 2 {
 		goproxy, gomodcache := fields[0], fields[1]
@@ -139,7 +139,7 @@ func doPkgsite(ctx context.Context, urlPath, fragment string) error {
 		} else {
 			gomodcache = "file:///" + filepath.ToSlash(gomodcache)
 		}
-		env = append(env, "GOPROXY="+gomodcache+","+goproxy)
+		env = append(env, "GKPROXY="+gomodcache+","+goproxy)
 	}
 
 	pkgsite := buildPkgsite(ctx)

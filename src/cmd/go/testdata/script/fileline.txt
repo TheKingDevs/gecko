@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 # look for short, relative file:line in error message
 ! go run ../../gopath/x/y/z/err.go

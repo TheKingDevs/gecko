@@ -218,7 +218,7 @@ var (
 )
 
 func main() {
-	goarch := os.Getenv("GOARCH")
+	goarch := os.Getenv("GKARCH")
 	if goarch == "" {
 		goarch = runtime.GOARCH
 	}
@@ -230,7 +230,7 @@ func main() {
 		return
 	}
 	defer os.RemoveAll(dir)
-	os.Setenv("GOPATH", filepath.Join(dir, "_gopath"))
+	os.Setenv("GKPATH", filepath.Join(dir, "_gopath"))
 
 	if err := ioutil.WriteFile(filepath.Join(dir, "go.mod"), []byte("module go-test-nosplit\n"), 0666); err != nil {
 		log.Panic(err)

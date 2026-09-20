@@ -2,7 +2,7 @@
 # This test is intended to verify that "go list" accepts coverage related
 # build arguments (such as -cover, -covermode). See issue #57785.
 
-env GOBIN=$WORK/bin
+env GKBIN=$WORK/bin
 
 # Install a target and then do an ordinary staleness check on it.
 go install m/example

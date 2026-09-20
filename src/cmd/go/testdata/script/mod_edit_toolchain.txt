@@ -1,6 +1,6 @@
 # Test support for go mod edit -toolchain to set toolchain to use
 
-env GOTOOLCHAIN=local
+env GKTOOLCHAIN=local
 
 ! grep toolchain go.mod
 go mod edit -toolchain=go1.9

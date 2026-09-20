@@ -2,7 +2,7 @@
 
 ! go test -fuzz=. -fuzztime=1x
 ! stdout .
-stderr '^-fuzz flag is not supported on '$GOOS'/'$GOARCH'$'
+stderr '^-fuzz flag is not supported on '$GKOS'/'$GKARCH'$'
 
 -- go.mod --
 module example

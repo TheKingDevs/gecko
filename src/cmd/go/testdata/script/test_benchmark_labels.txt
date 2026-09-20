@@ -2,8 +2,8 @@
 
 # Check for goos, goarch, and pkg.
 go test -run ^$ -bench . bench
-stdout '^goos: '$GOOS
-stdout '^goarch: '$GOARCH
+stdout '^goos: '$GKOS
+stdout '^goarch: '$GKARCH
 stdout '^pkg: bench'
 
 # Check go test does not print pkg multiple times

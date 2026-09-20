@@ -13,17 +13,17 @@
 # cannot be served from the first build's link cache: the binaries must be
 # byte-identical because they are truly reproducible, not because one was
 # copied from the other.
-env GOCACHE=$WORK/cache-default
-go build -buildmode=default -o default$GOEXE .
+env GKCACHE=$WORK/cache-default
+go build -buildmode=default -o default$GKEXE .
 
-env GOCACHE=$WORK/cache-explicit
-[!default-pie] go build -buildmode=exe -o explicit$GOEXE .
-[default-pie] go build -buildmode=pie -o explicit$GOEXE .
+env GKCACHE=$WORK/cache-explicit
+[!default-pie] go build -buildmode=exe -o explicit$GKEXE .
+[default-pie] go build -buildmode=pie -o explicit$GKEXE .
 
-cmp -q default$GOEXE explicit$GOEXE
+cmp -q default$GKEXE explicit$GKEXE
 
 # The build info must record the resolved buildmode, not the literal "default".
-go version -m default$GOEXE
+go version -m default$GKEXE
 [!default-pie] stdout -buildmode=exe
 [default-pie] stdout -buildmode=pie
 

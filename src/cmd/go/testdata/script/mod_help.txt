@@ -1,4 +1,0 @@
-# go help get shows usage for get
-go help get
-stdout 'usage: gecko get'
-stdout 'updates go.mod to require those versions'

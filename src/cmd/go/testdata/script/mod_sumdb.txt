@@ -1,12 +1,12 @@
-env sumdb=$GOSUMDB
-env proxy=$GOPROXY
-env GOPROXY GONOPROXY GOSUMDB GONOSUMDB
+env sumdb=$GKSUMDB
+env proxy=$GKPROXY
+env GKPROXY GKNOPROXY GKSUMDB GKNOSUMDB
 env dbname=localhost.localdev/sumdb
 
 # disagreeing with the sumdb produces security errors
 # (this also populates tiles on the sumdb server).
 cp go.mod.orig go.mod
-env GOSUMDB=$sumdb' '$proxy/sumdb-wrong
+env GKSUMDB=$sumdb' '$proxy/sumdb-wrong
 ! go get rsc.io/quote
 stderr 'gecko: rsc.io/quote@v1.5.2: verifying module: checksum mismatch'
 stderr 'downloaded: h1:3fEy'
@@ -24,13 +24,13 @@ rm go.sum
 
 # switching to truthful sumdb detects timeline inconsistency
 cp go.mod.orig go.mod
-env GOSUMDB=$sumdb
+env GKSUMDB=$sumdb
 ! go get rsc.io/fortune
 stderr 'SECURITY ERROR\ngo.sum database server misbehavior detected!'
 stderr 'proof of misbehavior:'
 
 # removing the cached wrong tree head and cached tiles clears the bad data
-rm $GOPATH/pkg/sumdb/$dbname/latest
+rm $GKPATH/pkg/sumdb/$dbname/latest
 go clean -modcache
 go get rsc.io/fortune
 

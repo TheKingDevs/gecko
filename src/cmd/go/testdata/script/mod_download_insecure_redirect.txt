@@ -1,30 +1,30 @@
-# golang.org/issue/29591: 'go get' was following plain-HTTP redirects even without -insecure (now replaced by GOINSECURE).
+# golang.org/issue/29591: 'go get' was following plain-HTTP redirects even without -insecure (now replaced by GKINSECURE).
 
 [!git] skip
 
-env GOPROXY=direct
-env GOSUMDB=off
+env GKPROXY=direct
+env GKSUMDB=off
 
 ! go mod download vcs-test.golang.org/insecure/go/insecure@latest
 stderr 'redirected .* to insecure URL'
 
 # insecure host
-env GOINSECURE=vcs-test.golang.org
+env GKINSECURE=vcs-test.golang.org
 go clean -modcache
 go mod download vcs-test.golang.org/insecure/go/insecure@latest
 
 # insecure glob host
-env GOINSECURE=*.golang.org
+env GKINSECURE=*.golang.org
 go clean -modcache
 go mod download vcs-test.golang.org/insecure/go/insecure@latest
 
 # insecure multiple host
-env GOINSECURE=somewhere-else.com,*.golang.org
+env GKINSECURE=somewhere-else.com,*.golang.org
 go clean -modcache
 go mod download vcs-test.golang.org/insecure/go/insecure@latest
 
 # different insecure host does not fetch
-env GOINSECURE=somewhere-else.com
+env GKINSECURE=somewhere-else.com
 go clean -modcache
 ! go mod download vcs-test.golang.org/insecure/go/insecure@latest
 stderr 'redirected .* to insecure URL'

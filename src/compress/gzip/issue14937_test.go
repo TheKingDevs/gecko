@@ -34,7 +34,7 @@ func TestGZIPFilesHaveZeroMTimes(t *testing.T) {
 
 	goroot, err := filepath.EvalSymlinks(runtime.GOROOT())
 	if err != nil {
-		t.Fatal("error evaluating GOROOT: ", err)
+		t.Fatal("error evaluating GKROOT: ", err)
 	}
 	var files []string
 	err = filepath.WalkDir(goroot, func(path string, info fs.DirEntry, err error) error {
@@ -48,12 +48,12 @@ func TestGZIPFilesHaveZeroMTimes(t *testing.T) {
 	})
 	if err != nil {
 		if os.IsNotExist(err) {
-			t.Skipf("skipping: GOROOT directory not found: %s", runtime.GOROOT())
+			t.Skipf("skipping: GKROOT directory not found: %s", runtime.GOROOT())
 		}
-		t.Fatal("error collecting list of .gz files in GOROOT: ", err)
+		t.Fatal("error collecting list of .gz files in GKROOT: ", err)
 	}
 	if len(files) == 0 {
-		t.Fatal("expected to find some .gz files under GOROOT")
+		t.Fatal("expected to find some .gz files under GKROOT")
 	}
 	for _, path := range files {
 		checkZeroMTime(t, path)

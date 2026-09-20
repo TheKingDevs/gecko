@@ -29,7 +29,7 @@ case $(uname -s -m) in
 esac
 
 if [ ! -f make.bash ]; then
-	echo 'race.bash must be run from $GOROOT/src' 1>&2
+	echo 'race.bash must be run from $GKROOT/src' 1>&2
 	exit 1
 fi
 . ./make.bash --no-banner

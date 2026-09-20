@@ -1,28 +1,28 @@
 # Checks that an identical binary is built with -trimpath from the same
-# source files, with GOROOT in two different locations.
+# source files, with GKROOT in two different locations.
 # Verifies golang.org/issue/38989
 
 [short] skip
 [!symlink] skip
 
 # Symlink the compiler to a local path
-env TEST_GOROOT=$GOROOT
-env GOROOT=$WORK/goroot1
-symlink $GOROOT -> $TEST_GOROOT
+env TEST_GOROOT=$GKROOT
+env GKROOT=$WORK/goroot1
+symlink $GKROOT -> $TEST_GOROOT
 
-# Set up fresh GOCACHE
-env GOCACHE=$WORK/gocache1
-mkdir $GOCACHE
+# Set up fresh GKCACHE
+env GKCACHE=$WORK/gocache1
+mkdir $GKCACHE
 
 # Build a simple binary
 go build -o binary1 -trimpath -x main.go
 
 # Now repeat the same process with the compiler at a different local path
-env GOROOT=$WORK/goroot2
-symlink $GOROOT -> $TEST_GOROOT
+env GKROOT=$WORK/goroot2
+symlink $GKROOT -> $TEST_GOROOT
 
-env GOCACHE=$WORK/gocache2
-mkdir $GOCACHE
+env GKCACHE=$WORK/gocache2
+mkdir $GKCACHE
 
 go build -o binary2 -trimpath -x main.go
 

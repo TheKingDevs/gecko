@@ -1,4 +1,4 @@
-env GO111MODULE=off
+env GK111MODULE=off
 
 ! go fmt does-not-exist
 
@@ -8,15 +8,15 @@ stdout 'exclude[/\\]x_linux\.go'
 
 # Test edge cases with fmt.
 
-! exec $GOROOT/bin/fmt does-not-exist
+! exec $GKROOT/bin/fmt does-not-exist
 
-exec $GOROOT/bin/fmt gofmt-dir/no-extension
+exec $GKROOT/bin/fmt gofmt-dir/no-extension
 stdout 'package x'
 
-exec $GOROOT/bin/fmt gofmt-dir
+exec $GKROOT/bin/fmt gofmt-dir
 ! stdout 'package x'
 
-! exec $GOROOT/bin/fmt empty.go nopackage.go
+! exec $GKROOT/bin/fmt empty.go nopackage.go
 stderr -count=1 'empty\.go:1:1: expected .package., found .EOF.'
 stderr -count=1 'nopackage\.go:1:1: expected .package., found not'
 

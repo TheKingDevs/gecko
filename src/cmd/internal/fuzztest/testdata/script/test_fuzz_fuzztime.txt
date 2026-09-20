@@ -2,7 +2,7 @@ skip # a 5s timeout is never going to be reliable (go.dev/issue/72140)
 
 [!fuzz] skip
 [short] skip
-env GOCACHE=$WORK/cache
+env GKCACHE=$WORK/cache
 
 # There are no seed values, so 'go test' should finish quickly.
 go test
@@ -19,7 +19,7 @@ go test -timeout=3s -fuzz=FuzzFast -fuzztime=5s
 
 # We should see the same behavior when invoking the test binary directly.
 go test -c
-exec ./fuzz.test$GOEXE -test.timeout=3s -test.fuzz=FuzzFast -test.fuzztime=5s -test.parallel=1 -test.fuzzcachedir=$WORK/cache
+exec ./fuzz.test$GKEXE -test.timeout=3s -test.fuzz=FuzzFast -test.fuzztime=5s -test.parallel=1 -test.fuzzcachedir=$WORK/cache
 
 # Timeout should not cause inputs to be written as crashers.
 ! exists testdata/fuzz
