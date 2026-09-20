@@ -16,11 +16,11 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 - `cmd/go/testdata/script/help.txt` no longer asserts help for `mod`/`get`; the `mod_help.txt` script (entirely about `go help mod`/`go help get`) is deleted. Scripts that still drive `gecko mod …` remain skipped via the `usesModCommand` harness filter.
 - Modules stay in use internally: the std library is still the module in `src/`, `GKTOOLCHAIN=auto` downloads toolchains through the module proxy, and `cmd/gpm` reads third-party `go.mod` files as dependency manifests.
 
-**Hash do commit / Commit hash:** `-` (uncommitted)
+**Hash do commit / Commit hash:** `11f542c2`
 
 **Mensagem do commit / Commit message:**
 ```
-gecko: keep the module system internal-only, drop user-facing mod surface
+gecko: use GK* env vars for toolchain config, confine modules to internal
 ```
 
 ### Entry: gecko environment variables (GKROOT, GKPATH, GKHOME, …)
@@ -36,11 +36,11 @@ gecko: keep the module system internal-only, drop user-facing mod surface
 - `cmd/dist`, `make.bash`/`make.bat`/`make.rc` and the `script` test framework condition names follow the rename (`[GKOS:linux]`, etc.). Where dist or the shell bootstrap scripts drive a standard Go bootstrap toolchain, both the `GO*` names (read by the standard Go binary) and the `GK*` equivalents are set.
 - The `gecko install` command is used again internally by `cmd/dist` to build the toolchain (its removal broke `make.bash`); `gecko get` remains removed.
 
-**Hash do commit / Commit hash:** `-` (uncommitted)
+**Hash do commit / Commit hash:** `11f542c2`
 
 **Mensagem do commit / Commit message:**
 ```
-gecko: use GK* environment variables for toolchain configuration
+gecko: use GK* env vars for toolchain config, confine modules to internal
 ```
 
 ### Entry: fix fork fallout in the toolchain's own test suite
