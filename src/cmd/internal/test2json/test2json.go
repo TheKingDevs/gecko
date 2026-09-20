@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // Package test2json implements conversion of test binary output to JSON.
-// It is used by cmd/test2json and cmd/go.
+// It is used by cmd/test2json and cmd/gecko.
 //
 // See the cmd/test2json documentation for details of the JSON encoding.
 package test2json

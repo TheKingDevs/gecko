@@ -689,7 +689,7 @@ var gentab = []struct {
 	file string
 	gen  func(dir, file string)
 }{
-	{"cmd/go/internal/cfg", "zdefaultcc.go", mkzdefaultcc},
+	{"cmd/gecko/internal/cfg", "zdefaultcc.go", mkzdefaultcc},
 	{"internal/runtime/sys", "zversion.go", mkzversion},
 	{"time/tzdata", "zzipdata.go", mktzdata},
 }
@@ -771,7 +771,7 @@ func runInstall(pkg string, ch chan struct{}) {
 	} else {
 		// Go command.
 		elem := name
-		if elem == "go" {
+		if elem == "gecko" {
 			elem = "go_bootstrap"
 		}
 		link = []string{pathf("%s/link", tooldir)}
@@ -1167,7 +1167,7 @@ func shouldbuild(file, pkg string) bool {
 		if code == "package documentation" {
 			return false
 		}
-		if code == "package main" && pkg != "cmd/go" && pkg != "cmd/cgo" {
+		if code == "package main" && pkg != "cmd/gecko" && pkg != "cmd/cgo" {
 			return false
 		}
 		if !strings.HasPrefix(p, "//") {
@@ -1392,7 +1392,7 @@ func toolenv() []string {
 	var env []string
 	if !mustLinkExternal(goos, goarch, false) {
 		// Unless the platform requires external linking,
-		// we disable cgo to get static binaries for cmd/go and cmd/pprof,
+		// we disable cgo to get static binaries for cmd/gecko and cmd/pprof,
 		// so that they work on systems without the same dynamic libraries
 		// as the original build system.
 		env = append(env, "CGO_ENABLED=0")
@@ -1412,7 +1412,7 @@ var (
 	toolchain = []string{"cmd/asm", "cmd/cgo", "cmd/compile", "cmd/link", "cmd/preprofile"}
 
 	// Keep in sync with binExes in cmd/distpack/pack.go.
-	binExesIncludedInDistpack = []string{"cmd/go", "cmd/fmt", "cmd/gpm"}
+	binExesIncludedInDistpack = []string{"cmd/gecko", "cmd/fmt", "cmd/gpm"}
 
 	// Keep in sync with the filter in cmd/distpack/pack.go.
 	toolsIncludedInDistpack = []string{"cmd/asm", "cmd/cgo", "cmd/compile", "cmd/cover", "cmd/export", "cmd/fix", "cmd/link", "cmd/preprofile", "cmd/vet"}
@@ -1477,7 +1477,7 @@ func cmdbootstrap() {
 	// Disable GOEXPERIMENT when building toolchain1 and
 	// go_bootstrap. We don't need any experiments for the
 	// bootstrap toolchain, and this lets us avoid duplicating the
-	// GOEXPERIMENT-related build logic from cmd/go here. If the
+	// GOEXPERIMENT-related build logic from cmd/gecko here. If the
 	// bootstrap toolchain is < Go 1.17, it will ignore this
 	// anyway since GOEXPERIMENT is baked in; otherwise it will
 	// pick it up from the environment we set here. Once we're
@@ -1525,10 +1525,10 @@ func cmdbootstrap() {
 	os.Setenv("GKOS", goos)
 
 	timelog("build", "go_bootstrap")
-	xprintf("Building Go bootstrap cmd/go (go_bootstrap) using Go toolchain1.\n")
+	xprintf("Building Go bootstrap cmd/gecko (go_bootstrap) using Go toolchain1.\n")
 	install("runtime")     // dependency not visible in sources; also sets up textflag.h
 	install("time/tzdata") // no dependency in sources; creates generated file
-	install("cmd/go")
+	install("cmd/gecko")
 	if vflag > 0 {
 		xprintf("\n")
 	}
@@ -1548,11 +1548,11 @@ func cmdbootstrap() {
 	// Then we built the new go command (as go_bootstrap)
 	// using the new toolchain and our own build logic (above).
 	//
-	//	toolchain1 = mk(new toolchain, go1.17 toolchain, go1.17 cmd/go)
-	//	go_bootstrap = mk(new cmd/go, toolchain1, cmd/dist)
+	//	toolchain1 = mk(new toolchain, go1.17 toolchain, go1.17 cmd/gecko)
+	//	go_bootstrap = mk(new cmd/gecko, toolchain1, cmd/dist)
 	//
 	// The toolchain1 we built earlier is built from the new sources,
-	// but because it was built using cmd/go it has no build IDs.
+	// but because it was built using cmd/gecko it has no build IDs.
 	// The eventually installed toolchain needs build IDs, so we need
 	// to do another round:
 	//
@@ -1564,7 +1564,7 @@ func cmdbootstrap() {
 	}
 	xprintf("Building Go toolchain2 using go_bootstrap and Go toolchain1.\n")
 	os.Setenv("CC", compilerEnvLookup("CC", defaultcc, goos, goarch))
-	// Now that cmd/go is in charge of the build process, enable GOEXPERIMENT.
+	// Now that cmd/gecko is in charge of the build process, enable GOEXPERIMENT.
 	os.Setenv("GKEXPERIMENT", goexperiment)
 	goInstall(toolenv(), goBootstrap, toolchain...)
 	if debug {
@@ -1721,11 +1721,12 @@ func wrapperPathFor(goos, goarch string) string {
 
 func goInstall(env []string, goBinary string, args ...string) {
 	goCmd(env, goBinary, "install", args...)
-	// `go install cmd/go` writes $GOROOT/bin/go. The gecko toolchain exposes a
-	// single command named gecko, so move it into place right away. Every other
+	// `go install cmd/gecko` writes $GOROOT/bin/gecko. The gecko toolchain exposes a
+	// single command named gecko. moveGoBinToGecko is kept as a no-op fallback
+	// for older trees that still produced $GOROOT/bin/go. Every other
 	// installed command (cmd/fmt, cmd/gpm, tools) keeps its own name.
 	for _, arg := range args {
-		if arg == "cmd/go" {
+		if arg == "cmd/gecko" {
 			moveGoBinToGecko()
 			break
 		}
@@ -1776,12 +1777,12 @@ func goCmd(env []string, goBinary string, cmd string, args ...string) {
 
 func checkNotStale(env []string, goBinary string, targets ...string) {
 	// The go command is installed as $GOROOT/bin/gecko, so 'go list' would
-	// always report cmd/go as "not installed but available in build cache".
+	// always report cmd/gecko as "not installed but available in build cache".
 	// It was just built by this same bootstrap, so it cannot be stale.
 	if len(targets) > 0 {
 		filtered := targets[:0:0]
 		for _, t := range targets {
-			if t != "cmd/go" {
+			if t != "cmd/gecko" {
 				filtered = append(filtered, t)
 			}
 		}

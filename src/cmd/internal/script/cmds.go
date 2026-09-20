@@ -61,7 +61,7 @@ func InterruptCmd(cmd *exec.Cmd) error {
 		// windows does not implement cmd.Process.Signal
 		return cmd.Process.Kill()
 	}
-	// TODO(thepudds): currently cmd/go/script_test.go uses a platform-specific cancel
+	// TODO(thepudds): currently cmd/gecko/script_test.go uses a platform-specific cancel
 	// that we could consider emulating here.
 	return cmd.Process.Signal(os.Interrupt)
 }

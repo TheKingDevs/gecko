@@ -261,7 +261,7 @@ func readRawBuildInfo(r io.ReaderAt) (vers, mod string, err error) {
 	}
 	if len(mod) >= 33 && mod[len(mod)-17] == '\n' {
 		// Strip module framing: sentinel strings delimiting the module info.
-		// These are cmd/go/internal/modload.infoStart and infoEnd.
+		// These are cmd/gecko/internal/modload.infoStart and infoEnd.
 		mod = mod[16 : len(mod)-16]
 	} else {
 		mod = ""

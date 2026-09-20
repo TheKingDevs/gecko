@@ -665,7 +665,7 @@ func (t test) run() error {
 
 		if tim != 0 {
 			err = cmd.Start()
-			// This command-timeout code adapted from cmd/go/test.go
+			// This command-timeout code adapted from cmd/gecko/test.go
 			// Note: the Go command uses a more sophisticated timeout
 			// strategy, first sending SIGQUIT (if appropriate for the
 			// OS in question) to try to trigger a stack trace, then
@@ -2054,8 +2054,8 @@ func splitQuoted(s string) (r []string, err error) {
 // replacePrefix is like strings.ReplaceAll, but only replaces instances of old
 // that are preceded by ' ', '\t', or appear at the beginning of a line.
 //
-// This does the same kind of filename string replacement as cmd/go.
-// Pilfered from src/cmd/go/internal/work/shell.go .
+// This does the same kind of filename string replacement as cmd/gecko.
+// Pilfered from src/cmd/gecko/internal/work/shell.go .
 func replacePrefix(s, old, new string) string {
 	n := strings.Count(s, old)
 	if n == 0 {

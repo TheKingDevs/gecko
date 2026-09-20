@@ -569,7 +569,7 @@ The following options are available when running cgo directly:
 		If set (which it is by default) import syscall in
 		generated output.
 	-ldflags flags
-		Flags to pass to the C linker. The cmd/go tool uses
+		Flags to pass to the C linker. The cmd/gecko tool uses
 		this to pass in the flags in the CGO_LDFLAGS variable.
 	-objdir directory
 		Put all generated files in directory.

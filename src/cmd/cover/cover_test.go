@@ -47,7 +47,7 @@ var debug = flag.Bool("debug", false, "keep tmpdir files for debugging")
 
 // TestMain used here so that we can leverage the test executable
 // itself as a cmd/cover executable; compare to similar usage in
-// the cmd/go tests.
+// the cmd/gecko tests.
 func TestMain(m *testing.M) {
 	if os.Getenv("CMDCOVER_TOOLEXEC") != "" {
 		// When CMDCOVER_TOOLEXEC is set, the test binary is also

@@ -2019,7 +2019,7 @@ func (ctxt *Link) hostlink() {
 	}
 
 	// Filter out useless linker warnings caused by bugs outside Go.
-	// See also cmd/go/internal/work/exec.go's gccld method.
+	// See also cmd/gecko/internal/work/exec.go's gccld method.
 	var save [][]byte
 	var skipLines int
 	for _, line := range bytes.SplitAfter(out, []byte("\n")) {

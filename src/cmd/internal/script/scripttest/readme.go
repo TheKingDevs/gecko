@@ -77,7 +77,7 @@ func checkScriptReadme(t *testing.T, engine *script.Engine, env []string, script
 		t.Logf("wrote %d bytes to %s", buf.Len(), readmePath)
 	} else {
 		t.Logf("\n%s", diff)
-		t.Errorf("%s is stale. To update, run 'go generate cmd/go'.", readmePath)
+		t.Errorf("%s is stale. To update, run 'go generate cmd/gecko'.", readmePath)
 	}
 }
 

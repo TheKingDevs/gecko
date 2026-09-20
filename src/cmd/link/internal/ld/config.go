@@ -13,7 +13,7 @@ import (
 // A BuildMode indicates the sort of object we are building.
 //
 // Possible build modes are the same as those for the -buildmode flag
-// in cmd/go, and are documented in 'go help buildmode'.
+// in cmd/gecko, and are documented in 'go help buildmode'.
 type BuildMode uint8
 
 const (

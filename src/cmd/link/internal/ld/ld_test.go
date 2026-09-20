@@ -156,11 +156,11 @@ func TestLargeTextSectionSplitting(t *testing.T) {
 
 	// NB: the use of -ldflags=-debugtextsize=1048576 tells the linker to
 	// split text sections at a size threshold of 1M instead of the
-	// architected limit of 67M or larger. The choice of building cmd/go
+	// architected limit of 67M or larger. The choice of building cmd/gecko
 	// is arbitrary; we just need something sufficiently large that uses
 	// external linking.
-	exe := filepath.Join(dir, "go.exe")
-	out, err := testenv.Command(t, testenv.GoToolPath(t), "build", "-o", exe, "-ldflags=-linkmode=external -debugtextsize=1048576", "cmd/go").CombinedOutput()
+	exe := filepath.Join(dir, "gecko.exe")
+	out, err := testenv.Command(t, testenv.GoToolPath(t), "build", "-o", exe, "-ldflags=-linkmode=external -debugtextsize=1048576", "cmd/gecko").CombinedOutput()
 	if err != nil {
 		t.Fatalf("build failure: %s\n%s\n", err, string(out))
 	}

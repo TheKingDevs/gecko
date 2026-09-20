@@ -892,7 +892,7 @@ var depsRules = `
 
 // listStdPkgs returns the same list of packages as "go list std".
 func listStdPkgs(goroot string) ([]string, error) {
-	// Based on cmd/go's matchPackages function.
+	// Based on cmd/gecko's matchPackages function.
 	var pkgs []string
 
 	src := filepath.Join(goroot, "src") + string(filepath.Separator)

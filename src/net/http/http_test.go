@@ -47,7 +47,7 @@ func TestForeachHeaderElement(t *testing.T) {
 	}
 }
 
-// Test that cmd/go doesn't link in the HTTP server.
+// Test that cmd/gecko doesn't link in the HTTP server.
 //
 // This catches accidental dependencies between the HTTP transport and
 // server code.
@@ -72,10 +72,10 @@ func TestCmdGoNoHTTPServer(t *testing.T) {
 	for sym, want := range wantSym {
 		got := bytes.Contains(out, []byte(sym))
 		if !want && got {
-			t.Errorf("cmd/go unexpectedly links in HTTP server code; found symbol %q in cmd/go", sym)
+			t.Errorf("cmd/gecko unexpectedly links in HTTP server code; found symbol %q in cmd/gecko", sym)
 		}
 		if want && !got {
-			t.Errorf("expected to find symbol %q in cmd/go; not found", sym)
+			t.Errorf("expected to find symbol %q in cmd/gecko; not found", sym)
 		}
 	}
 }

@@ -377,7 +377,7 @@ func main() {
 
 	// For backward compatibility for Bazel, record CGO_LDFLAGS
 	// from the environment for external linking.
-	// This should not happen with cmd/go, which removes CGO_LDFLAGS
+	// This should not happen with cmd/gecko, which removes CGO_LDFLAGS
 	// from the environment when invoking cgo.
 	// This can be removed when we no longer need to support
 	// older versions of Bazel. See issue #66456 and

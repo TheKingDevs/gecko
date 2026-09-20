@@ -59,7 +59,7 @@ func ParseLangFlag() {
 
 // parseLang parses a -lang option into a langVer.
 func parseLang(s string) (lang, error) {
-	if s == "go1" { // cmd/go's new spelling of "go1.0" (#65528)
+	if s == "go1" { // cmd/gecko's new spelling of "go1.0" (#65528)
 		s = "go1.0"
 	}
 

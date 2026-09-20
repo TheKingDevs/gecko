@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // Package testlog provides a back-channel communication path
-// between tests and package os, so that cmd/go can see which
+// between tests and package os, so that cmd/gecko can see which
 // environment variables and files a test consults.
 package testlog
 

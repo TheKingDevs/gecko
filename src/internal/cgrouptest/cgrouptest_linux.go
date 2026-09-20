@@ -135,7 +135,7 @@ func findOwnedParent(t *testing.T, orig string) string {
 	// inside the current cgroup we are already in, however that will likely
 	// not work. cgroup v2 only allows processes to be in leaf cgroups. Our
 	// current cgroup likely contains multiple processes (at least this one
-	// and the cmd/go test runner). If we make a subdirectory and try to
+	// and the cmd/gecko test runner). If we make a subdirectory and try to
 	// move our process into that cgroup, then the subdirectory and parent
 	// would both contain processes. Linux won't allow us to do that [1].
 	//

@@ -4,7 +4,7 @@
 
 // Package buildcfg provides access to the build configuration
 // described by the current environment. It is for use by build tools
-// such as cmd/go or cmd/compile and for setting up go/build's Default context.
+// such as cmd/gecko or cmd/compile and for setting up go/build's Default context.
 //
 // Note that it does NOT provide access to the build configuration used to
 // build the currently-running binary. For that, use runtime.GOOS etc

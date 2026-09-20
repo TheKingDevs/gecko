@@ -476,7 +476,7 @@ func Init() {
 	timeout = flag.Duration("test.timeout", 0, "panic test binary after duration `d` (default 0, timeout disabled)")
 	cpuListStr = flag.String("test.cpu", "", "comma-separated `list` of cpu counts to run each test with")
 	parallel = flag.Int("test.parallel", runtime.GOMAXPROCS(0), "run at most `n` tests in parallel")
-	testlog = flag.String("test.testlogfile", "", "write test action log to `file` (for use only by cmd/go)")
+	testlog = flag.String("test.testlogfile", "", "write test action log to `file` (for use only by cmd/gecko)")
 	shuffle = flag.String("test.shuffle", "off", "randomize the execution order of tests and benchmarks")
 	fullPath = flag.Bool("test.fullpath", false, "show full file names in error messages")
 
@@ -755,7 +755,7 @@ func Short() bool {
 	return *short
 }
 
-// testBinary is set by cmd/go to "1" if this is a binary built by "go test".
+// testBinary is set by cmd/gecko to "1" if this is a binary built by "go test".
 // The value is set to "1" by a -X option to cmd/link. We assume that
 // because this is possible, the compiler will not optimize testBinary
 // into a constant on the basis that it is an unexported package-scope
@@ -2820,7 +2820,7 @@ func (m *M) before() {
 	}
 	if *testlog != "" {
 		// Note: Not using toOutputDir.
-		// This file is for use by cmd/go, not users.
+		// This file is for use by cmd/gecko, not users.
 		var f *os.File
 		var err error
 		if m.numRun == 1 {

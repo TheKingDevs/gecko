@@ -29,11 +29,11 @@ func TestFortran(t *testing.T) {
 
 	var fcExtra []string
 	if strings.Contains(fc, "gfortran") {
-		// TODO: This duplicates but also diverges from logic from cmd/go
-		// itself. For example, cmd/go merely adds -lgfortran without the extra
+		// TODO: This duplicates but also diverges from logic from cmd/gecko
+		// itself. For example, cmd/gecko merely adds -lgfortran without the extra
 		// library path work. If this is what's necessary to run gfortran, we
-		// should reconcile the logic here and in cmd/go.. Maybe this should
-		// become a cmd/go script test to share that logic.
+		// should reconcile the logic here and in cmd/gecko.. Maybe this should
+		// become a cmd/gecko script test to share that logic.
 
 		// Add -m32 if we're targeting 386, in case this is a cross-compile.
 		if runtime.GOARCH == "386" {

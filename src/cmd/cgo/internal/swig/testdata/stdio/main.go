@@ -4,7 +4,7 @@
 
 // This file is here just to cause problems.
 // main.swig turns into a file also named main.go.
-// Make sure cmd/go keeps them separate
+// Make sure cmd/gecko keeps them separate
 // when both are passed to cgo.
 
 package main

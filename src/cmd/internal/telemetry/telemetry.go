@@ -23,7 +23,7 @@ var openCountersCalled, maybeChildCalled bool
 
 // MaybeParent does a once a day check to see if the weekly reports are
 // ready to be processed or uploaded, and if so, starts the telemetry child to
-// do so. It should only be called by cmd/go, and only after OpenCounters and MaybeChild
+// do so. It should only be called by cmd/gecko, and only after OpenCounters and MaybeChild
 // have already been called.
 func MaybeParent() {
 	if !counter.OpenCalled() || !maybeChildCalled {

@@ -24,7 +24,7 @@ type testRule struct {
 
 var srcRules = []testRule{
 	{name: "go/VERSION"},
-	{name: "go/src/cmd/go/main.go"},
+	{name: "go/src/cmd/gecko/main.go"},
 	{name: "go/src/bytes/bytes.go"},
 	{name: "**/.DS_Store", exclude: true},
 	{name: "go/.git", exclude: true},
@@ -42,7 +42,7 @@ var srcRules = []testRule{
 
 var zipRules = []testRule{
 	{name: "go/VERSION"},
-	{name: "go/src/cmd/go/main.go"},
+	{name: "go/src/cmd/gecko/main.go"},
 	{name: "go/src/bytes/bytes.go"},
 
 	{name: "**/.DS_Store", exclude: true},
@@ -74,7 +74,7 @@ var zipRules = []testRule{
 
 var modRules = []testRule{
 	{name: "golang.org/toolchain@*/VERSION"},
-	{name: "golang.org/toolchain@*/src/cmd/go/main.go"},
+	{name: "golang.org/toolchain@*/src/cmd/gecko/main.go"},
 	{name: "golang.org/toolchain@*/src/bytes/bytes.go"},
 
 	{name: "golang.org/toolchain@*/lib/wasm/go_js_wasm_exec"},

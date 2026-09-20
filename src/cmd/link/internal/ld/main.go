@@ -181,7 +181,7 @@ func Main(arch *sys.Arch, theArch Arch) {
 	}
 
 	if buildcfg.GOROOT == "" {
-		// cmd/go clears the GOROOT variable when -trimpath is set,
+		// cmd/gecko clears the GOROOT variable when -trimpath is set,
 		// so omit it from the binary even if cmd/link itself has an
 		// embedded GOROOT value reported by runtime.GOROOT.
 	} else {

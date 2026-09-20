@@ -371,7 +371,7 @@ func walkCompareString(n *ir.BinaryExpr, init *ir.Nodes) ir.Node {
 		}
 
 		// maxRewriteLen was chosen empirically.
-		// It is the value that minimizes cmd/go file size
+		// It is the value that minimizes cmd/gecko file size
 		// across most architectures.
 		// See the commit description for CL 26758 for details.
 		maxRewriteLen := 6

@@ -21,6 +21,8 @@ _testmain.go
 
 /VERSION.cache
 /bin/
+!/bin/gecko
+!/bin/gpm
 /build.out
 /doc/articles/wiki/*.bin
 /goinstall.log

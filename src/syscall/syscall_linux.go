@@ -82,7 +82,7 @@ func Syscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno) {
 	// RawSyscall6 is fine because it is implemented in assembly and thus
 	// has no coverage instrumentation.
 	//
-	// This is typically not a problem in the runtime because cmd/go avoids
+	// This is typically not a problem in the runtime because cmd/gecko avoids
 	// adding coverage instrumentation to the runtime in race mode.
 	r1, r2, err = RawSyscall6(trap, a1, a2, a3, 0, 0, 0)
 	runtime_exitsyscall()

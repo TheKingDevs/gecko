@@ -1650,7 +1650,7 @@ func TestFileChdirFromTempDir(t *testing.T) {
 }
 
 // TestFileChdirTestlog verifies that (*File).Chdir notifies the testlog,
-// just like os.Chdir does. cmd/go's test cache relies on every working
+// just like os.Chdir does. cmd/gecko's test cache relies on every working
 // directory change being recorded so that relative paths logged by later
 // Open/Stat calls can be resolved against the correct directory.
 func TestFileChdirTestlog(t *testing.T) {

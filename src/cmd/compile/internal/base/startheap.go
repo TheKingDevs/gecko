@@ -86,7 +86,7 @@ func AdjustStartingHeap(requestedHeapGoal, derateBreak, derateLoPct, derateHiPct
 	// The benchmarking to obtain this was (a version of):
 	//
 	// for i in {1..50} ; do
-	//     for what in std cmd/compile cmd/fix cmd/go github.com/microsoft/typescript-go/internal/ast ; do
+	//     for what in std cmd/compile cmd/fix cmd/gecko github.com/microsoft/typescript-go/internal/ast ; do
 	//       whatbase=`basename ${what}`
 	//       for sh in 128 2000 ; do
 	//         for br in 500 600 ; do

@@ -72,7 +72,7 @@ func TestStackCheckOutput(t *testing.T) {
 
 	// Parse stanzas
 	stanza := regexp.MustCompile(`^(.*): nosplit stack over \d+ byte limit\n(.*\n(?: .*\n)*)`)
-	// Strip comments from cmd/go
+	// Strip comments from cmd/gecko
 	out = regexp.MustCompile(`(?m)^#.*\n`).ReplaceAllString(out, "")
 	for len(out) > 0 {
 		m := stanza.FindStringSubmatch(out)

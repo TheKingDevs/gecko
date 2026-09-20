@@ -258,7 +258,7 @@ Below is the full list of supported metrics, ordered lexicographically.
 		The stack size of new tasks.
 
 	/godebug/non-default-behavior/allowmultiplevcs:events
-		The number of non-default behaviors executed by the cmd/go
+		The number of non-default behaviors executed by the cmd/gecko
 		package due to a non-default GODEBUG=allowmultiplevcs=...
 		setting.
 
@@ -273,7 +273,7 @@ Below is the full list of supported metrics, ordered lexicographically.
 		setting.
 
 	/godebug/non-default-behavior/embedfollowsymlinks:events
-		The number of non-default behaviors executed by the cmd/go
+		The number of non-default behaviors executed by the cmd/gecko
 		package due to a non-default GODEBUG=embedfollowsymlinks=...
 		setting.
 
@@ -286,19 +286,19 @@ Below is the full list of supported metrics, ordered lexicographically.
 		package due to a non-default GODEBUG=fips140ems=... setting.
 
 	/godebug/non-default-behavior/gocachehash:events
-		The number of non-default behaviors executed by the cmd/go
+		The number of non-default behaviors executed by the cmd/gecko
 		package due to a non-default GODEBUG=gocachehash=... setting.
 
 	/godebug/non-default-behavior/gocachetest:events
-		The number of non-default behaviors executed by the cmd/go
+		The number of non-default behaviors executed by the cmd/gecko
 		package due to a non-default GODEBUG=gocachetest=... setting.
 
 	/godebug/non-default-behavior/gocacheverify:events
-		The number of non-default behaviors executed by the cmd/go
+		The number of non-default behaviors executed by the cmd/gecko
 		package due to a non-default GODEBUG=gocacheverify=... setting.
 
 	/godebug/non-default-behavior/gotestjsonbuildtext:events
-		The number of non-default behaviors executed by the cmd/go
+		The number of non-default behaviors executed by the cmd/gecko
 		package due to a non-default GODEBUG=gotestjsonbuildtext=...
 		setting.
 

@@ -1256,7 +1256,7 @@ func (l *maxBytesReader) Read(p []byte) (n int, err error) {
 	// maxBytesReader. This "requestTooLarge" check is
 	// only used by the server code. To prevent binaries
 	// which only using the HTTP Client code (such as
-	// cmd/go) from also linking in the HTTP server, don't
+	// cmd/gecko) from also linking in the HTTP server, don't
 	// use a static type assertion to the server
 	// "*response" type. Check this interface instead:
 	type requestTooLarger interface {

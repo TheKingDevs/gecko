@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 
 // Package cfg holds configuration shared by the Go command and internal/testenv.
-// Definitions that don't need to be exposed outside of cmd/go should be in
-// cmd/go/internal/cfg instead of this package.
+// Definitions that don't need to be exposed outside of cmd/gecko should be in
+// cmd/gecko/internal/cfg instead of this package.
 package cfg
 
 // KnownEnv is a list of environment variables that affect the operation

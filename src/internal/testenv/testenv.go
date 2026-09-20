@@ -64,8 +64,8 @@ func HasGoBuild() bool {
 var tryGoBuild = sync.OnceValue(func() error {
 	// To run 'go build', we need to be able to exec a 'go' command.
 	// We somewhat arbitrarily choose to exec 'go tool -n compile' because that
-	// also confirms that cmd/go can find the compiler. (Before CL 472096,
-	// we sometimes ended up with cmd/go installed in the test environment
+	// also confirms that cmd/gecko can find the compiler. (Before CL 472096,
+	// we sometimes ended up with cmd/gecko installed in the test environment
 	// without a cmd/compile it could use to actually build things.)
 	goTool, err := goTool()
 	if err != nil {

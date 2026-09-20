@@ -19,7 +19,7 @@ import (
 	"unsafe"
 )
 
-// set using cmd/go/internal/modload.ModInfoProg
+// set using cmd/gecko/internal/modload.ModInfoProg
 var modinfo string
 
 // Task scheduler

@@ -270,7 +270,7 @@ specified by the environment variable.
 
 The GOARCH, GOOS, GOPATH, and GOROOT environment variables complete
 the set of Go environment variables. They influence the building of Go programs
-(see [cmd/go] and [go/build]).
+(see [cmd/gecko] and [go/build]).
 GOARCH, GOOS, and GOROOT are recorded at compile time and made available by
 constants or functions in this package, but they do not influence the execution
 of the run-time system.

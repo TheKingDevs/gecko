@@ -10,9 +10,9 @@ import (
 	"unicode/utf8"
 )
 
-// Note: most of this code was originally part of the cmd/go/internal/search
+// Note: most of this code was originally part of the cmd/gecko/internal/search
 // package; it was migrated here in order to support the use case of
-// commands other than cmd/go that need to accept package pattern args.
+// commands other than cmd/gecko that need to accept package pattern args.
 
 // TreeCanMatchPattern(pattern)(name) reports whether
 // name or children of name can possibly match pattern.

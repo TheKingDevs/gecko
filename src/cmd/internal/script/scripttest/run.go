@@ -229,7 +229,7 @@ func subprocessGracePeriod(deadline time.Time, hasDeadline bool) time.Duration {
 // RunTests kicks off one or more script-based tests using the
 // specified engine, running all test files that match pattern.
 // This function adapted from Russ's rsc.io/script/scripttest#Run
-// function, which was in turn forked off cmd/go's runner.
+// function, which was in turn forked off cmd/gecko's runner.
 func RunTests(t *testing.T, ctx context.Context, engine *script.Engine, env []string, pattern string) {
 	ctx = ScriptTestContext(t, ctx)
 

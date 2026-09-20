@@ -35,7 +35,7 @@ type CoverPkgConfig struct {
 	// Local mode indicates we're doing a coverage build or test of a
 	// package selected via local import path, e.g. "./..." or
 	// "./foo/bar" as opposed to a non-relative import path. See the
-	// corresponding field in cmd/go's PackageInternal struct for more
+	// corresponding field in cmd/gecko's PackageInternal struct for more
 	// info.
 	Local bool
 

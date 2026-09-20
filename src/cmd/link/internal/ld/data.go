@@ -2598,7 +2598,7 @@ func (state *dodataState) dodataSect(ctxt *Link, symn sym.SymKind, syms []loader
 // Non-ELF binary formats are not always flexible enough to
 // give us a place to put the Go build ID. On those systems, we put it
 // at the very beginning of the text segment.
-// This “header” is read by cmd/go.
+// This “header” is read by cmd/gecko.
 func (ctxt *Link) textbuildid() {
 	if ctxt.IsELF || *flagBuildid == "" {
 		return
@@ -2744,7 +2744,7 @@ func (ctxt *Link) textaddress() {
 
 	if ctxt.IsAIX() && ctxt.IsExternal() {
 		// On AIX, normally we won't generate direct calls to external symbols,
-		// except in one test, cmd/go/testdata/script/link_syso_issue33139.txt.
+		// except in one test, cmd/gecko/testdata/script/link_syso_issue33139.txt.
 		// That test doesn't make much sense, and I'm not sure it ever works.
 		// Just generate trampoline for now (which will turn a direct call to
 		// an indirect call, which at least builds).

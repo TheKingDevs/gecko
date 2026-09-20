@@ -4,7 +4,7 @@
 
 // Package godebugs provides a table of known GODEBUG settings,
 // for use by a variety of other packages, including internal/godebug,
-// runtime, runtime/metrics, and cmd/go/internal/load.
+// runtime, runtime/metrics, and cmd/gecko/internal/load.
 package godebugs
 
 // An Info describes a single known GODEBUG setting.
@@ -26,19 +26,19 @@ type Info struct {
 // Note: After adding entries to this table, update the list in doc/godebug.md as well.
 // (Otherwise the test in this package will fail.)
 var All = []Info{
-	{Name: "allowmultiplevcs", Package: "cmd/go"},
+	{Name: "allowmultiplevcs", Package: "cmd/gecko"},
 	{Name: "containermaxprocs", Package: "runtime", Changed: 25, Old: "0"},
 	{Name: "cryptocustomrand", Package: "crypto", Changed: 26, Old: "1"},
 	{Name: "dataindependenttiming", Package: "crypto/subtle", Opaque: true},
 	{Name: "decoratemappings", Package: "runtime", Opaque: true, Changed: 25, Old: "0"},
-	{Name: "embedfollowsymlinks", Package: "cmd/go"},
+	{Name: "embedfollowsymlinks", Package: "cmd/gecko"},
 	{Name: "execerrdot", Package: "os/exec"},
 	{Name: "fips140", Package: "crypto/fips140", Opaque: true, Immutable: true},
 	{Name: "fips140ems", Package: "crypto/tls"},
-	{Name: "gocachehash", Package: "cmd/go"},
-	{Name: "gocachetest", Package: "cmd/go"},
-	{Name: "gocacheverify", Package: "cmd/go"},
-	{Name: "gotestjsonbuildtext", Package: "cmd/go", Changed: 24, Old: "1"},
+	{Name: "gocachehash", Package: "cmd/gecko"},
+	{Name: "gocachetest", Package: "cmd/gecko"},
+	{Name: "gocacheverify", Package: "cmd/gecko"},
+	{Name: "gotestjsonbuildtext", Package: "cmd/gecko", Changed: 24, Old: "1"},
 	{Name: "htmlmetacontenturlescape", Package: "html/template"},
 	{Name: "http2client", Package: "net/http"},
 	{Name: "http2debug", Package: "net/http", Opaque: true},
@@ -98,7 +98,7 @@ type RemovedInfo struct {
 // Removed contains all GODEBUGs that we have removed.
 //
 // Every removed GODEBUG must have a corresponding section in doc/godebug.md,
-// since cmd/go links to that document when a removed GODEBUG is used.
+// since cmd/gecko links to that document when a removed GODEBUG is used.
 var Removed = []RemovedInfo{
 	{Name: "x509sha1", Removed: 24, Old: one},                                                       // Old: "1"
 	{Name: "tlskyber", Removed: 24, Old: zero},                                                      // Old: "0"

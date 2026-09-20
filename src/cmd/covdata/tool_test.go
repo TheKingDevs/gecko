@@ -28,7 +28,7 @@ var preserveTmp = flag.Bool("preservetmp", false, "keep tmpdir files for debuggi
 
 // TestMain used here so that we can leverage the test executable
 // itself as a cmd/covdata executable; compare to similar usage in
-// the cmd/go tests.
+// the cmd/gecko tests.
 func TestMain(m *testing.M) {
 	// When CMDCOVDATA_TEST_RUN_MAIN is set, we're reusing the test
 	// binary as cmd/cover. In this case we run the main func exported

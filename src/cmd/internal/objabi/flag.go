@@ -84,7 +84,7 @@ func expandArgs(in []string) (out []string) {
 // Known deviations from GCC:
 // - CRLF is treated as line continuation to be Windows-friendly; GCC only recognizes LF.
 // - Obsolete \f and \v are not treated as whitespaces
-// This function is public to test with cmd/go/internal/work.encodeArg
+// This function is public to test with cmd/gecko/internal/work.encodeArg
 func ParseArgs(s []byte) []string {
 	var args []string
 	var arg strings.Builder

@@ -124,7 +124,7 @@ func (TestDeps) StartTestLog(w io.Writer) {
 		// (which will panic) and also avoids writing the header multiple times.
 		log.set = true
 		testlog.SetLogger(&log)
-		log.w.WriteString("# test log\n") // known to cmd/go/internal/test/test.go
+		log.w.WriteString("# test log\n") // known to cmd/gecko/internal/test/test.go
 	}
 	log.mu.Unlock()
 }
