@@ -15,7 +15,7 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 - No runtime/IR changes: the interpolation yields a string part exactly like any other expression interpolation; text parts are untouched.
 - Examples: `examples/03_templates.gk` gains `${\n}` and `${"\t"}` demonstrations.
 
-**Hash do commit / Commit hash:** `—` (uncommitted)
+**Hash do commit / Commit hash:** `013bf551`
 
 **Mensagem do commit / Commit message:**
 ```
