@@ -9,6 +9,7 @@ import (
 	"go/build/constraint"
 	"io"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -467,6 +468,12 @@ func (p *parser) fileOrNil() *File {
 			p.next()
 			f.DeclList = append(f.DeclList, p.classDecl(false)...)
 
+		case _Interface:
+			if !p.gk {
+				p.error("interface declarations are only allowed in gecko files")
+			}
+			f.DeclList = append(f.DeclList, p.interfaceDecl(false))
+
 		case _Var:
 			p.next()
 			f.DeclList = p.appendGroup(f.DeclList, func(g *Group) Decl { return p.varDecl(g, false) })
@@ -540,6 +547,13 @@ func appendGeckoExport(list []Decl, p *parser) []Decl {
 	case _Class:
 		p.next()
 		return append(list, p.classDecl(true)...)
+
+	case _Interface:
+		p.next()
+		if !p.gk {
+			p.error("interface declarations are only allowed in gecko files")
+		}
+		return append(list, p.interfaceDecl(true))
 
 	case _Var:
 		p.next()
@@ -1034,6 +1048,50 @@ func (p *parser) classDecl(export bool) []Decl {
 	d.Type = cls
 	d.Export = export
 
+	// Synthesize a `geckoGet_<field>(): T { return this.<field> }`
+	// accessor method for every class field, so that classes satisfy
+	// gecko interface field members (which the checker lowers to the same
+	// accessor methods). Getters are generated for the class's own fields:
+	// those declared in the class body and every `this.<name>` selector
+	// the checker would also report as a field. The result type is left
+	// unset here and filled in by the checker from the inferred field
+	// type.
+	for _, f := range p.geckoClassFieldNames(cls.Methods, cls.Fields, cls.Consts) {
+		getter := new(FuncDecl)
+		getter.GeckoGetterField = f
+		getter.SetPos(pos)
+		getter.Name = NewName(pos, "geckoGet_"+f)
+
+		getter.Type = new(FuncType)
+		getter.Type.SetPos(pos)
+
+		getter.Body = new(BlockStmt)
+		getter.Body.SetPos(pos)
+
+		sel := new(SelectorExpr)
+		sel.SetPos(pos)
+		sel.X = NewName(pos, "this")
+		sel.Sel = NewName(pos, f)
+
+		ret := new(ReturnStmt)
+		ret.SetPos(pos)
+		ret.Results = sel
+
+		getter.Body.List = []Stmt{ret}
+		cls.Methods = append(cls.Methods, getter)
+	}
+
+	// Rewrite gecko `super` references to selections on the embedded base
+	// class so the type checker and the noder only deal with regular
+	// receiver selections.
+	if cls.Base != nil {
+		if base := p.geckoBaseName(cls.Base); base != "" {
+			for _, m := range cls.Methods {
+				geckoRewriteSuper(m.Body, base)
+			}
+		}
+	}
+
 	// Desugar methods into FuncDecls with an implicit `this` receiver.
 	// Each method gets a fresh receiver Field so that the shared syntax
 	// nodes can be recorded independently by types2.
@@ -1052,6 +1110,73 @@ func (p *parser) classDecl(export bool) []Decl {
 		decls = append(decls, m)
 	}
 	return decls
+}
+
+// geckoClassFieldNames returns the set of field names the parser must
+// synthesis accessors for: names declared in the class body (`var`,
+// `const`, or the bare `x = v` shorthand) plus every `this.<name>`
+// selector in the class methods that is not a method call target. This
+// mirrors the field collection performed by the type checker, which runs
+// on the same desugared methods.
+func (p *parser) geckoClassFieldNames(methods []*FuncDecl, fields []*VarDecl, consts []*ConstDecl) []string {
+	names := make(map[string]bool)
+	addName := func(n *Name) {
+		if n != nil {
+			names[n.Value] = true
+		}
+	}
+
+	for _, d := range fields {
+		for _, n := range d.NameList {
+			addName(n)
+		}
+	}
+	for _, d := range consts {
+		for _, n := range d.NameList {
+			addName(n)
+		}
+	}
+
+	for _, m := range methods {
+		if m.Body == nil {
+			continue
+		}
+		// Selector expressions that are the `Fun` of a call expression
+		// are method calls (`this.m(arg)`), not field references.
+		isCallTarget := make(map[*SelectorExpr]bool)
+		Inspect(m.Body, func(n Node) bool {
+			if cl, ok := n.(*CallExpr); ok {
+				if sel, ok := Unparen(cl.Fun).(*SelectorExpr); ok {
+					isCallTarget[sel] = true
+				}
+			}
+			return true
+		})
+
+		Inspect(m.Body, func(n Node) bool {
+			if n == nil {
+				return false
+			}
+			sel, ok := n.(*SelectorExpr)
+			if !ok || isCallTarget[sel] {
+				return true
+			}
+			if nm, ok := Unparen(sel.X).(*Name); ok && nm.Value == "this" {
+				addName(sel.Sel)
+			}
+			return true
+		})
+	}
+
+	if len(names) == 0 {
+		return nil
+	}
+	var list []string
+	for n := range names {
+		list = append(list, n)
+	}
+	sort.Strings(list)
+	return list
 }
 
 // classMethodTail parses the signature and body of a class method whose
@@ -1098,6 +1223,119 @@ func (p *parser) classMethodTail(f *FuncDecl) *FuncDecl {
 	}
 
 	return f
+}
+
+// interfaceDecl parses a gecko interface declaration and desugars it into
+// a TypeDecl whose type is an *InterfaceType.
+//
+//	interface Name {
+//		field:  Type
+//		method(arg: T): R
+//	}
+//
+// Field members (`name: T`) are interface fields; the type checker lowers
+// them to `geckoGet_<name>() T` accessor methods so that classes
+// structurally implementing them satisfy the interface. Method members
+// share the gecko method signature syntax used by class methods.
+func (p *parser) interfaceDecl(export bool) *TypeDecl {
+	pos := p.pos() // position of "interface"
+	p.next()
+
+	name := p.name()
+	p.want(_Lbrace)
+
+	it := new(InterfaceType)
+	it.pos = p.pos()
+
+	for p.tok != _Rbrace && p.tok != _EOF {
+		if p.tok != _Name {
+			p.syntaxError("expected interface member")
+			p.advance(_Rbrace, _Semi)
+			continue
+		}
+
+		f := new(Field)
+		f.pos = p.pos()
+		f.Name = p.name()
+
+		// Distinguish `name: Type` (field member) from `name (...)`
+		// (method member): in gecko a field cannot have a name starting
+		// with '(', so a colon directly after the name is a field.
+		switch p.tok {
+		case _Colon:
+			f.GeckoIfaceField = true
+			p.next()
+			f.Type = p.typeOrNil()
+			if f.Type == nil {
+				f.Type = p.badExpr()
+				p.syntaxError("missing type after ':'")
+			}
+		case _Lparen:
+			meth := new(FuncDecl)
+			meth.pos = f.pos
+			meth.Name = f.Name
+			p.geckoIfaceMethodSig(meth)
+			f.Type = meth.Type
+			f.GeckoIfaceField = false
+		case _Semi, _Rbrace:
+			p.syntaxError("expected ':' or '(' after interface member name")
+			p.advance(_Rbrace, _Semi)
+			continue
+		default:
+			p.syntaxError("expected ':' or '(' after interface member name")
+			p.advance(_Rbrace, _Semi)
+			continue
+		}
+
+		it.MethodList = append(it.MethodList, f)
+		p.got(_Semi)
+	}
+
+	p.want(_Rbrace)
+
+	decl := new(TypeDecl)
+	decl.pos = pos
+	decl.Name = name
+	decl.Type = it
+	decl.Export = export
+	return decl
+}
+
+// geckoIfaceMethodSig parses the signature of an interface method member
+// whose name has already been read. Unlike classMethodTail it has no body
+// and no `this` receiver.
+func (p *parser) geckoIfaceMethodSig(f *FuncDecl) {
+	ft := new(FuncType)
+	ft.pos = p.pos()
+
+	if p.got(_Lparen) {
+		for p.tok != _Rparen && p.tok != _EOF {
+			ff := new(Field)
+			ff.pos = p.pos()
+			ff.Name = p.name()
+			if p.got(_Colon) {
+				ff.Type = p.typeOrNil()
+				if ff.Type == nil {
+					ff.Type = p.badExpr()
+					p.syntaxError("missing type after ':'")
+				}
+			} else {
+				// interface method parameters without an explicit type
+				// are implicitly typed `any`
+				ff.Type = NewName(ff.pos, "any")
+			}
+			ft.ParamList = append(ft.ParamList, ff)
+			if p.tok == _Comma {
+				p.next()
+			} else {
+				break
+			}
+		}
+		p.want(_Rparen)
+	}
+
+	ft.ResultList = p.funcResult()
+	f.Type = ft
 }
 
 // fieldInitStmts desugars a class field declaration (`var x = v`,

@@ -21,6 +21,13 @@ type Interface struct {
 	implicit  bool          // interface is wrapper for type set literal (non-interface T, ~T, or A|B)
 	complete  bool          // indicates that all fields (except for tset) are set up
 
+	// geckoFields maps gecko interface field names (`name: T` members) to
+	// the synthesized geckoGet_<name> accessor methods, so that
+	// `x.field` selections on values of this interface type can be
+	// redirected to the accessor. Nil for interfaces without field
+	// members.
+	geckoFields map[string]*Func
+
 	tset *_TypeSet // type set described by this interface, computed lazily
 }
 
@@ -96,6 +103,16 @@ func (t *Interface) Method(i int) *Func { return t.typeSet().Method(i) }
 // Empty reports whether t is the empty interface.
 func (t *Interface) Empty() bool { return t.typeSet().IsAll() }
 
+// geckoFieldGetter returns the synthesized accessor method (geckoGet_<name>)
+// for the interface field member with the given name, or nil if the
+// interface has no such field.
+func (t *Interface) geckoFieldGetter(name string) *Func {
+	if t.geckoFields == nil {
+		return nil
+	}
+	return t.geckoFields[name]
+}
+
 // IsComparable reports whether each type in interface t's type set is comparable.
 func (t *Interface) IsComparable() bool { return t.typeSet().IsComparable(nil) }
 
@@ -127,6 +144,36 @@ func (check *Checker) interfaceType(ityp *Interface, iface *syntax.InterfaceType
 	}
 
 	for _, f := range iface.MethodList {
+		if f.GeckoIfaceField {
+			// gecko interface field member: `name: T`. Fields cannot be
+			// selected directly on an interface value, so the member is
+			// lowered to a `geckoGet_<name>() T` accessor method. Classes
+			// implementing every accessor (and method) structurally
+			// satisfy the interface; the field is read-only.
+			name := f.Name.Value
+			if name == "_" {
+				check.error(f.Name, BlankIfaceMethod, "methods must have a unique non-blank name")
+				continue // ignore
+			}
+			typ := check.typ(f.Type)
+
+			// use named receiver type if available (for better error messages)
+			var recvTyp Type = ityp
+			if def != nil {
+				if named := asNamed(def.typ); named != nil {
+					recvTyp = named
+				}
+			}
+			sig := NewSignatureType(newVar(RecvVar, f.Name.Pos(), check.pkg, "", recvTyp), nil, nil, nil,
+				NewTuple(NewVar(f.Type.Pos(), check.pkg, "", typ)), false)
+			getter := NewFunc(f.Name.Pos(), check.pkg, "geckoGet_"+name, sig)
+			if ityp.geckoFields == nil {
+				ityp.geckoFields = make(map[string]*Func)
+			}
+			ityp.geckoFields[name] = getter
+			ityp.methods = append(ityp.methods, getter)
+			continue
+		}
 		if f.Name == nil {
 			addEmbedded(atPos(f.Type), parseUnion(check, f.Type))
 			continue

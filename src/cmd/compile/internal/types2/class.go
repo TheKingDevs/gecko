@@ -16,6 +16,38 @@ import (
 	. "internal/types/errors"
 )
 
+// geckoGetterResultType returns the type of class field `field` as seen
+// through the receiver type recv of a synthesized accessor method
+// (`geckoGet_<field>`), or nil if no such field is resolvable. The method
+// has no declared result type; funcDecl uses this to fill it in with the
+// class field's inferred type.
+func (check *Checker) geckoGetterResultType(recv Type, field string) Type {
+	obj, _, _ := lookupFieldOrMethod(recv, true, check.pkg, field, false)
+	v, _ := obj.(*Var)
+	if v == nil {
+		return nil
+	}
+	return v.typ
+}
+
+// geckoIfaceFieldGetter returns the synthesized accessor (geckoGet_<name>)
+// for the interface field `name` of a value of type typ, or nil unless the
+// value's type is (a pointer to) an interface with such a field member.
+func (check *Checker) geckoIfaceFieldGetter(typ Type, name string) *Func {
+	if isInterfacePtr(typ) {
+		return nil
+	}
+	u := typ
+	if p, ok := typ.(*Pointer); ok {
+		u = p.base
+	}
+	ityp, ok := u.Underlying().(*Interface)
+	if !ok {
+		return nil
+	}
+	return ityp.geckoFieldGetter(name)
+}
+
 // geckoClassType computes the underlying *Struct for a gecko class type.
 //
 // Field names are collected in source order from `this.<name>` selector

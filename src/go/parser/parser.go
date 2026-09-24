@@ -3204,6 +3204,14 @@ func (p *parser) parseExportDecl() ast.Decl {
 	case token.CLASS:
 		return p.parseClassDecl(true)
 
+	case token.INTERFACE:
+		if p.gecko {
+			return p.parseInterfaceDecl(true)
+		}
+		p.errorExpected(pos, "func, var, const, class, or export list after export (gecko)")
+		p.advance(declStart)
+		return &ast.BadDecl{From: pos, To: p.pos}
+
 	case token.LBRACE:
 		// export { X, Y, ... }
 		p.next()
@@ -3340,6 +3348,75 @@ func (p *parser) parseClassDecl(export bool) ast.Decl {
 	return decl
 }
 
+// parseInterfaceDecl parses a gecko interface declaration,
+// "interface Name() { member₁; member₂; ... }" (the parentheses after
+// Name are optional; only .gk source files reach this parser). Members
+// are "name: T" field members (recorded in Fields) or "name(params): R"
+// method members (recorded in Methods in source order); method members
+// are signatures, not bodies.
+func (p *parser) parseInterfaceDecl(export bool) ast.Decl {
+	if p.trace {
+		defer un(trace(p, "InterfaceDecl"))
+	}
+
+	pos := p.expect(token.INTERFACE)
+	name := p.parseIdent()
+
+	// Gecko interfaces may omit the parentheses: `interface Name { ... }`.
+	if p.tok == token.LPAREN {
+		p.expect(token.LPAREN)
+		p.expect(token.RPAREN)
+	}
+
+	decl := &ast.InterfaceDecl{Interface: pos, Export: export, Name: name}
+	if p.tok == token.LBRACE {
+		decl.Lbrace = p.pos
+		p.next()
+		for p.tok != token.RBRACE && p.tok != token.EOF {
+			if p.tok == token.SEMICOLON {
+				p.next()
+				continue
+			}
+			if p.tok != token.IDENT {
+				p.errorExpected(p.pos, "interface member declaration")
+				p.advance(declStart)
+				break
+			}
+			member := p.parseIdent()
+			switch p.tok {
+			case token.COLON:
+				p.next()
+				typ := p.parseType()
+				decl.Fields = append(decl.Fields, &ast.Field{
+					Names: []*ast.Ident{member},
+					Type:  typ,
+				})
+			case token.LPAREN:
+				m := &ast.FuncDecl{
+					Name: member,
+					Type: &ast.FuncType{
+						Func:    member.Pos(),
+						Params:  p.parseParameters(false),
+						Results: p.parseResults(),
+					},
+				}
+				decl.Methods = append(decl.Methods, m)
+			default:
+				p.errorExpected(p.pos, "':' or '(' after interface member name (gecko)")
+				p.advance(declStart)
+				return decl
+			}
+		}
+		decl.Rbrace = p.expect(token.RBRACE)
+	} else {
+		p.errorExpected(pos, "{")
+		p.advance(declStart)
+	}
+	p.expectSemi()
+
+	return decl
+}
+
 // fieldInitStmts desugars class body field declarations (`var x = 1`,
 // `const X = 1`, bare `x = 1`) into `this.x = 1` assignments that are run
 // by the (possibly synthesized) constructor.
@@ -3425,6 +3502,11 @@ func (p *parser) parseDecl(sync map[token.Token]bool) ast.Decl {
 
 	case token.CLASS:
 		return p.parseClassDecl(false)
+
+	case token.INTERFACE:
+		if p.gecko {
+			return p.parseInterfaceDecl(false)
+		}
 
 	case token.EXPORT:
 		return p.parseExportDecl()

@@ -138,6 +138,13 @@ type (
 		// run a class's field initializers when the class declares no
 		// explicit constructor. It is a formatting hint only.
 		GeckoSynthCtor bool
+		// GeckoGetterField names the class field this method reads. The
+		// parser synthesizes one `geckoGet_<field>` method per class field
+		// so that classes satisfy gecko interface field members (which the
+		// checker lowers to accessor methods). The method's result type is
+		// left unset here and filled in by the checker from the receiver's
+		// inferred field type.
+		GeckoGetterField string
 		decl
 	}
 
@@ -362,6 +369,11 @@ type (
 	Field struct {
 		Name *Name // nil means anonymous field/parameter (structs/parameters), or embedded element (interfaces)
 		Type Expr  // field names declared in a list share the same Type (identical pointers)
+		// GeckoIfaceField marks a gecko interface member written as
+		// `name: T`, i.e. a field descriptor rather than a method
+		// signature. The type checker lowers it to a `geckoGet_<name>`
+		// accessor method on the underlying Go interface.
+		GeckoIfaceField bool
 		node
 	}
 

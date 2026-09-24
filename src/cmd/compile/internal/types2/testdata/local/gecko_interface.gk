@@ -1,0 +1,122 @@
+// Copyright 2026 The Gecko Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// gecko interfaces: a top-level `interface` declaration with field
+// members (`name: T`) and methods. Field members lower to
+// `geckoGet_<name>` accessor methods; classes generate the same
+// accessors for their fields, so satisfaction is structural (like
+// TypeScript) and never declared with `implements`. Interface values
+// dispatch field reads and method calls dynamically; fields read through
+// an interface are read-only.
+
+package geckoiface
+
+interface Pet {
+	name: string
+	speak(): string
+}
+
+class Dog {
+	constructor(name: string) {
+		this.name = name
+	}
+	speak(): string {
+		return "woof " + this.name
+	}
+}
+
+class Cat {
+	constructor(name: string) {
+		this.name = name
+	}
+	speak(): string {
+		return "meow " + this.name
+	}
+}
+
+// Any class with a string name field and a speak() method satisfies Pet.
+func describe(p: Pet): string {
+	return p.name + " says " + p.speak()
+}
+
+var dog: Pet = new Dog("Rex")
+var cat: Pet = new Cat("Mimi")
+
+func useDirectly(): string {
+	var p: Pet = new Dog("Bolt")
+	// Field read through the interface, plus reassignment to another
+	// implementation.
+	p = new Cat("Nala")
+	var s: string = p.name
+	return describe(p) + describe(dog) + describe(cat) + s
+}
+
+// Interfaces compose with methods on their values (including calls to
+// the generated accessors through the interface's method set).
+func petName(p: Pet): string {
+	return p.speak()
+}
+
+// A class with only its own fields/methods, satisfied via its generated
+// accessors, and a derived class whose inherited field satisfies too.
+class Animal {
+	constructor(name: string) {
+		this.name = name
+	}
+	speak(): string {
+		return "animal " + this.name
+	}
+}
+
+class Puppy extends Animal {
+	constructor(name: string, tag: string) {
+		super(name)
+		this.tag = tag
+	}
+	speak(): string {
+		return "puppy " + this.name + " " + this.tag
+	}
+}
+
+func puppyAsPet(name: string, tag: string): Pet {
+	return new Puppy(name, tag) // promoted `name` field satisfies the accessor
+}
+
+// Interface with several field types and no methods.
+interface Point {
+	x: float64
+	y: float64
+}
+
+class Vec {
+	constructor() {
+		this.x = 1.5
+		this.y = -2.0
+	}
+	sum(): float64 {
+		return this.x + this.y
+	}
+}
+
+func manhattan(p: Point): float64 {
+	var ax: float64 = p.x
+	var ay: float64 = p.y
+	if (ax < 0) {
+		ax = -ax
+	}
+	if (ay < 0) {
+		ay = -ay
+	}
+	return ax + ay
+}
+
+var pt: Point = new Vec()
+
+// The empty interface accepts any value, as in Go.
+func echo(v: any): any {
+	return v
+}
+
+var e: any = 1
+var e2: any = new Vec()

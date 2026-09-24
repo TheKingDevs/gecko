@@ -1115,6 +1115,29 @@ type (
 		Rbrace  token.Pos    // position of "}", if any
 	}
 
+	// An InterfaceDecl node represents a gecko top-level interface
+	// declaration, "interface Name() { member₁; member₂; ... }" (the
+	// parentheses after Name are optional; only .gk source files are
+	// parsed with this node). Gecko interfaces are structural, like
+	// TypeScript: any class whose declared fields and methods match the
+	// interface's members satisfies it automatically, with no
+	// "implements" clause.
+	//
+	// Each member is either a field member ("name: T", recorded in
+	// Fields) or a method member ("name(params): R", recorded in
+	// Methods in source order; method members are signatures, not
+	// bodies).
+	InterfaceDecl struct {
+		Doc       *CommentGroup // associated documentation; or nil
+		Interface token.Pos     // position of "interface" keyword
+		Export    bool          // exported via the gecko export keyword
+		Name      *Ident        // interface name
+		Lbrace    token.Pos     // position of "{", if any
+		Fields    []*Field      // field members (name: T)
+		Methods   []*FuncDecl   // method members in source order
+		Rbrace    token.Pos     // position of "}", if any
+	}
+
 	// An ExportDecl node represents a gecko export declaration,
 	// "export X" or "export { X, Y }", which marks the named
 	// package-level declarations as exported.
@@ -1156,6 +1179,9 @@ func (d *ExportDecl) Pos() token.Pos {
 	}
 	return d.Names[0].Pos()
 }
+func (d *InterfaceDecl) Pos() token.Pos {
+	return d.Interface
+}
 func (d *FuncDecl) Pos() token.Pos {
 	if d.Async && d.AsyncPos.IsValid() {
 		return d.AsyncPos
@@ -1188,6 +1214,18 @@ func (d *ClassDecl) End() token.Pos {
 	}
 	return d.Name.End()
 }
+func (d *InterfaceDecl) End() token.Pos {
+	if d.Rbrace.IsValid() {
+		return d.Rbrace + 1
+	}
+	if n := len(d.Methods); n > 0 {
+		return d.Methods[n-1].End()
+	}
+	if n := len(d.Fields); n > 0 {
+		return d.Fields[n-1].End()
+	}
+	return d.Name.End()
+}
 func (d *ExportDecl) End() token.Pos {
 	if n := len(d.Names); n > 0 {
 		return d.Names[n-1].End()
@@ -1203,11 +1241,12 @@ func (d *FuncDecl) End() token.Pos {
 
 // declNode() ensures that only declaration nodes can be
 // assigned to a Decl.
-func (*BadDecl) declNode()    {}
-func (*GenDecl) declNode()    {}
-func (*ClassDecl) declNode()  {}
-func (*ExportDecl) declNode() {}
-func (*FuncDecl) declNode()   {}
+func (*BadDecl) declNode()       {}
+func (*GenDecl) declNode()       {}
+func (*ClassDecl) declNode()     {}
+func (*InterfaceDecl) declNode() {}
+func (*ExportDecl) declNode()    {}
+func (*FuncDecl) declNode()      {}
 
 // ----------------------------------------------------------------------------
 // Files and packages

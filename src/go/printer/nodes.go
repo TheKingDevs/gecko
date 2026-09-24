@@ -2138,6 +2138,8 @@ func (p *printer) decl(decl ast.Decl) {
 		p.funcDecl(d)
 	case *ast.ClassDecl:
 		p.classDecl(d)
+	case *ast.InterfaceDecl:
+		p.interfaceDecl(d)
 	case *ast.ExportDecl:
 		p.setComment(d.Doc)
 		p.setPos(d.Pos())
@@ -2237,6 +2239,63 @@ func (p *printer) classDecl(d *ast.ClassDecl) {
 	}
 }
 
+// interfaceDecl prints a gecko top-level interface declaration,
+// "interface Name() { field₁; method₁; ... }". Members are printed in
+// source order without the "func" keyword.
+func (p *printer) interfaceDecl(d *ast.InterfaceDecl) {
+	p.setComment(d.Doc)
+	p.setPos(d.Pos())
+	if d.Export {
+		p.print(token.EXPORT, blank)
+	}
+	p.print(token.INTERFACE, blank)
+	p.expr(d.Name)
+
+	if d.Rbrace.IsValid() {
+		p.print(blank)
+		p.setPos(d.Lbrace)
+		p.print(token.LBRACE)
+
+		members := make([]ast.Node, 0, len(d.Fields)+len(d.Methods))
+		for _, f := range d.Fields {
+			members = append(members, f)
+		}
+		for _, m := range d.Methods {
+			members = append(members, m)
+		}
+		sort.SliceStable(members, func(i, j int) bool {
+			return members[i].Pos() < members[j].Pos()
+		})
+
+		if len(members) > 0 {
+			p.print(indent, formfeed)
+			var line int
+			for i, m := range members {
+				if i > 0 {
+					p.linebreak(p.lineFor(m.Pos()), 1, ignore, p.linesFrom(line) > 0)
+				}
+				p.recordLine(&line)
+				switch m := m.(type) {
+				case *ast.Field:
+					p.setComment(m.Doc)
+					p.setPos(m.Pos())
+					p.expr(m.Names[0])
+					p.print(token.COLON, blank)
+					p.expr(m.Type)
+				case *ast.FuncDecl:
+					p.setComment(m.Doc)
+					p.setPos(m.Pos())
+					p.expr(m.Name)
+					p.signature(m.Type)
+				}
+			}
+			p.print(unindent, formfeed)
+		}
+		p.setPos(d.Rbrace)
+		p.print(token.RBRACE)
+	}
+}
+
 // classField is a var/const declaration in a gecko class body; it wraps the
 // ValueSpec together with its declaration keyword.
 type classField struct {
@@ -2278,6 +2337,8 @@ func declToken(decl ast.Decl) (tok token.Token) {
 		tok = token.FUNC
 	case *ast.ClassDecl:
 		tok = token.TYPE
+	case *ast.InterfaceDecl:
+		tok = token.INTERFACE
 	case *ast.ExportDecl:
 		tok = token.EXPORT
 	}

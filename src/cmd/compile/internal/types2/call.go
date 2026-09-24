@@ -827,6 +827,19 @@ func (check *Checker) selector(x *operand, e *syntax.SelectorExpr, wantType bool
 
 	obj, index, indirect = lookupFieldOrMethod(x.typ(), x.mode() == variable, check.pkg, sel, false)
 	if obj == nil {
+		// gecko: `x.field` on a value of an interface type with a field
+		// member reads the field through the synthesized geckoGet_<field>
+		// accessor method. Fields are read-only and the selection is a
+		// value, never a variable.
+		if !indirect && x.mode() != typexpr && x.mode() != invalid {
+			if getter := check.geckoIfaceFieldGetter(x.typ(), sel); getter != nil {
+				check.recordSelection(e, GeckoIfaceField, x.typ(), getter, []int{0}, false)
+				x.mode_ = value
+				x.typ_ = getter.typ.(*Signature).results.At(0).typ
+				return
+			}
+		}
+
 		// Don't report another error if the underlying type was invalid (go.dev/issue/49541).
 		if !isValid(x.typ().Underlying()) {
 			goto Error

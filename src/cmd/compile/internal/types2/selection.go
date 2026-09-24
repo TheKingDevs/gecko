@@ -52,6 +52,11 @@ const (
 	FieldVal   SelectionKind = iota // x.f is a struct field selector
 	MethodVal                       // x.f is a method selector
 	MethodExpr                      // x.f is a method expression
+	// GeckoIfaceField is a gecko extension: x.f reads interface field f
+	// of x through the synthesized accessor method geckoGet_<f>. The
+	// selection is a value (fields are read-only through an interface),
+	// and Selection.Obj is the accessor *Func.
+	GeckoIfaceField
 )
 
 // A Selection describes a selector expression x.f.

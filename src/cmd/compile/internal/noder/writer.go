@@ -2034,6 +2034,19 @@ func (w *writer) expr(expr syntax.Expr) {
 
 		case types2.MethodExpr:
 			w.methExpr(expr, sel)
+
+		case types2.GeckoIfaceField:
+			// gecko: `x.field` on an interface value is a getter call
+			// `x.geckoGet_field()`. Write the same encoding as a method
+			// call so the reader's exprCall path builds an interface call.
+			w.Code(exprCall)
+			w.Bool(true)    // method call
+			typ := w.recvExpr(expr, sel)
+			w.methodExpr(expr, typ, sel)
+			w.pos(expr)
+			w.Bool(false) // N:N argument assignment
+			w.Len(0)      // no arguments
+			w.Bool(false) // no '...' arguments
 		}
 
 	case *syntax.NewExpr:

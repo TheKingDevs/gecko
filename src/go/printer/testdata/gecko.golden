@@ -114,3 +114,25 @@ class Worker {
 		return task
 	}
 }
+
+// gecko structural interfaces: field and method members. Field members
+// ("name: T") and method members ("name(params): R") print without the
+// "func" keyword; the optional parentheses after the name are dropped.
+interface Shape {
+	name: string
+	area(): float64
+}
+
+class Circle {
+	constructor(name: string, radius: float64) {
+		this.name = name
+		this.radius = radius
+	}
+	area(): float64 {
+		return 3.14159 * this.radius * this.radius
+	}
+}
+
+func printShape(s: Shape) {
+	println(s.name, s.area())
+}

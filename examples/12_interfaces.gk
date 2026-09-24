@@ -1,0 +1,74 @@
+// 12_interfaces.gk — type-safe interfaces in gecko.
+//
+// An interface collects named fields (`name: T`) and methods. Any class
+// that declares matching fields and methods satisfies the interface
+// automatically (structural typing, like TypeScript) — there is no
+// `implements` clause. Interface values can hold a `new`-ed instance of
+// any implementing class; fields read through the interface are
+// read-only.
+//
+// Gecko lowers each interface field to a `geckoGet_<field>()` accessor
+// method, and generates the same accessor on every class, so interface
+// satisfaction is checked at compile time and dispatched like a regular
+// method call.
+//
+// Run from examples/:
+//   ../bin/go run 12_interfaces.gk
+
+package main
+
+// Shape describes anything that knows its name and can compute its area.
+interface Shape {
+	name: string
+	area(): float64
+}
+
+class Rectangle {
+	constructor(name: string, width: float64, height: float64) {
+		this.name = name
+		this.width = width
+		this.height = height
+	}
+	area(): float64 {
+		return this.width * this.height
+	}
+}
+
+class Circle {
+	constructor(name: string, radius: float64) {
+		this.name = name
+		this.radius = radius
+	}
+	area(): float64 {
+		return 3.14159 * this.radius * this.radius
+	}
+}
+
+// Shapes with all the right methods but a wrong field type do not
+// satisfy the interface: `name` is an int here, not a string.
+class OddShape {
+	constructor() {
+		this.name = 42
+	}
+	area(): float64 {
+		return 0
+	}
+}
+
+func printShape(s: Shape) {
+	println(s.name, "area:", s.area())
+}
+
+func main() {
+	r = new Rectangle("square", 4, 5)
+	c = new Circle("wheel", 2)
+
+	printShape(r)
+	printShape(c)
+
+	// A value of interface type can be reassigned to any implementation.
+	var s: Shape = r
+	printShape(s)
+	s = c
+	printShape(s)
+}

@@ -5,6 +5,26 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: structural interfaces (TypeScript-style)
+
+**Título / Title:** `.gk` files gain TypeScript-style structural interfaces: `interface Pet { name: string; speak(): string }` describes any class that declares a matching `name: string` field and `speak(): string` method — satisfaction is structural (no `implements`), checked at compile time, and fields read through the interface dispatch like method calls. Interfaces are usable as parameter/return/variable types; interface-typed fields are read-only.
+
+**Descrição / Description:**
+
+- Lowering: a field member `name: T` of an interface becomes an accessor method `geckoGet_name(): T` on the underlying Go interface; the body-less method members stay method signatures. On the class side, the parser synthesizes an accessor method `geckoGet_<field>()` (returning `this.<field>`) for every field name it sees — explicit `var`/`const`/bare declarations and non-call `this.<name>` selections — so interface satisfaction produces no duplicate-method errors in derived classes (an explicit accessor just shadows a promoted one, as in Go).
+- Syntax (`cmd/compile/internal/syntax`): `nodes.go` gains `Field.GeckoIfaceField` and `FuncDecl.GeckoGetterField`; `parser.go` parses a top-level `interface Name { ... }` declaration (`interfaceDecl`, `geckoIfaceMethodSig`) in both the plain-decl and `export` paths, and `classDecl` appends the synthesized getters to `cls.Methods` (`geckoClassFieldNames`); `tokens.go` needs no new keyword (`interface` is a Go keyword).
+- Types (`cmd/compile/internal/types2`): `Interface` tracks `geckoFields` and `interfaceType` lowers field members to accessor `Func`s; `check.selector` resolves `p.name` on an interface-typed value to the `geckoGet_name` accessor (new `SelectionKind.GeckoIfaceField`), so reads become method calls and assignments are rejected ("cannot assign to p.name"); `funcDecl` fills in the synthesized getters' declared result type from the matched class field (`geckoGetterResultType`, `geckoIfaceFieldGetter`). Read-only fields, structural satisfaction, and "missing method geckoGet_name" errors all flow from the ordinary interface machinery.
+- Compiler (`cmd/compile/internal/noder/writer.go`): a `GeckoIfaceField` selector is encoded like a method call (`exprCall`), so `p.name` lowers to `p.geckoGet_name()`, dispatched via the normal itab at runtime. No IR/walk changes.
+- Formatter mirror (`go/ast`, `go/parser`, `go/printer`): new `ast.InterfaceDecl` (field members as `*ast.Field`, method members as body-less `*ast.FuncDecl`) with `Walk`, `Pos`/`End`, and `declToken` support; the parser dispatches top-level (and `export`ed) `interface` only in `.gk` files; canonical printing round-trips the decoration-free `interface Name { member; ... }` form.
+- Tests/examples: new `testdata/local/gecko_interface.gk` covers field/method interfaces, structural satisfaction, promotion through `extends`, read-only enforcement is typechecked (positive cases only — the harness accepts error-free files), and empty interfaces; new `examples/12_interfaces.gk` demonstrates dynamic and typed operation.
+
+**Hash do commit / Commit hash:** `—` (uncommitted)
+
+**Mensagem do commit / Commit message:**
+```
+gecko: add structural interfaces
+```
+
 ### Entry: module system kept internal-only (no user-facing mod)
 
 **Título / Title:** the module machinery remains in the tree only as internal infrastructure (building/testing the std toolchain from `src/`, `GKTOOLCHAIN=auto` toolchain downloads, and gpm's interop with Go-ecosystem packages); it is no longer exposed to users. `gecko mod`, `gecko get` and the `help modules`/`help go.mod` topics are gone.

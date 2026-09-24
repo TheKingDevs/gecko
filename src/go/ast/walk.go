@@ -373,6 +373,18 @@ func Walk(v Visitor, node Node) {
 			Walk(v, m)
 		}
 
+	case *InterfaceDecl:
+		if n.Doc != nil {
+			Walk(v, n.Doc)
+		}
+		Walk(v, n.Name)
+		for _, f := range n.Fields {
+			Walk(v, f)
+		}
+		for _, m := range n.Methods {
+			Walk(v, m)
+		}
+
 	case *ExportDecl:
 		if n.Doc != nil {
 			Walk(v, n.Doc)
