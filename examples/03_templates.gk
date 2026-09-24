@@ -39,6 +39,12 @@ func main() {
 	// Bools, floats and comparisons interpolate too.
 	println(`${true} and ${2.5} and ${name == "Ana"}`)
 
+	// Escapes work only inside ${...}: a newline (or tab) interpolation.
+	println(`one${"\n"}two ${"\t"}tab`)
+
+	// ...or with the bare escape shorthand: here ${\n} yields a newline.
+	println(`line1${\n}line2`)
+
 	// A backtick literal without ${...} is a plain string, not a template.
 	println(`plain backticks, no template`)
 }

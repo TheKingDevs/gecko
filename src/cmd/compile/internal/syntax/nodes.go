@@ -216,7 +216,9 @@ type (
 
 	// A TemplateLit is a gecko template string: `text ${ expr } text`.
 	// Parts holds the alternating literal string segments and the
-	// interpolated sub-expressions.
+	// interpolated sub-expressions. Literal segments keep their raw
+	// backtick semantics; escape sequences are honored only inside the
+	// ${...} interpolations (e.g. `${\n}` is a newline).
 	TemplateLit struct {
 		Parts []any
 		expr

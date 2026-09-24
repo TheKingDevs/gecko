@@ -5,6 +5,23 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: escape sequences in template interpolations
+
+**Título / Title:** gecko template strings honor escape sequences only inside `${...}` interpolations, so `` `a${\n}b` `` yields a real newline (and `${\t}`, `${\r}`, `${\\}`, … their characters) instead of a syntax error. Literal template text keeps raw backtick semantics: `\n` written in the text stays `\n` (backslash + `n`), and escapes inside quoted strings of the interpolation keep normal Go semantics.
+
+**Descrição / Description:**
+
+- Syntax (`cmd/compile/internal/syntax/parser.go`): `templateExpr` preprocesses the interpolation body with `interpEscapes`, rewriting each **bare** escape (`\n`, `\t`, `\r`, `\\`, `\'`, `\"`, `\``, `\b`, `\f`, `\v`, `\0`) outside quoted strings and comments into the equivalent Go string literal (e.g. `${\n}` → the value `"\n"`), so the sub-parser builds a string constant. Unknown escapes, strings, raw literals, and comments inside the interpolation are copied unchanged and keep their normal reporting. `nodes.go`'s `TemplateLit` doc notes the rule.
+- No runtime/IR changes: the interpolation yields a string part exactly like any other expression interpolation; text parts are untouched.
+- Examples: `examples/03_templates.gk` gains `${\n}` and `${"\t"}` demonstrations.
+
+**Hash do commit / Commit hash:** `—` (uncommitted)
+
+**Mensagem do commit / Commit message:**
+```
+gecko: template string escapes only inside ${...}
+```
+
 ### Entry: structural interfaces (TypeScript-style)
 
 **Título / Title:** `.gk` files gain TypeScript-style structural interfaces: `interface Pet { name: string; speak(): string }` describes any class that declares a matching `name: string` field and `speak(): string` method — satisfaction is structural (no `implements`), checked at compile time, and fields read through the interface dispatch like method calls. Interfaces are usable as parameter/return/variable types; interface-typed fields are read-only.

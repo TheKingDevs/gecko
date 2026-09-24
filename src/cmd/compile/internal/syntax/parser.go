@@ -2764,6 +2764,113 @@ func (p *parser) oliteral() *BasicLit {
 // and the interpolated expressions are extracted from b.Value; each
 // ${...} sub-expression is parsed with a fresh parser over its source
 // text.
+// interpEscapes rewrites the escape sequences of a template
+// interpolation body so that a bare `\n` (etc.) inside `${...}` yields
+// the corresponding character instead of a syntax error: `\n` becomes
+// the string literal "\n", `\t` becomes "\t", and so on. Escapes inside
+// quoted strings of the interpolation source are left untouched, keeping
+// normal Go escape semantics there. Unknown escapes are left as-is (and
+// reported by the interpolation's sub-parser).
+func interpEscapes(body string) string {
+	if !strings.ContainsRune(body, '\\') {
+		return body
+	}
+	var b strings.Builder
+	for i := 0; i < len(body); {
+		c := body[i]
+		switch c {
+		case '\'', '"', '`':
+			// Copy a quoted string unchanged, honoring backslash
+			// escapes for interpreted ('...'/"...") strings only.
+			delim := byte(c)
+			b.WriteByte(c)
+			i++
+			for i < len(body) && body[i] != delim {
+				if delim != '`' && body[i] == '\\' && i+1 < len(body) {
+					b.WriteByte(body[i])
+					b.WriteByte(body[i+1])
+					i += 2
+					continue
+				}
+				b.WriteByte(body[i])
+				i++
+			}
+			if i < len(body) {
+				b.WriteByte(body[i])
+				i++
+			}
+		case '/':
+			// Copy comments unchanged; escapes inside them are text.
+			if i+1 >= len(body) {
+				b.WriteByte(c)
+				i++
+				continue
+			}
+			switch body[i+1] {
+			case '/':
+				b.WriteString("//")
+				i += 2
+				for i < len(body) && body[i] != '\n' {
+					b.WriteByte(body[i])
+					i++
+				}
+			case '*':
+				b.WriteString("/*")
+				i += 2
+				for i+1 < len(body) && !(body[i] == '*' && body[i+1] == '/') {
+					b.WriteByte(body[i])
+					i++
+				}
+				if i+1 < len(body) {
+					b.WriteString("*/")
+					i += 2
+				} else {
+					b.WriteByte(body[i])
+					i++
+				}
+			default:
+				b.WriteByte(c)
+				i++
+			}
+		case '\\':
+			if i+1 >= len(body) {
+				b.WriteByte(c)
+				i++
+				continue
+			}
+			ch := body[i+1]
+			if isTemplateEscape(ch) {
+				// Replace the bare escape \X with the string
+				// literal "\X" (e.g. "\n").
+				b.WriteString(`"`)
+				b.WriteByte('\\')
+				b.WriteByte(ch)
+				b.WriteString(`"`)
+				i += 2
+				continue
+			}
+			// Unknown escape: keep it; the sub-parser reports it.
+			b.WriteByte('\\')
+			b.WriteByte(ch)
+			i += 2
+		default:
+			b.WriteByte(c)
+			i++
+		}
+	}
+	return b.String()
+}
+
+// isTemplateEscape reports whether ch is an escape sequence supported
+// inside a gecko template interpolation.
+func isTemplateEscape(ch byte) bool {
+	switch ch {
+	case '\\', '\'', '"', '`', 'n', 'r', 't', 'b', 'f', 'v', '0':
+		return true
+	}
+	return false
+}
+
 func (p *parser) templateLit(b *BasicLit) Expr {
 	// b.Value includes the surrounding backticks.
 	raw := b.Value[1 : len(b.Value)-1]
@@ -2850,7 +2957,7 @@ func (p *parser) templateExpr(b *BasicLit, colOff uint, body string) Expr {
 
 	var pp parser
 	var bad *BadExpr
-	pp.init(base, strings.NewReader(body), func(err error) {
+	pp.init(base, strings.NewReader(interpEscapes(body)), func(err error) {
 		// err.Pos is already translated to the enclosing source
 		// coordinates; report it at the template's position.
 		if bad == nil {
