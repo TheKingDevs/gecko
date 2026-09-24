@@ -18,7 +18,7 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 - Formatter mirror (`go/ast`, `go/parser`, `go/printer`): new `ast.InterfaceDecl` (field members as `*ast.Field`, method members as body-less `*ast.FuncDecl`) with `Walk`, `Pos`/`End`, and `declToken` support; the parser dispatches top-level (and `export`ed) `interface` only in `.gk` files; canonical printing round-trips the decoration-free `interface Name { member; ... }` form.
 - Tests/examples: new `testdata/local/gecko_interface.gk` covers field/method interfaces, structural satisfaction, promotion through `extends`, read-only enforcement is typechecked (positive cases only — the harness accepts error-free files), and empty interfaces; new `examples/12_interfaces.gk` demonstrates dynamic and typed operation.
 
-**Hash do commit / Commit hash:** `—` (uncommitted)
+**Hash do commit / Commit hash:** `2a88aa9a`
 
 **Mensagem do commit / Commit message:**
 ```
