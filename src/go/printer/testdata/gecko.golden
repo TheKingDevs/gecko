@@ -136,3 +136,23 @@ class Circle {
 func printShape(s: Shape) {
 	println(s.name, s.area())
 }
+
+// gecko for (x of e) / for (k in e): value and key iteration. `of`
+// discards the key and binds the value; `in` binds the key (index).
+func iterate(items: []int, m: map[string]int) {
+	for (v of items) {
+		println(v)
+	}
+	for (k in items) {
+		println(k)
+	}
+	for (v of m) {
+		println(v)
+	}
+	for (k in m) {
+		println(k)
+	}
+	for (n of 4) {
+		println(n)
+	}
+}

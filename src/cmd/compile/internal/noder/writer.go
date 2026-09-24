@@ -1608,15 +1608,34 @@ func (w *writer) forStmt(stmt *syntax.ForStmt) {
 
 	if rang, ok := stmt.Init.(*syntax.RangeClause); w.Bool(ok) {
 		w.pos(rang)
-		w.assignList(rang.Lhs)
-		w.expr(rang.X)
 
 		xtyp := w.p.typeOf(rang.X)
+		keyType, valueType := types2.RangeKeyVal(xtyp)
+
+		lhs := rang.Lhs
+		if rang.Of && valueType != nil {
+			// `for (x of e)` iterates over the value of each element:
+			// discard the key by ranging over a discarded `_` and bind
+			// the single iteration variable to the value instead. For
+			// operands that only produce a value per element (channels,
+			// integer ranges) valueType is nil and the variable is bound
+			// in the ordinary single-variable way.
+			var x syntax.Expr = rang.Lhs
+			if list := syntax.UnpackListExpr(rang.Lhs); len(list) > 0 {
+				x = list[0]
+			}
+			lhs = &syntax.ListExpr{
+				ElemList: []syntax.Expr{syntax.NewName(rang.Pos(), "_"), x},
+			}
+		}
+		w.assignList(lhs)
+		w.expr(rang.X)
+
 		if _, isMap := types2.CoreType(xtyp).(*types2.Map); isMap {
 			w.rtype(xtyp)
 		}
 		{
-			lhs := syntax.UnpackListExpr(rang.Lhs)
+			lhs := syntax.UnpackListExpr(lhs)
 			assign := func(i int, src types2.Type) {
 				if i >= len(lhs) {
 					return
@@ -1642,7 +1661,6 @@ func (w *writer) forStmt(stmt *syntax.ForStmt) {
 				w.convRTTI(src, dstType)
 			}
 
-			keyType, valueType := types2.RangeKeyVal(w.p.typeOf(rang.X))
 			assign(0, keyType)
 			assign(1, valueType)
 		}
@@ -2040,7 +2058,7 @@ func (w *writer) expr(expr syntax.Expr) {
 			// `x.geckoGet_field()`. Write the same encoding as a method
 			// call so the reader's exprCall path builds an interface call.
 			w.Code(exprCall)
-			w.Bool(true)    // method call
+			w.Bool(true) // method call
 			typ := w.recvExpr(expr, sel)
 			w.methodExpr(expr, typ, sel)
 			w.pos(expr)
@@ -2722,43 +2740,43 @@ func (w *writer) multiExpr(pos poser, dstType func(int) types2.Type, exprs []syn
 			w.pos(pos)
 			w.expr(expr)
 
-w.Len(tuple.Len())
-		for i := 0; i < tuple.Len(); i++ {
-			src := tuple.At(i).Type()
-			// TODO(mdempsky): Investigate not writing src here. I think
-			// the reader should be able to infer it from expr anyway.
-			w.typ(src)
-			if dst := dstType(i); dst != nil && !types2.Identical(src, dst) {
-				// Gecko pointer fix: implicit address-of or dereference.
-				if w.geckoFile(pos) {
-					if p, _ := types2.Unalias(dst).(*types2.Pointer); p != nil && types2.Identical(types2.Unalias(p.Elem()), src) {
-						w.Bool(true) // some conversion/fix
-						w.Bool(true) // gecko pointer fix
-						w.Bool(true) // address-of
-						continue
+			w.Len(tuple.Len())
+			for i := 0; i < tuple.Len(); i++ {
+				src := tuple.At(i).Type()
+				// TODO(mdempsky): Investigate not writing src here. I think
+				// the reader should be able to infer it from expr anyway.
+				w.typ(src)
+				if dst := dstType(i); dst != nil && !types2.Identical(src, dst) {
+					// Gecko pointer fix: implicit address-of or dereference.
+					if w.geckoFile(pos) {
+						if p, _ := types2.Unalias(dst).(*types2.Pointer); p != nil && types2.Identical(types2.Unalias(p.Elem()), src) {
+							w.Bool(true) // some conversion/fix
+							w.Bool(true) // gecko pointer fix
+							w.Bool(true) // address-of
+							continue
+						}
+						if p, _ := types2.Unalias(src).(*types2.Pointer); p != nil && types2.Identical(types2.Unalias(p.Elem()), dst) {
+							w.Bool(true)  // some conversion/fix
+							w.Bool(true)  // gecko pointer fix
+							w.Bool(false) // dereference
+							continue
+						}
 					}
-					if p, _ := types2.Unalias(src).(*types2.Pointer); p != nil && types2.Identical(types2.Unalias(p.Elem()), dst) {
-						w.Bool(true)  // some conversion/fix
-						w.Bool(true)  // gecko pointer fix
-						w.Bool(false) // dereference
-						continue
+					if src == nil || dst == nil {
+						w.p.fatalf(pos, "src is %v, dst is %v", src, dst)
 					}
+					if !types2.AssignableTo(src, dst) {
+						w.p.fatalf(pos, "%v is not assignable to %v", src, dst)
+					}
+					w.Bool(true)  // regular conversion
+					w.Bool(false) // not a gecko pointer fix
+					w.typ(dst)
+					w.convRTTI(src, dst)
+				} else {
+					w.Bool(false) // no conversion
 				}
-				if src == nil || dst == nil {
-					w.p.fatalf(pos, "src is %v, dst is %v", src, dst)
-				}
-				if !types2.AssignableTo(src, dst) {
-					w.p.fatalf(pos, "%v is not assignable to %v", src, dst)
-				}
-				w.Bool(true)  // regular conversion
-				w.Bool(false) // not a gecko pointer fix
-				w.typ(dst)
-				w.convRTTI(src, dst)
-			} else {
-				w.Bool(false) // no conversion
 			}
-		}
-		return
+			return
 		}
 	}
 

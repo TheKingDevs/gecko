@@ -19,8 +19,10 @@ import (
 // where sKey, sValue, sExtra may be nil. isDef indicates whether these
 // variables are assigned to only (=) or whether there is a short variable
 // declaration (:=). If the latter and there are no variables, an error is
-// reported at noNewVarPos.
-func (check *Checker) rangeStmt(inner stmtContext, rangeStmt *syntax.ForStmt, noNewVarPos poser, sKey, sValue, sExtra, rangeVar syntax.Expr, isDef bool) {
+// reported at noNewVarPos. isOf marks a gecko `for (x of rangeVar)`
+// clause, where the single iteration variable is bound to the value of
+// each element rather than to its key.
+func (check *Checker) rangeStmt(inner stmtContext, rangeStmt *syntax.ForStmt, noNewVarPos poser, sKey, sValue, sExtra, rangeVar syntax.Expr, isDef, isOf bool) {
 	// check expression to iterate over
 	var x operand
 
@@ -78,6 +80,14 @@ func (check *Checker) rangeStmt(inner stmtContext, rangeStmt *syntax.ForStmt, no
 			check.softErrorf(sExtra, InvalidIterVar, "range clause permits at most two iteration variables")
 		}
 		key, val = k, v
+	}
+
+	// gecko: `for (x of e)` binds the single iteration variable to the
+	// value of each element and discards the key. Operands that only
+	// produce a value per element (channels, integer ranges, single-value
+	// range functions) keep the ordinary single-variable form.
+	if isOf && sKey != nil && sValue == nil && val != nil {
+		sKey, sValue = syntax.NewName(sKey.Pos(), "_"), sKey
 	}
 
 	// Open the for-statement block scope now, after the range clause.

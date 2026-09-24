@@ -504,6 +504,7 @@ func (c *DeepCopier) CopySimpleStmt(s syntax.SimpleStmt) syntax.SimpleStmt {
 	case *syntax.RangeClause:
 		newS := &syntax.RangeClause{
 			Def: s.Def,
+			Of:  s.Of,
 			X:   c.CopyExpr(s.X),
 		}
 		// In a range clause, Lhs may contain definitions if Def is true.

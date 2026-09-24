@@ -1,0 +1,80 @@
+// Copyright 2026 The Gecko Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// gecko `for (x of e)` and `for (k in e)` loops. The `of` clause binds
+// the single iteration variable to the value of each element (discarding
+// the key) and `in` binds it to the key (index). Operands that only
+// produce a value per element — channels and integer ranges — bind the
+// variable to that value in both forms.
+
+package geckoofin
+
+func slices(items: []int, words: []string) {
+	var sum: int = 0
+	for (v of items) {
+		sum = sum + v
+	}
+	for (v of words) {
+		println(v)
+	}
+	var i: int = 0
+	for (i in items) {
+		println(i)
+	}
+}
+
+func maps(m: map[string]int, b: map[int]bool) {
+	var total: int = 0
+	for (v of m) {
+		total = total + v
+	}
+	for (k in m) {
+		println(k)
+	}
+	var flag: bool = false
+	for (v of b) {
+		flag = v
+	}
+	println(flag)
+	for (v in b) {
+		println(v)
+	}
+}
+
+func strings() {
+	for (r of "gecko") {
+		println(r)
+	}
+	_ = 0
+}
+
+func ints() {
+	var n: int
+	for (n of 5) {
+		println(n)
+	}
+	for (n in 5) {
+		println(n)
+	}
+}
+
+func channels(ch: chan int) {
+	for (v of ch) {
+		println(v)
+	}
+	for (v in ch) {
+		println(v)
+	}
+}
+
+func reusesExisting(items: []int) {
+	var acc: int = 0
+	for (v of items) {
+		acc = acc + v
+	}
+	for (k in items) {
+		acc = acc + k
+	}
+	println(acc)
+}

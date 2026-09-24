@@ -839,6 +839,16 @@ type (
 		Range      token.Pos   // position of "range" keyword
 		X          Expr        // value to range over
 		Body       *BlockStmt
+
+		// GeckoIn reports a gecko `for (k in e)` clause, which iterates
+		// over the keys (indexes) of e: the single iteration variable is
+		// bound exactly like `for k = range e`.
+		GeckoIn bool
+		// GeckoOf reports a gecko `for (x of e)` clause, which iterates
+		// over the values of e: the single iteration variable is stored
+		// in Value and bound like `for _, x = range e` (a channel-like
+		// operand, which only has values, is bound through Key instead).
+		GeckoOf bool
 	}
 )
 

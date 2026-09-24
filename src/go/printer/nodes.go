@@ -1666,21 +1666,37 @@ func (p *printer) stmt(stmt ast.Stmt, nextIsRBrace bool) {
 		if paren {
 			p.print(token.LPAREN)
 		}
-		if s.Key != nil {
-			p.expr(s.Key)
-			if s.Value != nil {
-				// use position of value following the comma as
-				// comma position for correct comment placement
-				p.setPos(s.Value.Pos())
-				p.print(token.COMMA, blank)
-				p.expr(s.Value)
+		if s.GeckoOf || s.GeckoIn {
+			// gecko: for (x of e) iterates over values, for (k in e)
+			// over keys; both use an `of`/`in` keyword instead of `= range`.
+			kw := "in"
+			v := s.Key
+			if s.GeckoOf {
+				kw = "of"
+				v = s.Value
 			}
+			p.expr(v)
 			p.print(blank)
-			p.setPos(s.TokPos)
-			p.print(s.Tok, blank)
+			p.setPos(s.Range)
+			p.print(ast.NewIdent(kw), blank)
+			p.expr(stripParens(s.X))
+		} else {
+			if s.Key != nil {
+				p.expr(s.Key)
+				if s.Value != nil {
+					// use position of value following the comma as
+					// comma position for correct comment placement
+					p.setPos(s.Value.Pos())
+					p.print(token.COMMA, blank)
+					p.expr(s.Value)
+				}
+				p.print(blank)
+				p.setPos(s.TokPos)
+				p.print(s.Tok, blank)
+			}
+			p.print(token.RANGE, blank)
+			p.expr(stripParens(s.X))
 		}
-		p.print(token.RANGE, blank)
-		p.expr(stripParens(s.X))
 		if paren {
 			p.print(token.RPAREN)
 		}

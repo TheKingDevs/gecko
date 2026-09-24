@@ -3425,6 +3425,27 @@ func (p *parser) simpleStmt(lhs Expr, keyword token) SimpleStmt {
 		lhs = p.exprList()
 	}
 
+	// gecko: `for (x of e)` iterates over the value of each element and
+	// `for (x in e)` over its key (index). They differ from the range
+	// clause only in how the single iteration variable is bound, so both
+	// parse to a RangeClause; Of marks the value form.
+	if p.gk && keyword == _For && p.tok == _Name && (p.lit == "of" || p.lit == "in") {
+		if list, ok := lhs.(*ListExpr); ok && len(list.ElemList) != 1 {
+			p.syntaxError("for ... of/in requires exactly one iteration variable")
+		} else if _, ok := Unparen(lhs).(*Name); !ok {
+			p.syntaxError("for ... of/in requires a single name on the left")
+		}
+		pos := p.pos()
+		of := p.lit == "of"
+		p.next() // consume the of/in keyword
+		r := new(RangeClause)
+		r.pos = pos
+		r.Lhs = lhs
+		r.Of = of
+		r.X = p.expr()
+		return r
+	}
+
 	if _, ok := lhs.(*ListExpr); !ok && p.tok != _Assign && p.tok != _Define {
 		// expr
 		pos := p.pos()

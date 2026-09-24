@@ -694,7 +694,7 @@ func (check *Checker) stmt(ctxt stmtContext, s syntax.Stmt) {
 					sExtra = p.ElemList[2]
 				}
 			}
-			check.rangeStmt(inner, s, s, sKey, sValue, sExtra, rclause.X, rclause.Def)
+			check.rangeStmt(inner, s, s, sKey, sValue, sExtra, rclause.X, rclause.Def, rclause.Of)
 			break
 		}
 

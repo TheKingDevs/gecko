@@ -1,0 +1,66 @@
+// 13_of_in.gk — `for (x of e)` and `for (k in e)` loops in gecko.
+//
+// JavaScript-style iteration over a collection:
+//
+//   - `for (x of e)` iterates over the value of each element. The key
+//     (index) is discarded; `x` receives the element value every round.
+//   - `for (k in e)` iterates over the key (index) of each element, just
+//     like the plain single-variable `for (k = range e)` form.
+//
+// Both forms assign to an iteration variable that does not exist yet and
+// reuse one that does (the same declare-or-assign rule as `= range`).
+// For operands that only produce a value per element — channels and
+// integer ranges — the variable receives that value in either form.
+//
+// Run from examples/:
+//   ../bin/gecko run 13_of_in.gk
+
+package main
+
+func main() {
+	// of yields values; in yields indexes.
+	items = []int{10, 20, 30}
+	print("of: ")
+	for (v of items) {
+		print(v, " ")
+	}
+	println()
+
+	print("in: ")
+	for (k in items) {
+		print(k, " ")
+	}
+	println()
+
+	// Maps: of yields values, in yields keys.
+	ages = {"gecko": 3, "go": 16, "rust": 1}
+	print("map of: ")
+	for (a of ages) {
+		print(a, " ")
+	}
+	println()
+	print("map in: ")
+	for (k in ages) {
+		print(k, " ")
+	}
+	println()
+
+	// Strings: of yields runes, in yields byte offsets.
+	print("string of: ")
+	for (r of "abc") {
+		print(string(r), " ")
+	}
+	println()
+	print("string in: ")
+	for (k in "abc") {
+		print(k, " ")
+	}
+	println()
+
+	// Integer ranges and existing variables (declare-or-assign).
+	sum = 0
+	for (n of 5) {
+		sum = sum + n
+	}
+	println("sum 0..4:", sum)
+}

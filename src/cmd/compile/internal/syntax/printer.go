@@ -664,14 +664,25 @@ func (p *printer) printRawNode(n Node) {
 		p.printSelectBody(n.Body)
 
 	case *RangeClause:
-		if n.Lhs != nil {
-			tok := _Assign
-			if n.Def {
-				tok = _Define
+		if n.Of {
+			// gecko: for (x of e), the single iteration variable is
+			// bound to the value of each element.
+			if n.Lhs != nil {
+				p.print(n.Lhs, blank, NewName(n.pos, "of"), blank)
+			} else {
+				p.print(NewName(n.pos, "of"), blank)
 			}
-			p.print(n.Lhs, blank, tok, blank)
+			p.print(n.X)
+		} else {
+			if n.Lhs != nil {
+				tok := _Assign
+				if n.Def {
+					tok = _Define
+				}
+				p.print(n.Lhs, blank, tok, blank)
+			}
+			p.print(_Range, blank, n.X)
 		}
-		p.print(_Range, blank, n.X)
 
 	case *ForStmt:
 		p.print(_For, blank)

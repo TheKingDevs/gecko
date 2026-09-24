@@ -2557,6 +2557,36 @@ func (p *parser) parseForStmt() ast.Stmt {
 				isRange = true
 			} else {
 				s2, isRange = p.parseSimpleStmt(rangeOk)
+				// gecko: `for (x of e)` iterates over the values of e and
+				// `for (x in e)` over its keys (indexes). Both are written
+				// with an `of`/`in` keyword instead of `= range`.
+				if !isRange && p.gecko && s2 != nil && p.tok == token.IDENT && (p.lit == "in" || p.lit == "of") {
+					if x, ok := s2.(*ast.ExprStmt); ok {
+						if ident, ok := x.X.(*ast.Ident); ok {
+							kwpos := p.pos
+							isOf := p.lit == "of"
+							p.next()
+							rs := &ast.RangeStmt{
+								For:    pos,
+								TokPos: kwpos,
+								Tok:    token.ASSIGN,
+								Range:  kwpos,
+								X:      p.parseRhs(),
+							}
+							if isOf {
+								rs.GeckoOf = true
+								rs.Value = ident
+							} else {
+								rs.GeckoIn = true
+								rs.Key = ident
+							}
+							s2 = rs
+							isRange = true
+						} else {
+							p.error(p.pos, "for ... of/in requires a single name on the left")
+						}
+					}
+				}
 			}
 		}
 		if !isRange && p.tok == token.SEMICOLON {
@@ -2581,6 +2611,12 @@ func (p *parser) parseForStmt() ast.Stmt {
 	p.expectSemi()
 
 	if isRange {
+		if rs, ok := s2.(*ast.RangeStmt); ok {
+			// a gecko `for (x of e)` / `for (k in e)` clause was parsed
+			// directly above, with the body attached here.
+			rs.Body = body
+			return rs
+		}
 		as := s2.(*ast.AssignStmt)
 		// check lhs
 		var key, value ast.Expr

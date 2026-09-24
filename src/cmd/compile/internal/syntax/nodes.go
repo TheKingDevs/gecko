@@ -68,9 +68,9 @@ type (
 	ImportDecl struct {
 		Group        *Group // nil means not part of a group
 		Pragma       Pragma
-		LocalPkgName *Name     // including "."; nil means no rename present
-		Path         *BasicLit // Path.Bad || Path.Kind == StringLit; nil means no path
-		TsFrom       bool     // gecko: TypeScript-style "from" import
+		LocalPkgName *Name       // including "."; nil means no rename present
+		Path         *BasicLit   // Path.Bad || Path.Kind == StringLit; nil means no path
+		TsFrom       bool        // gecko: TypeScript-style "from" import
 		TSMembers    []*TsMember // gecko: named members imported from Path
 		decl
 	}
@@ -532,7 +532,11 @@ type (
 	RangeClause struct {
 		Lhs Expr // nil means no Lhs = or Lhs :=
 		Def bool // means :=
-		X   Expr // range X
+		// Of marks a gecko `for (x of e)` clause: the single iteration
+		// variable is bound to the value of each element rather than to
+		// its key (which is discarded).
+		Of bool
+		X  Expr // range X
 		simpleStmt
 	}
 

@@ -5,6 +5,25 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: `for (x of e)` and `for (k in e)` loops
+
+**Título / Title:** gecko gains JavaScript-style `for (x of e)` / `for (k in e)` loops. `of` iterates over the **value** of each element (the key is discarded) and `in` iterates over its **key** (index) — both written with an `of`/`in` keyword instead of `= range`, and both reusing the range machinery so they work over slices, arrays, maps, strings, ranges-over-int, channels and range functions. The iteration variable follows the gecko declare-or-assign rule (declared when new, assigned when already visible). `in` behaves exactly like the single-variable `for (k = range e)`; `of` is its value counterpart. Operands that only produce a value per element (channels, integer ranges) bind the variable to that value in either form.
+
+**Descrição / Description:**
+
+- Syntax (`cmd/compile/internal/syntax`): `simpleStmt` recognizes an `of`/`in` keyword (contextual, `.gk` only — no new reserved tokens, so identifiers named `in`/`of` keep working) right after the single iteration variable of a `for` clause and parses a `RangeClause`. Clauses with more than one iteration variable or a non-name left side are rejected. `RangeClause` gains an `Of bool` flag; `in` is a pure alias of the existing `= range` form and needs no marker. The internal `printer.go` and `midway/deepcopy.go` carry the new flag.
+- Types (`cmd/compile/internal/types2`): `rangeStmt` takes an `isOf` flag. For `of`, after computing the key/value types the single iteration variable is re-bound to the value: the clause is type-checked like `for (_, x = range e)` (via a synthesized `_`), while channel-like operands keep the ordinary single-variable binding. All existing declare-or-assign (`geckoRangeVars`) and conversion checks apply unchanged.
+- Compiler (`cmd/compile/internal/noder/writer.go`): for an `of` clause whose operand yields a value per element, the writer ranges over a discarded `_` key and binds the single variable to the value (`RangeClause` value-binding); channel/int operands emit the single-variable form. The IR is ordinary Go range, so no walk changes.
+- Formatter mirror (`go/ast`, `go/parser`, `go/printer`): `ast.RangeStmt` gains `GeckoIn`/`GeckoOf` flags (`in` stores the variable in `Key`, `of` in `Value`, so generic analysis binds value forms correctly). The parser recognizes `for (x in e)` / `for (x of e)` in `.gk` files; canonical printing round-trips the `of`/`in` keywords.
+- Tests/examples: new `testdata/local/gecko_ofin.gk` (slices, maps, strings, int ranges, channels, existing-variable reuse); `go/printer/testdata/gecko.gk`/`.golden` gains value/key iteration snippets; new `examples/13_of_in.gk`.
+
+**Hash do commit / Commit hash:** `_pending_`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: support for (x of e) and for (k in e) loops
+```
+
 ### Entry: escape sequences in template interpolations
 
 **Título / Title:** gecko template strings honor escape sequences only inside `${...}` interpolations, so `` `a${\n}b` `` yields a real newline (and `${\t}`, `${\r}`, `${\\}`, … their characters) instead of a syntax error. Literal template text keeps raw backtick semantics: `\n` written in the text stays `\n` (backslash + `n`), and escapes inside quoted strings of the interpolation keep normal Go semantics.
