@@ -16,7 +16,7 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 - Typed enforcement and the build cache (`cmd/gecko/internal/work`): `gc` appends `-geckotype=typed` when the project's `gecko.json` says so, but that happens after the cache lookup, and neither the build nor the export action ID covered the project type. Changing `"type": "dynamic"` to `"type": "typed"` therefore kept serving cached objects and export data produced under the dynamic rules, and a typed project happily ran untyped code. `buildActionID` and `exportActionID` now hash the project's type, so flipping it invalidates the cached objects and the cached types.
 - Docs/comments: `README.md` describes the two directories and the enforcement; the example headers point at `../../bin/gecko run <file>.gk` (the tree moved down one level and the command is installed as `bin/gecko`, not `bin/go`) and use the `/** … */` block form, as do the `test/` READMEs' commands.
 
-**Hash do commit / Commit hash:** `_pending_`
+**Hash do commit / Commit hash:** `19fdae4c`
 
 **Mensagem do commit / Commit message:**
 ```
@@ -56,7 +56,7 @@ Two bugs kept "type": "typed" from meaning much, both fixed here:
 - Formatter mirror (`go/token`, `go/scanner`, `go/parser`, `go/printer`): new `token.NULLISH` ("??") at the `||` precedence; the `.gk` scanner turns `??` into `NULLISH` (plain `.go` still rejects `?`); the parser builds an ordinary `ast.BinaryExpr` and canonical printing round-trips `x ?? y`.
 - Tests/examples: new `testdata/local/gecko_nullish.gk` (pointers, slices/maps/chans/funcs/interfaces, lazy fallback, `null ?? y`, chaining, non-nilable operands); `go/printer/testdata/gecko.gk`/`.golden` gains a nullish snippet; new `examples/14_nullish.gk` (now `examples/dynamic/14_nullish.gk`, with a typed counterpart in `examples/typed/`).
 
-**Hash do commit / Commit hash:** `_pending_`
+**Hash do commit / Commit hash:** `7a317760`
 
 **Mensagem do commit / Commit message:**
 ```
@@ -75,7 +75,7 @@ gecko: support the nullish coalescing operator ??
 - Formatter mirror (`go/ast`, `go/parser`, `go/printer`): `ast.RangeStmt` gains `GeckoIn`/`GeckoOf` flags (`in` stores the variable in `Key`, `of` in `Value`, so generic analysis binds value forms correctly). The parser recognizes `for (x in e)` / `for (x of e)` in `.gk` files; canonical printing round-trips the `of`/`in` keywords.
 - Tests/examples: new `testdata/local/gecko_ofin.gk` (slices, maps, strings, int ranges, channels, existing-variable reuse); `go/printer/testdata/gecko.gk`/`.golden` gains value/key iteration snippets; new `examples/13_of_in.gk`.
 
-**Hash do commit / Commit hash:** `_pending_`
+**Hash do commit / Commit hash:** `b21e45d0`
 
 **Mensagem do commit / Commit message:**
 ```
