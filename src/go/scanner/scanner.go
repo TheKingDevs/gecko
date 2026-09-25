@@ -989,6 +989,26 @@ scanAgain:
 			}
 		case '|':
 			tok = s.switch3(token.OR, token.OR_ASSIGN, '|', token.LOR)
+		case '?':
+			// Gecko nullish coalescing "??" is only meaningful in .gk
+			// source files; plain Go never contains a '?'.
+			if !s.Gecko {
+				s.errorf(s.file.Offset(pos), "illegal character %#U", ch)
+				insertSemi = s.insertSemi // preserve insertSemi info
+				tok = token.ILLEGAL
+				lit = string(ch)
+				break
+			}
+			// The outer switch has already consumed the first '?'.
+			if s.ch == '?' {
+				s.next()
+				tok = token.NULLISH
+			} else {
+				s.errorf(s.file.Offset(pos), "illegal character %#U (nullish coalescing is '??')", ch)
+				insertSemi = s.insertSemi // preserve insertSemi info
+				tok = token.ILLEGAL
+				lit = string(ch)
+			}
 		case '~':
 			tok = token.TILDE
 		default:

@@ -2162,6 +2162,23 @@ func (w *writer) expr(expr syntax.Expr) {
 			break
 		}
 
+		if expr.Op == syntax.Nullish {
+			// Gecko nullish coalescing. A bare null left operand always
+			// selects the right operand, so emit it directly. Otherwise
+			// write both operands converted to the result type; the
+			// reader rebuilds the null-guarded temp sequence.
+			if isNil(w.p, expr.X) {
+				w.expr(expr.Y)
+				break
+			}
+			typ := w.p.typeOf(expr)
+			w.Code(exprNullish)
+			w.pos(expr)
+			w.implicitConvExpr(typ, expr.X)
+			w.implicitConvExpr(typ, expr.Y)
+			break
+		}
+
 		var commonType types2.Type
 		geckoForce := false
 		if expr.Op != syntax.Shl && expr.Op != syntax.Shr {

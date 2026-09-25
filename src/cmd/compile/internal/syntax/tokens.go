@@ -128,6 +128,9 @@ const (
 	Recv  // <-
 	Tilde // ~
 
+	// precNullish
+	Nullish // ??
+
 	// precOrOr
 	OrOr // ||
 

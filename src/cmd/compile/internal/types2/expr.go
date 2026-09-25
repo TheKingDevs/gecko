@@ -819,6 +819,11 @@ func (check *Checker) binary(x *operand, e syntax.Expr, lhs, rhs syntax.Expr, op
 		}
 	}
 
+	if op == syntax.Nullish {
+		check.geckoBinaryNullish(x, &y, e)
+		return
+	}
+
 	if isComparison(op) {
 		check.comparison(x, &y, op, false)
 		return

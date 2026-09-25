@@ -1,0 +1,66 @@
+// Copyright 2026 The Gecko Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// gecko nullish coalescing `x ?? y`: the result is x unless x is null,
+// in which case it is y. The result type is the type of x (defaulted
+// when x is untyped); y must be assignable to it. A non-nilable x is
+// simply x, and a bare `null` x always selects the fallback.
+
+package geckonullish
+
+var p: *int
+var r: *int
+var i: interface{}
+
+func pointers(d: int) {
+	var x: *int = p ?? r
+	_ = x
+	_ = p ?? null
+	_ = (p ?? r) ?? r
+}
+
+func references(s: []int, m: map[int]int, c: chan int, f: func()) {
+	_ = s ?? make([]int, 0)
+	_ = m ?? map[int]int{}
+	_ = c ?? make(chan int)
+	_ = f ?? func() {}
+	_ = i ?? p ?? null
+}
+
+func fallback(): *int {
+	return p ?? g()
+}
+
+func g(): *int { return p }
+
+func nullLhs(): string {
+	return null ?? "fallback"
+}
+
+func untyped(x: int, f: float64) {
+	_ = 7 ?? 8
+	_ = 2.5 ?? 3
+	_ = x ?? x
+	_ = f ?? 1
+}
+
+func nonnilable(s: string, n: int, b: bool) {
+	_ = s ?? "x"
+	_ = n ?? 5
+	_ = b ?? true
+}
+
+func errs(pn: *int, s: string) {
+	_ = pn ?? true /* ERROR "mismatched types untyped bool and" */
+	_ = true ?? 1  /* ERROR "mismatched types untyped int and bool" */
+	_ = s ?? null  /* ERROR "type string has no nil" */
+}
+
+func chained(): *string {
+	return first() ?? second() ?? third()
+}
+
+func first(): *string  { return null }
+func second(): *string { return null }
+func third(): *string  { return null }

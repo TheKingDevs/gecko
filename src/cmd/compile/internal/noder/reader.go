@@ -2572,6 +2572,26 @@ func (r *reader) expr() (res ir.Node) {
 		}
 		return typecheck.Expr(ir.NewBinaryExpr(pos, op, x, y))
 
+	case exprNullish:
+		// Gecko x ?? y: evaluate x into a temp and yield it unless it is
+		// null, in which case the right operand is evaluated and yields
+		// it. A non-nilable left operand can never be null, so the left
+		// operand is yielded directly. The sequence is wrapped in InitExpr
+		// so it only runs when the surrounding expression is evaluated.
+		pos := r.pos()
+		lhs := r.expr()
+		rhs := r.expr()
+		typ := lhs.Type()
+		if !typ.HasNil() {
+			return lhs
+		}
+		tmp := typecheck.TempAt(pos, r.curfn, typ)
+		init := ir.Nodes{ir.NewDecl(pos, ir.ODCL, tmp)}
+		init.Append(typecheck.Stmt(ir.NewAssignStmt(pos, tmp, lhs)))
+		cond := typecheck.Expr(ir.NewBinaryExpr(pos, ir.OEQ, tmp, ir.NewNilExpr(pos, typ)))
+		init.Append(typecheck.Stmt(ir.NewIfStmt(pos, cond, ir.Nodes{typecheck.Stmt(ir.NewAssignStmt(pos, tmp, rhs))}, nil)))
+		return ir.InitExpr(init, tmp)
+
 	case exprRecv:
 		x := r.expr()
 		pos := r.pos()

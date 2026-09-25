@@ -156,3 +156,13 @@ func iterate(items: []int, m: map[string]int) {
 		println(n)
 	}
 }
+
+// gecko nullish coalescing `x ?? y`: result is x unless x is null, in
+// which case the fallback y is evaluated and used.
+func coalesce(p: *string, name: string, s: string) {
+	var out: string = p ?? "unknown"
+	println(name ?? null)
+	var next: string = s ?? "fallback"
+	out = next ?? "again"
+	println(out)
+}

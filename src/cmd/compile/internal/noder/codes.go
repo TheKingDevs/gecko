@@ -67,6 +67,7 @@ const (
 	exprPrintTemplate  // gecko template string used as a print/println argument. Followed by bool println, parts for the flattened arguments
 	exprGeckoPrint     // gecko print/println with values needing a custom form (slices, maps, null-safe chains). Followed by bool println, args as interface{}
 	exprTemplate       // gecko template string used as a general string expression. Followed by parts: bool literal; string, or bool chain guards..., expr
+	exprNullish        // gecko x ?? y: evaluates x into a temp and yields it unless it is null, in which case the right operand is evaluated and yields it. Followed by pos, x, y
 )
 
 type codeAssign int

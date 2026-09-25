@@ -12,6 +12,7 @@ package types2
 import (
 	"cmd/compile/internal/syntax"
 	"go/constant"
+	. "internal/types/errors"
 	"strings"
 )
 
@@ -124,6 +125,62 @@ func (check *Checker) geckoLitType(e syntax.Expr) Type {
 		return t
 	}
 	return universeAny.Type()
+}
+
+// geckoBinaryNullish type-checks a nullish coalescing operation x ?? y,
+// where the result is x unless x is null, in which case it is y. It
+// reports the result in x. A bare null x yields y; a non-nilable x
+// simply yields x. In all cases y must be assignable to the result
+// type.
+func (check *Checker) geckoBinaryNullish(x, y *operand, e syntax.Expr) {
+	if x.isNil() {
+		// null ?? y always selects the fallback: yield y.
+		*x = *y
+		x.expr = e
+		return
+	}
+
+	// The result type is x's type, defaulted when x is untyped.
+	typ := x.typ()
+	if b, ok := typ.(*Basic); ok && b.info&IsUntyped != 0 {
+		switch b.kind {
+		case UntypedBool:
+			typ = Typ[Bool]
+		case UntypedInt:
+			typ = Typ[Int]
+		case UntypedRune:
+			typ = Typ[Rune]
+		case UntypedFloat:
+			typ = Typ[Float64]
+		case UntypedComplex:
+			typ = Typ[Complex128]
+		case UntypedString:
+			typ = Typ[String]
+		default:
+			// UntypedNil cannot reach here (handled above); anything
+			// else stays as is and is reported by the checks below.
+		}
+		x.typ_ = typ
+	}
+
+	if !isValid(typ) || !isValid(y.typ()) {
+		x.invalidate()
+		return
+	}
+
+	if y.isNil() {
+		if !hasNil(typ) {
+			check.errorf(y, MismatchedTypes, invalidOp+"cannot use null as the fallback of %s (type %s has no nil)", e, typ)
+			x.invalidate()
+		}
+		return
+	}
+
+	if ok, _ := y.assignableTo(check, typ, nil); !ok {
+		check.errorf(y, MismatchedTypes, invalidOp+"%s (mismatched types %s and %s)", e, y.typ(), typ)
+		x.invalidate()
+		return
+	}
 }
 
 // isByteType reports whether t is byte (uint8) or a type with an

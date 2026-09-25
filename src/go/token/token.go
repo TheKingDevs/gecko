@@ -63,6 +63,7 @@ const (
 
 	LAND  // &&
 	LOR   // ||
+	NULLISH // ??
 	ARROW // <-
 	INC   // ++
 	DEC   // --
@@ -182,6 +183,7 @@ var tokens = [...]string{
 
 	LAND:  "&&",
 	LOR:   "||",
+	NULLISH: "??",
 	ARROW: "<-",
 	INC:   "++",
 	DEC:   "--",
@@ -285,7 +287,7 @@ const (
 // is LowestPrecedence.
 func (op Token) Precedence() int {
 	switch op {
-	case LOR:
+	case LOR, NULLISH:
 		return 1
 	case LAND:
 		return 2
