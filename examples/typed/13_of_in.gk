@@ -1,0 +1,72 @@
+/**
+ * 13_of_in.gk — for (x of e) and for (k in e), typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/13_of_in.gk.
+ * The `of`/`in` forms are unchanged, but in a "typed" project the
+ * iteration variable cannot be introduced by the range clause itself: the
+ * dynamic declare-or-assign rule is not available, so every iteration
+ * variable is declared with an explicit type before the loop. The map
+ * and string iterations below therefore declare a key/rune variable of
+ * the right type, and reuse it across the loops that share a name.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 13_of_in.gk
+ */
+
+package main
+
+func main() {
+	// of yields values; in yields indexes.
+	var items: []int = []int{10, 20, 30}
+	print("of: ")
+	var v: int = 0
+	for (v of items) {
+		print(v, " ")
+	}
+	println()
+
+	print("in: ")
+	var k: int = 0
+	for (k in items) {
+		print(k, " ")
+	}
+	println()
+
+	// Maps: of yields values, in yields keys.
+	var ages: map[string]int = map[string]int{"gecko": 3, "go": 16, "rust": 1}
+	print("map of: ")
+	var a: int = 0
+	for (a of ages) {
+		print(a, " ")
+	}
+	println()
+	print("map in: ")
+	var mk: string = ""
+	for (mk in ages) {
+		print(mk, " ")
+	}
+	println()
+
+	// Strings: of yields runes, in yields byte offsets.
+	print("string of: ")
+	var r: rune = 0
+	for (r of "abc") {
+		print(string(r), " ")
+	}
+	println()
+	print("string in: ")
+	var sk: int = 0
+	for (sk in "abc") {
+		print(sk, " ")
+	}
+	println()
+
+	// Integer ranges and a reused variable. In dynamic mode `n` would be
+	// introduced by the range clause; in typed mode it is declared first.
+	var sum: int = 0
+	var n: int = 0
+	for (n of 5) {
+		sum = sum + n
+	}
+	println("sum 0..4:", sum)
+}

@@ -1,31 +1,16 @@
-// 04_classes.gk — classes, new expressions, and inheritance in gecko.
-//
-// A class body declares methods. Fields are created implicitly by
-// this.<name> = ... assignments; their types are inferred from the
-// constructor (a literal RHS fixes the type, a typed constructor
-// parameter propagates its type, and anything else becomes `any`).
-// new Class(args) allocates a *Class and calls the constructor with the
-// arguments; a class without a constructor can still be allocated.
-//
-// A class may extend another class with `extends`:
-//
-//	class Dog extends Animal { ... }
-//
-// The base class is embedded by value, so its fields and methods are
-// promoted onto the derived class. Inside a derived class, `super` refers
-// to the embedded base:
-//
-//	super(args)         calls the base constructor,
-//	super.method(args)  calls a base method,
-//	super.field         reads a base field.
-//
-// Promoted base methods stay bound to the base implementation (like Go
-// embedding, there is no virtual override): the base's own method calls
-// resolve to the base, even when invoked on a derived instance. Only
-// `super.method()` reaches the immediate base explicitly.
-//
-// Run from examples/:
-//   ../bin/go run 04_classes.gk
+/**
+ * 04_classes.gk — classes, new expressions, and inheritance in gecko, typed
+ * edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/04_classes.gk.
+ * Class bodies and inheritance are unchanged; the difference is that this
+ * project declares "type": "typed", so `new X(...)` is assigned to a
+ * declared `*X` variable instead of relying on the dynamic
+ * declare-or-assign rule.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 04_classes.gk
+ */
 
 package main
 
@@ -111,7 +96,7 @@ class Puppy extends Dog {
 
 func main() {
 	// new calls the constructor with the given arguments.
-	g = new Greeter("Ana")
+	var g: *Greeter = new Greeter("Ana")
 	g.loud()
 
 	// Instance methods can mutate the implicitly-created fields.
@@ -119,24 +104,24 @@ func main() {
 	g.loud()
 
 	// Classes with state: every new creates a fresh instance.
-	c = new Counter()
+	var c: *Counter = new Counter()
 	c.inc()
 	c.inc()
 	c.inc()
 	println("counter:", c.value())
 
-	d = new Counter()
+	var d: *Counter = new Counter()
 	println("fresh counter:", d.value())
 
 	// Constructing a class without a constructor.
-	t = new Tag()
+	var t: *Tag = new Tag()
 	println(t.describe())
 
 	// Inheritance: base fields and methods are promoted.
-	a = new Animal("generic")
+	var a: *Animal = new Animal("generic")
 	println(a.speak())
 
-	dog = new Dog("Rex", "poodle")
+	var dog: *Dog = new Dog("Rex", "poodle")
 	println(dog.speak())
 	println(dog.loud())
 	println(dog.parentLoud())
@@ -145,7 +130,7 @@ func main() {
 	dog.rename("Fido")
 	println(dog.speak())
 
-	p = new Puppy("Pip", "beagle", "T1")
+	var p: *Puppy = new Puppy("Pip", "beagle", "T1")
 	println(p.speak())
 	println(p.parentLoud())
 	println(p.breed, p.tag)

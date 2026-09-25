@@ -1,0 +1,7 @@
+{
+  "name": "examples-dynamic",
+  "version": "1.0.0",
+  "description": "gecko language examples written in dynamic mode",
+  "type": "dynamic",
+  "license": "BSD-3-Clause"
+}

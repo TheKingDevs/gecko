@@ -1,13 +1,16 @@
-// 03_templates.gk — gecko template strings.
-//
-// A backtick string literal containing ${...} is a template string, but
-// only when it is used directly as an argument of print or println. The
-// whole template types as string, and each ${expr} interpolates its
-// value exactly like a print argument would. A backtick literal without
-// ${...} is a plain string.
-//
-// Run from src/:
-//   bin/go run examples/03_templates.gk
+/**
+ * 03_templates.gk — gecko template strings, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/03_templates.gk.
+ * A template string is a backtick literal used directly as an argument of
+ * print or println whose ${...} pieces are interpolated. Templates are a
+ * gecko convenience available in both modes; the only difference here is
+ * that every name is declared with an explicit type before use, because
+ * this project declares "type": "typed".
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 03_templates.gk
+ */
 
 package main
 
@@ -16,8 +19,8 @@ func sq(x: int): int {
 }
 
 func main() {
-	name = "Ana"
-	age = 30
+	var name: string = "Ana"
+	var age: int = 30
 
 	// Simple interpolation inside println.
 	println(`hello ${name}!`)

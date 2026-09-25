@@ -1,21 +1,22 @@
-// 07_arrays.gk — slices in gecko.
-//
-// Gecko spells Go's slices with a lighter syntax. The dynamic literal
-// [1, 2, 3] infers its element type from the values, and a typed literal
-// []int{...} is also available (an empty [ ] is only valid with a type).
-// Covers: literals, len, index read/write, append (including variadic
-// spread ...), slicing, two-dimensional slices, mixed []any, nil/empty
-// slices, make/copy, and slices as function arguments and results.
-// The builtin print/println print slices as [1 2 3].
-//
-// Run from src/:
-//   bin/go run examples/07_arrays.gk
+/**
+ * 07_arrays.gk — slices in gecko, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/07_arrays.gk.
+ * The visible difference is the literals: dynamic mode infers the element
+ * type of `[1, 2, 3]`, while typed mode requires the element type to be
+ * written out (`[]int{1, 2, 3}`). Everything else — append, slicing,
+ * make/copy, two-dimensional slices and range — is unchanged.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 07_arrays.gk
+ */
 
 package main
 
 // Slices as function arguments.
 func sum(xs: []int): int {
-	t = 0
+	var t: int = 0
+	var v: int = 0
 	for (_, v = range xs) {
 		t = t + v
 	}
@@ -24,7 +25,8 @@ func sum(xs: []int): int {
 
 // Slices as function results.
 func upTo(n: int): []int {
-	var r: []int
+	var r: []int = null
+	var i: int = 0
 	for (i = 0; i < n; i = i + 1) {
 		r = append(r, i)
 	}
@@ -33,7 +35,7 @@ func upTo(n: int): []int {
 
 func main() {
 	// Dynamic literal: the element type is inferred from the values.
-	a = [1, 2, 3]
+	var a: []int = []int{1, 2, 3}
 	println("dyn literal:        ", a)
 
 	// Typed literal (needed for an empty slice and for element types the
@@ -56,40 +58,42 @@ func main() {
 	println("re-read a[1]:       ", a[1])
 
 	// append; the result is reassigned (it may reallocate).
-	p = [7, 8]
+	var p: []int = []int{7, 8}
 	p = append(p, 9)
 	p = append(p, 10, 11)
 	println("append chain:       ", p)
 
 	// Variadic spread with ... concatenates a whole slice.
-	p2 = append([]int{1}, []int{2, 3, 4}...)
+	var p2: []int = append([]int{1}, []int{2, 3, 4}...)
 	println("append ...:         ", p2)
 
 	// Slicing: low:high, :high, low:.
-	s = [10, 20, 30, 40]
+	var s: []int = []int{10, 20, 30, 40}
 	println("s[1:3]:             ", s[1:3])
 	println("s[:2]:              ", s[:2])
 	println("s[2:]:              ", s[2:])
 
 	// Two-dimensional slices (slice of slices).
-	var grid: [][]int = [[1, 2], [3, 4]]
+	var grid: [][]int = [][]int{[]int{1, 2}, []int{3, 4}}
 	println("grid:               ", grid)
 	println("grid[0]:            ", grid[0])
 	println("grid[1][1]:         ", grid[1][1])
 
 	// String, float and mixed []any slices.
-	var names: []string = ["gecko", "go"]
-	var scores: []float64 = [1.5, 2.5]
-	mixed = [1, "two", true]
+	var names: []string = []string{"gecko", "go"}
+	var scores: []float64 = []float64{1.5, 2.5}
+	var mixed: []any = []any{1, "two", true}
 	println("strings:            ", names)
 	println("floats:             ", scores)
 	println("[]any mixed:        ", mixed)
 
 	// Iterate with the index, or with the index and value.
+	var i: int = 0
 	for (i = range names) {
 		print(i, " ")
 	}
 	println()
+	var name: string = ""
 	for (i, name = range names) {
 		print(i, ":", name, " ")
 	}
@@ -97,7 +101,7 @@ func main() {
 
 	// make allocates a new slice; copy copies into an existing one.
 	var dst: []int = make([]int, len(a))
-	n = copy(dst, a)
+	var n: int = copy(dst, a)
 	println("copy:", dst, "copied:", n)
 
 	// Slices flowing through functions.

@@ -1,13 +1,15 @@
-// 06_null.gk — the null literal in gecko.
-//
-// Gecko spells Go's nil as null. null works everywhere nil does:
-// comparisons, assignments to any nilable type (pointers, slices, maps,
-// channels, functions, interfaces) and function arguments/results.
-// Writing nil in a .gk file is a compile error (the compiler suggests
-// using null instead).
-//
-// Run from src/:
-//   bin/go run examples/06_null.gk
+/**
+ * 06_null.gk — the null literal in gecko.
+ *
+ * Gecko spells Go's nil as null. null works everywhere nil does:
+ * comparisons, assignments to any nilable type (pointers, slices, maps,
+ * channels, functions, interfaces) and function arguments/results.
+ * Writing nil in a .gk file is a compile error (the compiler suggests
+ * using null instead).
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 06_null.gk
+ */
 
 package main
 

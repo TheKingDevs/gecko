@@ -1,0 +1,144 @@
+/**
+ * 02_loops.gk — loops in gecko, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/02_loops.gk.
+ * The difference is declaration: in dynamic mode `i = 0` introduces the
+ * variable (declare-or-assign), while in typed mode every loop and
+ * accumulator starts as `var i: int = 0`. The same applies to the
+ * `for (v of e)` / `for (k in e)` forms, whose iteration variable is
+ * declared up front here. The loop forms themselves are identical.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 02_loops.gk
+ */
+
+package main
+
+func main() {
+	// Classic for with init, condition and post.
+	var i: int = 0
+	print("classic: ")
+	for (i = 0; i < 3; i = i + 1) {
+		print(i, " ")
+	}
+	println()
+
+	// for with only a condition (the body runs while it holds).
+	var j: int = 0
+	print("for-cond: ")
+	for (j < 3) {
+		print(j, " ")
+		j = j + 1
+	}
+	println()
+
+	// while (cond) is sugar for for (cond).
+	print("while: ")
+	var k: int = 0
+	while (k < 3) {
+		print(k, " ")
+		k = k + 1
+	}
+	println()
+
+	// while () is an infinite loop; break exits it.
+	print("while(): ")
+	var m: int = 0
+	while () {
+		if (m >= 3) {
+			break
+		}
+		print(m, " ")
+		m = m + 1
+	}
+	println()
+
+	// for (;;) is also an infinite loop; continue skips to the next round.
+	print("for(;;): ")
+	var sum: int = 0
+	for (;;) {
+		sum = sum + 1
+		if (sum == 1) {
+			continue // skip printing the first round
+		}
+		print(sum, " ")
+		if (sum >= 4) {
+			break
+		}
+	}
+	println()
+
+	// for (i = range items): the index only.
+	print("range idx: ")
+	var items: []int = []int{10, 20, 30}
+	var idx: int = 0
+	for (idx = range items) {
+		print(idx, " ")
+	}
+	println()
+
+	// for (i, value = range items): the index and the value.
+	print("range idx,val: ")
+	var value: int = 0
+	for (idx, value = range items) {
+		print(idx, ":", value, " ")
+	}
+	println()
+
+	// Range over a string yields byte offsets and rune values. The rune
+	// variable is declared as rune, which the type checker requires: the
+	// range assigns a rune, so an int variable would not fit.
+	print("range str: ")
+	var word: string = "abc"
+	var r: rune = 0
+	for (idx, r = range word) {
+		print(idx, ":", string(r), " ")
+	}
+	println()
+
+	// for (v of items) iterates the values, leaving the index out. The
+	// iteration variable cannot be introduced by the clause in typed
+	// mode, so it is declared with its type first.
+	print("of: ")
+	var v: int = 0
+	for (v of items) {
+		print(v, " ")
+	}
+	println()
+
+	// for (k in items) iterates the keys (the index for a slice). `k` is
+	// taken by the while loop above, so the index gets its own name.
+	print("in: ")
+	var ik: int = 0
+	for (ik in items) {
+		print(ik, " ")
+	}
+	println()
+
+	// The two forms also work over strings: `of` yields the runes,
+	// `in` yields the byte offsets.
+	print("of str: ")
+	var c: rune = 0
+	for (c of word) {
+		print(string(c), " ")
+	}
+	println()
+
+	// And over an integer range, where only a value exists per round.
+	print("of int: ")
+	var n: int = 0
+	for (n of 5) {
+		print(n, " ")
+	}
+	println()
+
+	// `= range` and `of`/`in` assign to a variable that is already
+	// visible. `i` is still visible here: it was declared in the function
+	// scope for the classic for above, so the clause assigns to it rather
+	// than introducing a new one.
+	print("of, reused i: ")
+	for (i of items) {
+		print(i, " ")
+	}
+	println("i is now", i)
+}

@@ -174,13 +174,22 @@ As extensões da linguagem são implementadas diretamente no compilador e runtim
 
 ## 🧪 Exemplos
 
-Os exemplos da linguagem estão disponíveis em:
+Os exemplos da linguagem estão disponíveis em duas pastas — uma para cada modo:
 
 ```txt
 examples/
-├── 00_hello.gk
-└── ...
+├── dynamic/   # exemplos 100% dinâmicos (gecko.json: "type": "dynamic")
+│   ├── 00_hello.gk
+│   └── ...
+└── typed/     # os mesmos exemplos, 100% tipados (gecko.json: "type": "typed")
+    ├── 00_hello.gk
+    └── ...
 ```
+
+Cada pasta é um projeto `gecko.json` independente, e o `type` do projeto é o
+que faz o compilador exigir tipagem explícita: em `typed/`, conveniências
+dinâmicas (como `x = 42` declarando `x`, ou `[]int` omitido em literais) são
+erros de compilação.
 
 Exemplo utilizando entrada de dados:
 
@@ -192,7 +201,7 @@ println("Olá, " + name + "!")
 Execute:
 
 ```bash
-gecko run examples/00_hello.gk
+cd examples/dynamic && gecko run 00_hello.gk
 ```
 
 ## 🤝 Contribuindo

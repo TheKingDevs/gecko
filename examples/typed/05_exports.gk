@@ -1,22 +1,14 @@
-// 05_exports.gk — the gecko export keyword.
-//
-// In .gk files, visibility is controlled by `export` instead of Go's
-// "first letter uppercase = exported" rule, so a lowercase name can be
-// exported and a capital name can stay private. Every form is shown
-// against the exportlib library package (examples/exportlib/lib.gk):
-//
-//   - `export` before func/var/const/class,
-//   - the shorthand form `export name`,
-//   - the list form `export {a, b}`,
-//   - classes whose fields and methods are reachable across packages
-//     (constructed with the qualified `new pkg.Class(args)` expression).
-//
-// Uncommenting the private references at the bottom shows that names
-// without (or not covered by) an export stay private even with a
-// capital letter.
-//
-// Run from examples/:
-//   ../bin/go run 05_exports.gk
+/**
+ * 05_exports.gk — the gecko export keyword, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/05_exports.gk.
+ * Visibility rules are identical; the only change is the explicit `*Person`
+ * declaration for the imported class, because this project declares
+ * "type": "typed" and cannot rely on declare-or-assign.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 05_exports.gk
+ */
 
 package main
 
@@ -38,7 +30,7 @@ func main() {
 
 	// Classes: the class itself is exported; its fields and methods are
 	// reachable regardless of capitalization. Qualified `new` works.
-	p = new exportlib.Person("Bia")
+	var p: *exportlib.Person = new exportlib.Person("Bia")
 	println(p.name)
 	println(p.Loud())
 

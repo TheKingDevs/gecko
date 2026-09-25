@@ -1,0 +1,67 @@
+/**
+ * 09_input.gk — the input builtin, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/09_input.gk.
+ * input returns a string, so every read is declared as a string here; in
+ * dynamic mode the same reads would just be `line = input(...)`. The blank
+ * identifier assignment in the dynamic edition (`_ = input(...)`) becomes
+ * a named string variable, since typed mode has no blank-identifier
+ * discard.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 09_input.gk
+ * or feed it (one line per read, EOF ends the loops):
+ *   printf 'go\nMy list\nhello\nworld\n\n' | ../../bin/gecko run 09_input.gk
+ */
+
+package main
+
+// chomp drops a single trailing '\n', if there is one. input keeps the line
+// ending, so this is the usual first step before comparing or storing it.
+func chomp(s: string): string {
+	if (len(s) > 0 && s[len(s) - 1] == '\n') {
+		return s[0:len(s) - 1]
+	}
+	return s
+}
+
+func main() {
+	println("input demo — submit an empty line or press Ctrl-D to move on")
+
+	// Several arguments are joined with spaces, like println. The dynamic
+	// edition discards the result with the blank identifier; typed mode
+	// rejects an unused declaration, so the line is read into a named
+	// string that is printed back.
+	var start: string = input("Press", "Enter", "to start: ")
+	if (start != "") {
+		println("got:", start)
+	}
+
+	// No arguments: a bare, prompt-less read.
+	var title: string = chomp(input())
+	if (title != "") {
+		println(`title: ${title}`)
+	}
+
+	// A plain prompt; the returned line still carries its '\n'.
+	var echo: string = input("type a line> ")
+	println(`kept ${len(echo)} byte(s), ${len(chomp(echo))} after chomp`)
+
+	// Read a whole list of lines until a blank line or EOF.
+	var lines: []string = []string{}
+	for (;;) {
+		// A template prompt interpolates the counter into the string.
+		var line: string = chomp(input(`line ${len(lines) + 1}: `))
+		if (line == "") {
+			break
+		}
+		lines = append(lines, line)
+	}
+
+	// Summarize with a template.
+	println(`read ${len(lines)} line(s)`)
+	var i: int = 0
+	for (i = 0; i < len(lines); i = i + 1) {
+		println(`  ${i + 1}. ${lines[i]}`)
+	}
+}

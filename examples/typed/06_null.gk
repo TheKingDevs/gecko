@@ -1,0 +1,58 @@
+/**
+ * 06_null.gk — the gecko null literal, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/06_null.gk.
+ * The dynamic edition compares values against null directly
+ * (`x == null`); typed mode requires the comparison to be valid for the
+ * declared type, so every null compared here is a nilable one (a pointer,
+ * slice, map, channel, func or any).
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 06_null.gk
+ */
+
+package main
+
+func describePtr(p: *int): string {
+	if (p == null) {
+		return "null pointer"
+	}
+	return "points at " + string(*p)
+}
+
+func main() {
+	// Comparing against null.
+	var p: *int = null
+	println("p == null:", p == null)
+	println("p != null:", p != null)
+
+	// Assigning null to every nilable type.
+	var sl: []int = null
+	var m: map[string]int = null
+	var ch: chan int = null
+	var fn: func() = null
+	var itf: any = null
+	println(sl, m, ch, fn, itf)
+
+	// Resetting an existing variable to null.
+	var x: int = 123
+	var ptr: *int = &x
+	println("before:", describePtr(ptr))
+	ptr = null
+	println("after:", describePtr(ptr))
+
+	// null as a function argument and result.
+	println(describePtr(null))
+	println(empty() == null)
+}
+
+class Box() {
+	constructor(value: string) {
+		this.value = value
+	}
+}
+
+// Returning null.
+func empty(): *Box {
+	return null
+}

@@ -3760,22 +3760,28 @@ func (p *parser) tryStmt() Stmt {
 
 	if catchBody != nil {
 		// The catch variable (or an internal name when the binding is
-		// omitted or blank) is declared by the e = recover() assignment
-		// inside the deferred closure; references to it in the catch
-		// body bind to it.
+		// omitted or blank) is introduced by a `var e = recover()`
+		// declaration inside the deferred closure; references to it in
+		// the catch body bind to it. The binding is a real declaration
+		// rather than a plain `e = recover()` assignment so that it is
+		// also introduced in a "typed" project, where the declare-or-
+		// assign rule of `=` is not available.
 		name := catchVar
 		if name == nil || name.Value == "_" {
 			name = NewName(pos, "geckoTryErr")
 		}
 
-		// e = recover()
+		// var e = recover()
 		recov := new(CallExpr)
 		recov.pos = pos
 		recov.Fun = NewName(pos, "recover")
-		assign := new(AssignStmt)
-		assign.pos = pos
-		assign.Lhs = name
-		assign.Rhs = recov
+		varDecl := new(VarDecl)
+		varDecl.pos = pos
+		varDecl.NameList = []*Name{name}
+		varDecl.Values = recov
+		decl := new(DeclStmt)
+		decl.pos = pos
+		decl.DeclList = []Decl{varDecl}
 
 		// if (e != null) { <catch body> }
 		cond := new(Operation)
@@ -3788,7 +3794,7 @@ func (p *parser) tryStmt() Stmt {
 		ifStmt.Cond = cond
 		ifStmt.Then = catchBody
 
-		tryList = prepend(p.geckoDefer(pos, []Stmt{assign, ifStmt}), tryList)
+		tryList = prepend(p.geckoDefer(pos, []Stmt{decl, ifStmt}), tryList)
 	}
 
 	if finallyBody != nil {

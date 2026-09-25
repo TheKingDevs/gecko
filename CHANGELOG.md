@@ -5,6 +5,64 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: `examples/` split into dynamic and typed editions, and two typed-mode fixes
+
+**Título / Title:** the examples are now split into `examples/dynamic/` and `examples/typed/`, each its own `gecko.json` project, with every example replicated 100% typed next to its 100% dynamic original. Making `"type": "typed"` actually stick also required two fixes: `try`/`catch` was unusable in a typed project (even `catch { }` failed to compile), and the build cache ignored the project's `type`, so turning it on did not enforce anything for already-compiled packages.
+
+**Descrição / Description:**
+
+- Examples layout: the 15 numbered examples plus `exportlib/` moved to `examples/dynamic/` with `gecko.json` declaring `"type": "dynamic"`, and `examples/typed/` holds a typed counterpart of each one with `"type": "typed"`. The typed edition keeps the same output — same order, same messages — and differs only where the mode forces it: names are introduced with `var name: Type = value` instead of `=`, literals and ranges get explicit element types, and `for (x of e)` / `for (k in e)` reuse a pre-declared iteration variable. `examples/typed/exportlib/lib.gk` is the typed counterpart of the library package, so `05_exports.gk` exercises cross-package types in both modes. `02_loops.gk` now also tours the `of`/`in` forms (over a slice, a string and an integer range, plus the assign-to-an-existing-variable case) instead of leaving them only to `13_of_in.gk`; both editions print the same output.
+- Typed `try`/`catch` (`cmd/compile/internal/syntax`): `tryStmt` desugared the catch binding into a plain `e = recover()` assignment, which a typed project reads as an assignment to a name that does not exist yet — so `catch (e)` reported `undefined: e` and the binding-less `catch { }` reported `undefined: geckoTryErr`, leaving error handling unusable in typed mode. The desugaring now emits a real `var e = recover()` declaration (`VarDecl` inside a `DeclStmt`), so the binding is introduced in both modes and the catch body binds to it as before.
+- Typed enforcement and the build cache (`cmd/gecko/internal/work`): `gc` appends `-geckotype=typed` when the project's `gecko.json` says so, but that happens after the cache lookup, and neither the build nor the export action ID covered the project type. Changing `"type": "dynamic"` to `"type": "typed"` therefore kept serving cached objects and export data produced under the dynamic rules, and a typed project happily ran untyped code. `buildActionID` and `exportActionID` now hash the project's type, so flipping it invalidates the cached objects and the cached types.
+- Docs/comments: `README.md` describes the two directories and the enforcement; the example headers point at `../../bin/gecko run <file>.gk` (the tree moved down one level and the command is installed as `bin/gecko`, not `bin/go`) and use the `/** … */` block form, as do the `test/` READMEs' commands.
+
+**Hash do commit / Commit hash:** `_pending_`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: split the examples into dynamic and typed editions
+
+Move the numbered examples and exportlib to examples/dynamic/ with their
+own gecko.json, and add a 100% typed counterpart of every example under
+examples/typed/. Each directory is a project of its own, so the typed
+copies are compiled under "type": "typed" and the dynamic ones under
+"type": "dynamic".
+
+Two bugs kept "type": "typed" from meaning much, both fixed here:
+
+  - try/catch did not work in a typed project at all. The catch binding
+    was desugared into an `e = recover()` assignment, which typed mode
+    reads as an assignment to an undeclared name, so `catch (e)` failed
+    with `undefined: e` and even `catch { }` failed with `undefined:
+    geckoTryErr`. The desugaring now emits a real `var e = recover()`
+    declaration, which introduces the binding in both modes.
+
+  - the build cache ignored the project type. `gc` adds
+    -geckotype=typed after the cache lookup, and neither the build nor
+    the export action ID covered the type from gecko.json, so switching a
+    project to typed kept reusing objects and export data built under the
+    dynamic rules. Both action IDs now hash the project type.
+```
+
+### Entry: nullish coalescing `??` operator
+
+**Título / Title:** gecko gains JavaScript's nullish coalescing `x ?? y`: the result is `x` unless `x` is null, in which case the fallback `y` is evaluated and used. The fallback is lazy (only evaluated when `x` is actually null), so `name = user.name ?? "Unknown"` reads the name once and only computes the default when the field is null. The result type is the type of `x` (or of `y` when `x` is a bare `null`); a non-nilable left operand (int, string, bool, …) can never be null and yields `x` without evaluating the fallback, and `null ?? y` always selects `y`.
+
+**Descrição / Description:**
+
+- Syntax (`cmd/compile/internal/syntax`): new `Nullish` operator (`??`) and token-entry in `tokens.go`/`operator_string.go`; `scanner.go` recognizes `?` `?` and assigns the disjunction precedence (`precOrOr`) so `??` binds like `||` and mixes left-associatively with it. No new keyword, so nothing else changes parse rules.
+- Types (`cmd/compile/internal/types2`): `binary` dispatches `Nullish` to `geckoBinaryNullish` before ordinary binary checks. A bare null left operand yields the fallback operand; the result type is `x`'s type (defaulted when `x` is untyped); a null fallback requires the result type to have a nil; otherwise `y` must be assignable to the result type. Mismatched types and null on a non-nilable type are reported as before.
+- Compiler (`cmd/compile/internal/noder`): the writer emits a dedicated `exprNullish` code (falling straight to `y` when `x` is the null literal); both operands are written converted to the result type. The reader rebuilds the expression as a null-guarded temp: `tmp = x; if (tmp != null) ` else `tmp = y`, returning `tmp` wrapped in `InitExpr` so the fallback only runs when the whole expression is evaluated (and only when `x` was null). A non-nilable `x` yields `x` directly.
+- Formatter mirror (`go/token`, `go/scanner`, `go/parser`, `go/printer`): new `token.NULLISH` ("??") at the `||` precedence; the `.gk` scanner turns `??` into `NULLISH` (plain `.go` still rejects `?`); the parser builds an ordinary `ast.BinaryExpr` and canonical printing round-trips `x ?? y`.
+- Tests/examples: new `testdata/local/gecko_nullish.gk` (pointers, slices/maps/chans/funcs/interfaces, lazy fallback, `null ?? y`, chaining, non-nilable operands); `go/printer/testdata/gecko.gk`/`.golden` gains a nullish snippet; new `examples/14_nullish.gk` (now `examples/dynamic/14_nullish.gk`, with a typed counterpart in `examples/typed/`).
+
+**Hash do commit / Commit hash:** `_pending_`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: support the nullish coalescing operator ??
+```
+
 ### Entry: `for (x of e)` and `for (k in e)` loops
 
 **Título / Title:** gecko gains JavaScript-style `for (x of e)` / `for (k in e)` loops. `of` iterates over the **value** of each element (the key is discarded) and `in` iterates over its **key** (index) — both written with an `of`/`in` keyword instead of `= range`, and both reusing the range machinery so they work over slices, arrays, maps, strings, ranges-over-int, channels and range functions. The iteration variable follows the gecko declare-or-assign rule (declared when new, assigned when already visible). `in` behaves exactly like the single-variable `for (k = range e)`; `of` is its value counterpart. Operands that only produce a value per element (channels, integer ranges) bind the variable to that value in either form.

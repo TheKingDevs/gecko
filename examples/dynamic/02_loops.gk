@@ -1,11 +1,14 @@
-// 02_loops.gk — loops in gecko.
-//
-// Classic for, for used as a while loop, the while keyword itself,
-// infinite loops (while () and for (;;)), break/continue, and range
-// over slices and strings, with and without the index.
-//
-// Run from src/:
-//   bin/go run examples/02_loops.gk
+/**
+ * 02_loops.gk — loops in gecko.
+ *
+ * Classic for, for used as a while loop, the while keyword itself,
+ * infinite loops (while () and for (;;)), break/continue, range over
+ * slices and strings with and without the index, and the shorter
+ * for (v of e) / for (k in e) forms.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 02_loops.gk
+ */
 
 package main
 
@@ -84,4 +87,44 @@ func main() {
 		print(idx, ":", string(r), " ")
 	}
 	println()
+
+	// for (v of items) iterates the values, leaving the index out.
+	print("of: ")
+	for (v of items) {
+		print(v, " ")
+	}
+	println()
+
+	// for (k in items) iterates the keys (the index for a slice).
+	print("in: ")
+	for (k in items) {
+		print(k, " ")
+	}
+	println()
+
+	// The two forms also work over strings: `of` yields the runes,
+	// `in` yields the byte offsets.
+	print("of str: ")
+	for (c of word) {
+		print(string(c), " ")
+	}
+	println()
+
+	// And over an integer range, where only a value exists per round.
+	print("of int: ")
+	for (n of 5) {
+		print(n, " ")
+	}
+	println()
+
+	// Like `= range`, the iteration variable is declared by the clause
+	// when it is new and assigned when it is already visible. `i` is not
+	// visible here (the classic for above gave it its own scope), so this
+	// line declares it and the clause then assigns to it.
+	print("of, reused i: ")
+	i = 0
+	for (i of items) {
+		print(i, " ")
+	}
+	println("i is now", i)
 }

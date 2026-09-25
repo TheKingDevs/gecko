@@ -274,6 +274,16 @@ func (b *Builder) buildActionID(a *Action) cache.ActionID {
 
 	b.addPackageOrigin(h, p)
 
+	// gecko: the project "type" (dynamic or typed) selects the compiler's
+	// type-checking rules through -geckotype, so it must be part of the
+	// action ID. gc appends the flag when it builds the compile action,
+	// which happens after the cache lookup; without hashing it here,
+	// changing "type" in gecko.json would keep serving cached objects
+	// that were compiled under the previous rules.
+	if typ := load.GeckoProjectType(p.Dir); typ != "" {
+		fmt.Fprintf(h, "geckotype %s\n", typ)
+	}
+
 	if p.Module != nil {
 		fmt.Fprintf(h, "gecko %s\n", p.Module.GoVersion)
 	}
@@ -1862,6 +1872,13 @@ func (b *Builder) exportActionID(a *Action, ecfg *exportConfig) cache.ActionID {
 	fmt.Fprintf(h, "importPath %s\n", ecfg.ImportPath)
 	fmt.Fprintf(h, "compiler %s\n", ecfg.Compiler)
 	fmt.Fprintf(h, "goVersion %s\n", ecfg.GoVersion)
+	// gecko: the project "type" changes the type-checking rules, and hence
+	// the types recorded in the export data, so it must be part of the
+	// export action ID for the same reason it is part of the build action
+	// ID: changing "type" in gecko.json invalidates the cached export.
+	if typ := load.GeckoProjectType(a.Package.Dir); typ != "" {
+		fmt.Fprintf(h, "geckotype %s\n", typ)
+	}
 	// Source file contents.
 	for _, file := range ecfg.GoFiles {
 		fmt.Fprintf(h, "goFile %s %s\n", file, b.fileHash(file))

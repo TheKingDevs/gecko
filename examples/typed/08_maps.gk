@@ -1,23 +1,23 @@
-// 08_maps.gk — maps in gecko.
-//
-// Gecko spells Go's maps with a lighter syntax: the dynamic literal
-// {"name": "gecko"} infers map[string]any when the value types differ and
-// the concrete value type when they agree. Typed literals like
-// map[string]int{...} are also available, and map keys can be any
-// comparable type (string, int, bool, ...). Covers: literals, len,
-// index read/write, delete, iteration, maps whose values are slices or
-// maps, heterogeneous map[string]any, nil/empty maps, and maps as
-// function arguments and results. The builtin print/println print maps
-// as {key:value, key:value}.
-//
-// Run from src/:
-//   bin/go run examples/08_maps.gk
+/**
+ * 08_maps.gk — maps in gecko, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/08_maps.gk.
+ * Dynamic mode infers the type of `{"alice": 30}`; typed mode requires
+ * both the map type and, for nested values, the value type to be written
+ * out (`map[string]int{"alice": 30}`). Key/value iteration also needs
+ * its variables declared up front, because range cannot introduce a new
+ * name in typed mode.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 08_maps.gk
+ */
 
 package main
 
 // Maps as function arguments.
 func totalAge(people: map[string]int): int {
-	t = 0
+	var t: int = 0
+	var age: int = 0
 	for (_, age = range people) {
 		t = t + age
 	}
@@ -26,7 +26,7 @@ func totalAge(people: map[string]int): int {
 
 // Maps as function results.
 func buildMap(): map[string]int {
-	m = {"a": 1}
+	var m: map[string]int = map[string]int{"a": 1}
 	m["b"] = 2
 	return m
 }
@@ -34,31 +34,31 @@ func buildMap(): map[string]int {
 func main() {
 	// Dynamic literal: inference produces the concrete element type when
 	// every value agrees (map[string]int) ...
-	ages = {"alice": 30, "bob": 40}
+	var ages: map[string]int = map[string]int{"alice": 30, "bob": 40}
 	println("int values:         ", ages)
 
 	// ... and map[string]any when the value types differ.
-	hetero = {"name": "gecko", "active": true, "version": 1.0}
+	var hetero: map[string]any = map[string]any{"name": "gecko", "active": true, "version": 1.0}
 	println("mixed values:       ", hetero)
 
 	// Typed literal.
-	var stringMap: map[string]string = {"a": "x", "b": "y"}
+	var stringMap: map[string]string = map[string]string{"a": "x", "b": "y"}
 	println("string map:         ", stringMap)
 
 	// Keys can be any comparable type.
-	var byId: map[int]string = {1: "one", 2: "two"}
-	var byFlag: map[bool]string = {true: "yes", false: "no"}
+	var byId: map[int]string = map[int]string{1: "one", 2: "two"}
+	var byFlag: map[bool]string = map[bool]string{true: "yes", false: "no"}
 	println("int keys:           ", byId)
 	println("bool keys:          ", byFlag)
 
 	// Values can be slices or other maps.
-	var groups: map[string][]int = {"team": [1, 2, 3], "bench": [4]}
-	var tree: map[string]map[string]int = {"outer": {"inner": 1}}
+	var groups: map[string][]int = map[string][]int{"team": []int{1, 2, 3}, "bench": []int{4}}
+	var tree: map[string]map[string]int = map[string]map[string]int{"outer": map[string]int{"inner": 1}}
 	println("of slices:          ", groups)
 	println("2D nested map:      ", tree)
 
 	// An empty typed literal and a null map both print as {} with length 0.
-	var empty: map[string]int = {}
+	var empty: map[string]int = map[string]int{}
 	var nilMap: map[string]int = null
 	println("empty literal:      ", empty, "len:", len(empty))
 	println("null map:           ", nilMap, "len:", len(nilMap))
@@ -74,15 +74,17 @@ func main() {
 	println("after writes:       ", ages)
 
 	// delete removes a key.
-	del = {"a": 1, "b": 2, "c": 3}
+	var del: map[string]int = map[string]int{"a": 1, "b": 2, "c": 3}
 	delete(del, "b")
 	println("after delete:       ", del)
 
 	// Iteration yields keys, or keys and values in an unspecified order.
+	var k: string = ""
 	for (k = range ages) {
 		print(k, " ")
 	}
 	println()
+	var v: int = 0
 	for (k, v = range ages) {
 		print(k, "=", v, " ")
 	}

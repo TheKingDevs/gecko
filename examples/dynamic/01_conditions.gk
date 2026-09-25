@@ -1,11 +1,13 @@
-// 01_conditions.gk — conditionals in gecko.
-//
-// Every if/switch clause is parenthesized: if (cond), switch (expr),
-// switch (). Covers if/else, else-if chains, switch with grouped cases,
-// switch with no expression, and type switches.
-//
-// Run from src/:
-//   bin/go run examples/01_conditions.gk
+/**
+ * 01_conditions.gk — conditionals in gecko.
+ *
+ * Every if/switch clause is parenthesized: if (cond), switch (expr),
+ * switch (). Covers if/else, else-if chains, switch with grouped cases,
+ * switch with no expression, and type switches.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 01_conditions.gk
+ */
 
 package main
 

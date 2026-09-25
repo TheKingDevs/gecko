@@ -1,0 +1,62 @@
+/**
+ * 00_hello.gk — "Hello, Gecko!": the basics of a .gk file, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/00_hello.gk.
+ * The project this file lives in declares "type": "typed" in its
+ * gecko.json, so gecko rejects every dynamic-typing convenience and the
+ * program has to be written the strict way:
+ *
+ *   - a variable is declared once with `var name: Type = value`; the
+ *     `=` declare-or-assign rule of dynamic mode is not available, so
+ *     `greeting = "hi"` is an "undefined: greeting" error here,
+ *   - a later `name = value` then assigns to the already declared
+ *     variable.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 00_hello.gk
+ */
+
+package main
+
+func main() {
+	// print writes to stdout without a trailing newline; println appends
+	// one. Gecko provides both as builtins, so there is no need (or
+	// reason) to import fmt.
+	print("Hello")
+	print(", ")
+	print("Gecko")
+	println("!")
+	println() // println() with no arguments writes just a newline
+
+	// println joins its arguments with a space and appends a newline.
+	println("Hello", "Gecko")
+	println(1, 2, 3)
+	println(true, 2.5, 'c')
+
+	// String concatenation with + works exactly like in Go.
+	println("one" + " " + "two" + " " + "three")
+
+	// In typed mode the name must exist before it can be assigned, so the
+	// dynamic-mode `greeting = "hi"` becomes a declaration. Reassigning
+	// an already declared variable is still plain `=`.
+	var greeting: string = "hi"
+	println(greeting)
+	greeting = greeting + " there"
+	println(greeting)
+
+	// Every type is written out explicitly after the colon.
+	var typed: string = "typed var"
+	var count: int = 42
+	var ratio: float64 = 3.14
+	var on: bool = true
+	println(typed, count, ratio, on)
+
+	// null is the gecko literal for Go's nil (see 06_null.gk).
+	var maybe: *int = null
+	println("null pointer:", maybe)
+
+	// input(prompt) writes the prompt to stdout and reads one line from
+	// stdin; EOF returns the empty string.
+	var name: string = input("What is your name? (press Enter) ")
+	println("Nice to meet you,", name, "!")
+}

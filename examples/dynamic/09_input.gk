@@ -1,23 +1,25 @@
-// 09_input.gk — reading from stdin with the input builtin.
-//
-// input(args...) formats its arguments like println (joined by spaces, no
-// trailing newline), writes the result to stdout as the prompt, then reads
-// one line from stdin. The return value *includes* the trailing '\n' (CRLF
-// is normalized to LF), and is "" once stdin reaches EOF. Calling input()
-// with no arguments reads a line without printing a prompt.
-//
-// Because the line ending is kept, the usual first step is chomp: drop a
-// single trailing '\n' before comparing or storing the line. To read many
-// lines, loop until chomp(input(...)) returns "" — that happens on EOF or
-// when the user submits an empty line.
-//
-// Covers: input with no prompt, with a plain prompt and with a formatted
-// prompt; the trailing newline; loops, slices, templates, append.
-//
-// Run from examples/:
-//   ../bin/go run 09_input.gk
-// or feed it (one line per read, EOF ends the loops):
-//   printf 'go\nMy list\nhello\nworld\n\n' | ../bin/go run 09_input.gk
+/**
+ * 09_input.gk — reading from stdin with the input builtin.
+ *
+ * input(args...) formats its arguments like println (joined by spaces, no
+ * trailing newline), writes the result to stdout as the prompt, then reads
+ * one line from stdin. The return value *includes* the trailing '\n' (CRLF
+ * is normalized to LF), and is "" once stdin reaches EOF. Calling input()
+ * with no arguments reads a line without printing a prompt.
+ *
+ * Because the line ending is kept, the usual first step is chomp: drop a
+ * single trailing '\n' before comparing or storing the line. To read many
+ * lines, loop until chomp(input(...)) returns "" — that happens on EOF or
+ * when the user submits an empty line.
+ *
+ * Covers: input with no prompt, with a plain prompt and with a formatted
+ * prompt; the trailing newline; loops, slices, templates, append.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 09_input.gk
+ * or feed it (one line per read, EOF ends the loops):
+ *   printf 'go\nMy list\nhello\nworld\n\n' | ../../bin/gecko run 09_input.gk
+ */
 
 package main
 

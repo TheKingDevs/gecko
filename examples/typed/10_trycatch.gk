@@ -1,29 +1,15 @@
-// 10_trycatch.gk — error handling with try/catch/finally and throw in gecko.
-//
-// A panic-style error is raised with `throw expr`, which is shorthand for
-// panic(expr). It is caught with a JavaScript-style try statement:
-//
-//	try {
-//		...
-//	} catch (e) {
-//		...
-//	} finally {
-//		...
-//	}
-//
-// The catch variable (the value passed to recover) has type any, so it is
-// usually narrowed with a type assertion, e.g. e.(string). The catch can
-// omit its binding (`catch { ... }`), and either clause is optional as long
-// as one is present (`try`/`finally` without a `catch` is allowed).
-//
-// The finally body runs on every path: when the try body finishes normally,
-// when it throws, and also when the catch body itself throws.
-//
-// Because the try body is wrapped in a closure internally, `return` and any
-// `break`/`continue`/`goto` that would leave the body are compile errors.
-//
-// Run from examples/:
-//   ../bin/go run 10_trycatch.gk
+/**
+ * 10_trycatch.gk — throw, try/catch/finally, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/10_trycatch.gk.
+ * Error handling works exactly the same in both modes: the catch binding
+ * is introduced by the catch clause itself (the compiler desugars it into
+ * a `var e = recover()` declaration), so it does not depend on the
+ * dynamic declare-or-assign rule.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 10_trycatch.gk
+ */
 
 package main
 

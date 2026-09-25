@@ -1,0 +1,61 @@
+/**
+ * 14_nullish.gk — nullish coalescing `x ?? y` in gecko.
+ *
+ * `x ?? y` yields x unless x is null, in which case it yields y instead.
+ *
+ *   - Both operands must agree on the result type (usually a nilable
+ *     pointer here). The type of the left operand wins, so
+ *     `nickname ?? &anon` is a *string (the unary & takes the address of
+ *     the anonymous string).
+ *   - The fallback is lazy and only runs when the left side is actually
+ *     null, so `cfg ?? buildDefault()` never calls buildDefault when a
+ *     config is already present.
+ *   - A left operand that can never be null (int, bool, string, ...) is
+ *     returned directly: `8080 ?? 80` is 8080 and the fallback never
+ *     runs.
+ *   - `a ?? b ?? c` chains left to right: the first non-null value wins.
+ *     `null ?? x` is exactly x; writing a null literal on the left always
+ *     picks the fallback.
+ *   - Note the left side is used as-is; `*p ?? y` means "dereference p;
+ *     if p is null this is a nil dereference, exactly like *p alone".
+ *     Put the dereference on the result instead: `*(p ?? q)`.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 14_nullish.gk
+ */
+
+package main
+
+var defaultNick = "anonymous"
+var builtTimes = 0
+
+func buildDefault(): *string {
+	builtTimes = builtTimes + 1
+	return &defaultNick
+}
+
+func main() {
+	// A config lookup that may be null.
+	var nickname: *string = null
+
+	// Derived from a present config: fallback never runs (lazy).
+	var present: *string = &defaultNick
+	got = present ?? buildDefault()
+	println("present:", *got, "(builds:", builtTimes, ")")
+
+	// No config: the fallback is built lazily and used.
+	got = nickname ?? buildDefault()
+	println("missing:", *got, "(builds:", builtTimes, ")")
+
+	// Bare null always selects the fallback.
+	got = null ?? buildDefault()
+	println("bare null:", *got, "(builds:", builtTimes, ")")
+
+	// Non-nilable left side: never null, so no fallback and no build.
+	println("shortcut:", 8080 ?? 80, "(builds:", builtTimes, ")")
+
+	// Chain: first non-null of three wins (nickname is null, so the
+	// second -- a concrete fallback -- is picked).
+	got = nickname ?? nickname ?? &defaultNick
+	println("chained:", *got, "(builds:", builtTimes, ")")
+}

@@ -1,19 +1,14 @@
-// 12_interfaces.gk — type-safe interfaces in gecko.
-//
-// An interface collects named fields (`name: T`) and methods. Any class
-// that declares matching fields and methods satisfies the interface
-// automatically (structural typing, like TypeScript) — there is no
-// `implements` clause. Interface values can hold a `new`-ed instance of
-// any implementing class; fields read through the interface are
-// read-only.
-//
-// Gecko lowers each interface field to a `geckoGet_<field>()` accessor
-// method, and generates the same accessor on every class, so interface
-// satisfaction is checked at compile time and dispatched like a regular
-// method call.
-//
-// Run from examples/:
-//   ../bin/go run 12_interfaces.gk
+/**
+ * 12_interfaces.gk — structural interfaces, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/12_interfaces.gk.
+ * Interface satisfaction is structural in both modes; the typed edition
+ * only writes out the pointer types of the constructed classes, because
+ * declare-or-assign is not available in a "typed" project.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 12_interfaces.gk
+ */
 
 package main
 
@@ -60,8 +55,8 @@ func printShape(s: Shape) {
 }
 
 func main() {
-	r = new Rectangle("square", 4, 5)
-	c = new Circle("wheel", 2)
+	var r: *Rectangle = new Rectangle("square", 4, 5)
+	var c: *Circle = new Circle("wheel", 2)
 
 	printShape(r)
 	printShape(c)

@@ -21,7 +21,7 @@ GKARCH are enabled by default, and only on GKOS=linux.
 To perform comprehensive tests for all the supported architectures
 (even on a non-Linux system), one can run the following command:
 
-  $ ../../bin/go test cmd/internal/testdir -run='Test/codegen' -all_codegen -v
+  $ ../../bin/gecko test cmd/internal/testdir -run='Test/codegen' -all_codegen -v
 
 This is recommended after any change that affect the compiler's code.
 

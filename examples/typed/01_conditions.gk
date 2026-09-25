@@ -1,0 +1,73 @@
+/**
+ * 01_conditions.gk — if / else-if / else, switch and type switch, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/01_conditions.gk.
+ * In typed mode each name is declared with an explicit type before use;
+ * `x = 10` from the dynamic edition is `var x: int = 10` here.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 01_conditions.gk
+ */
+
+package main
+
+// if / else-if / else chains.
+func sign(x: int): string {
+	if (x > 0) {
+		return "positive"
+	} else if (x < 0) {
+		return "negative"
+	} else {
+		return "zero"
+	}
+}
+
+func main() {
+	println(sign(4), sign(-3), sign(0))
+
+	// if without an else.
+	var x: int = 10
+	if (x > 5) {
+		println("x is big")
+	}
+
+	// switch on a value with grouped cases (multiple case labels).
+	var day: string = "sat"
+	switch (day) {
+	case "sat", "sun":
+		println(day, "is a weekend day")
+	case "mon", "tue", "wed", "thu", "fri":
+		println(day, "is a weekday")
+	default:
+		println("unknown day:", day)
+	}
+
+	// switch with no expression switches on true, so each case is a
+	// boolean condition checked in order.
+	var n: int = 7
+	switch () {
+	case n < 0:
+		println(n, "is negative")
+	case n == 0:
+		println(n, "is zero")
+	default:
+		println(n, "is positive")
+	}
+
+	// A type switch: the switch expression must already be declared, so
+	// instead of the dynamic `t = v.(type)` binding `t` up front, each
+	// case narrows an `any` value with an assertion. Note there is no
+	// keyword case fallthrough; use commas, or fallthrough if really
+	// needed (it is plain Go behavior otherwise).
+	var v: any = "a gecko string"
+	switch (v.(type)) {
+	case string:
+		println("a string of length", len(v.(string)))
+	case int:
+		println("an int:", v.(int))
+	case float64:
+		println("a float:", v.(float64))
+	default:
+		println("unknown type", v)
+	}
+}

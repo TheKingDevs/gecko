@@ -1,0 +1,7 @@
+{
+  "name": "examples-typed",
+  "version": "1.0.0",
+  "description": "gecko language examples written in fully typed mode",
+  "type": "typed",
+  "license": "BSD-3-Clause"
+}

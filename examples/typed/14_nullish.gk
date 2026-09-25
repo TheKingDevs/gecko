@@ -1,0 +1,48 @@
+/**
+ * 14_nullish.gk — the nullish coalescing operator `??`, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/14_nullish.gk.
+ * The operator behaves identically in both modes; only the binding of
+ * the result differs, since a "typed" project cannot introduce `got`
+ * through the dynamic declare-or-assign rule. See dynamic/14_nullish.gk
+ * for the full description of the operator and its lazy evaluation.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 14_nullish.gk
+ */
+
+package main
+
+var defaultNick = "anonymous"
+var builtTimes = 0
+
+func buildDefault(): *string {
+	builtTimes = builtTimes + 1
+	return &defaultNick
+}
+
+func main() {
+	// A config lookup that may be null.
+	var nickname: *string = null
+
+	// Derived from a present config: fallback never runs (lazy).
+	var present: *string = &defaultNick
+	var got: *string = present ?? buildDefault()
+	println("present:", *got, "(builds:", builtTimes, ")")
+
+	// No config: the fallback is built lazily and used.
+	got = nickname ?? buildDefault()
+	println("missing:", *got, "(builds:", builtTimes, ")")
+
+	// Bare null always selects the fallback.
+	got = null ?? buildDefault()
+	println("bare null:", *got, "(builds:", builtTimes, ")")
+
+	// Non-nilable left side: never null, so no fallback and no build.
+	println("shortcut:", 8080 ?? 80, "(builds:", builtTimes, ")")
+
+	// Chain: first non-null of three wins (nickname is null, so the
+	// second -- a concrete fallback -- is picked).
+	got = nickname ?? nickname ?? &defaultNick
+	println("chained:", *got, "(builds:", builtTimes, ")")
+}

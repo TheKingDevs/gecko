@@ -1,0 +1,40 @@
+/**
+ * 11_async.gk — async func and await, typed edition.
+ *
+ * This is the fully typed counterpart of examples/dynamic/11_async.gk.
+ * The async functions and await calls are unchanged; the stored future is
+ * the one place a type is now written out, because an async func with a
+ * result returns a `chan <result>` and typed mode cannot infer that from
+ * the bare assignment.
+ *
+ * Run from this directory:
+ *   ../../bin/gecko run 11_async.gk
+ */
+
+package main
+
+async func add(a: int, b: int): int {
+	return a + b
+}
+
+async func greet(name: string): string {
+	return "hello " + name
+}
+
+async func shout(message: string) {
+	println("shout:", message)
+}
+
+func main() {
+	// Awaiting a future yields the value the body returned.
+	println("add(20, 22) =", await add(20, 22))
+	println("greet =", await greet("gecko"))
+
+	// A future can be stored and awaited later.
+	var f: chan int = add(1, 2)
+	println("stored future =", await f)
+
+	// An async function without a result is awaited for ordering only.
+	await shout("done")
+	println("main done")
+}
