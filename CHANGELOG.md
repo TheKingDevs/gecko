@@ -20,7 +20,7 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 - Known limitation: as in Go, both branches must produce a value, so `c ? println(a) : println(b)` is rejected (`no value used as value`); `if (c) … else …` already covers the statement case.
 - Known limitation: an interface condition (`any`) is tested with `x != null`, the same test `??` uses, so a boxed `0`, `false`, `""` or empty collection is truthy. A dynamic type switch at run time would be needed for the JavaScript rule, and the IR has no primitive for one; a value inferred in dynamic mode is not affected, because it keeps its concrete type rather than being boxed in `any`.
 
-**Hash do commit / Commit hash:** `_pending_`
+**Hash do commit / Commit hash:** `80de8ba8`
 
 **Mensagem do commit / Commit message:**
 ```
