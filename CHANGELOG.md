@@ -22,7 +22,7 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 - Known limitation: a `// import "..."` comment is not honored for a file import, which already has an explicit path.
 - Known limitation: `gecko vet` still cannot type-check `.gk` files that use member imports (`import { x } from ...`) or `export`, because it type-checks with the upstream `go/types`; pre-existing and unrelated to this entry. `gecko build`, `gecko run` and `gecko fmt` are unaffected.
 
-**Hash do commit / Commit hash:** `_pending_`
+**Hash do commit / Commit hash:** `d6db98b1`
 
 **Mensagem do commit / Commit message:**
 ```
