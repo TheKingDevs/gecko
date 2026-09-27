@@ -41,7 +41,11 @@ O Gecko inclui recursos próprios construídos sobre a base do Go:
 Crie um arquivo `hello.gk`:
 
 ```go
-println("Hello, Gecko!")
+package main
+
+func main() {
+	println("Hello world!")
+}
 ```
 
 Execute com:
