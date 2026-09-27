@@ -3,7 +3,8 @@
  *
  * Every if/switch clause is parenthesized: if (cond), switch (expr),
  * switch (). Covers if/else, else-if chains, switch with grouped cases,
- * switch with no expression, and type switches.
+ * switch with no expression, type switches, and the conditional
+ * expression `cond ? a : b`.
  *
  * Run from this directory:
  *   ../../bin/gecko run 01_conditions.gk
@@ -70,4 +71,42 @@ func main() {
 	default:
 		println("unknown type", t)
 	}
+	// The conditional expression `cond ? a : b` evaluates to `a` when
+	// `cond` is truthy and to `b` when it is falsy, and only the selected
+	// branch is evaluated. Truthiness follows JavaScript: null, false, the
+	// numeric zero, the empty string and empty collections are falsy, and
+	// everything else is truthy.
+	var name = "mrx" ? "thekingdevs" : null
+	println("name =", name)
+
+	score = 0
+	println("score =", score ? "has points" : "no points")
+	println("items =", []int{} ? "some" : "empty")
+	println("empty =", "" ? "not empty" : "empty string")
+
+	// A conditional is right associative, so a nested one needs no
+	// parentheses: it is the else branch.
+	m = 7
+	println("m =", m > 10 ? "big" : m > 3 ? "medium" : "small")
+
+	// It has the lowest precedence, so it needs no parentheses as an
+	// operand, and each branch is an ordinary expression.
+	var points = (score ? 1 : 0) + (m > 3 ? 10 : 0)
+	println("points =", points)
+
+	// A null pointer is falsy too, so a pointer is usable as a condition.
+	// Note the explicit type: dynamic mode cannot infer a name from a bare
+	// null, so `p = null` is an error there.
+	var p: *string = null
+	println("p =", p ? "present" : "null")
+
+	// Only the selected branch is evaluated, so this prints "positive"
+	// and never calls boom.
+	println("m =", m > 0 ? "positive" : boom())
+}
+
+// A branch that is never evaluated is not executed.
+func boom(): string {
+	println("boom")
+	return "boom"
 }

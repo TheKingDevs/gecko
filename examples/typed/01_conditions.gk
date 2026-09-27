@@ -2,6 +2,8 @@
  * 01_conditions.gk — if / else-if / else, switch and type switch, typed edition.
  *
  * This is the fully typed counterpart of examples/dynamic/01_conditions.gk.
+ * It also covers the conditional expression `cond ? a : b`.
+ *
  * In typed mode each name is declared with an explicit type before use;
  * `x = 10` from the dynamic edition is `var x: int = 10` here.
  *
@@ -70,4 +72,42 @@ func main() {
 	default:
 		println("unknown type", v)
 	}
+	// The conditional expression `cond ? a : b` evaluates to `a` when
+	// `cond` is truthy and to `b` when it is falsy, and only the selected
+	// branch is evaluated. Truthiness follows JavaScript: null, false, the
+	// numeric zero, the empty string and empty collections are falsy, and
+	// everything else is truthy. In typed mode the condition may be any
+	// type, not just bool.
+	var name = "mrx" ? "thekingdevs" : null
+	println("name =", name)
+
+	var score: int = 0
+	println("score =", score ? "has points" : "no points")
+	println("items =", []int{} ? "some" : "empty")
+	println("empty =", "" ? "not empty" : "empty string")
+
+	// A conditional is right associative, so a nested one needs no
+	// parentheses: it is the else branch.
+	var m: int = 7
+	println("m =", m > 10 ? "big" : m > 3 ? "medium" : "small")
+
+	// It has the lowest precedence, so it needs no parentheses as an
+	// operand, and each branch is an ordinary expression.
+	var points = (score ? 1 : 0) + (m > 3 ? 10 : 0)
+	println("points =", points)
+
+	// Both branches must produce the same type. A bare null branch takes
+	// the type of the other branch, so it needs a nilable result type.
+	var p: *string = null
+	println("p =", p ? "present" : "null")
+
+	// Only the selected branch is evaluated, so this prints "positive"
+	// and never calls boom.
+	println("m =", m > 0 ? "positive" : boom())
+}
+
+// A branch that is never evaluated is not executed.
+func boom(): string {
+	println("boom")
+	return "boom"
 }

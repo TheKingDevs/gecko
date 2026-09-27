@@ -4,6 +4,8 @@
  * Gecko spells Go's nil as null. null works everywhere nil does:
  * comparisons, assignments to any nilable type (pointers, slices, maps,
  * channels, functions, interfaces) and function arguments/results.
+ * A null pointer is also falsy, so a pointer can be used directly as the
+ * condition of `?:`.
  * Writing nil in a .gk file is a compile error (the compiler suggests
  * using null instead).
  *
@@ -13,11 +15,11 @@
 
 package main
 
-func describePtr(p: *int): string {
+func describePtr(p: *string): string {
 	if (p == null) {
 		return "null pointer"
 	}
-	return "points at " + string(*p)
+	return "points at " + *p
 }
 
 func main() {
@@ -35,8 +37,8 @@ func main() {
 	println(sl, m, ch, fn, itf)
 
 	// Resetting an existing variable to null.
-	x = 123
-	ptr = &x
+	word = "gecko"
+	ptr = &word
 	println("before:", describePtr(ptr))
 	ptr = null
 	println("after:", describePtr(ptr))
@@ -44,6 +46,16 @@ func main() {
 	// null as a function argument and result.
 	println(describePtr(null))
 	println(empty() == null)
+
+	// A pointer is falsy when it is null, so it can be used directly as the
+	// condition of `?:` -- the JavaScript `user ? user.name : "anon"` idiom.
+	// Only the selected branch is evaluated, so *ptr is never dereferenced
+	// while ptr is null.
+	ptr = &word
+	println("ptr:", ptr ? *ptr : "ptr is null")
+	ptr = null
+	println("ptr:", ptr ? *ptr : "ptr is null")
+	println("empty:", empty() ? "has a box" : "no box")
 }
 
 class Box() {

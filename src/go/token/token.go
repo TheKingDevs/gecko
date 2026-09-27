@@ -61,12 +61,13 @@ const (
 	SHR_ASSIGN     // >>=
 	AND_NOT_ASSIGN // &^=
 
-	LAND  // &&
-	LOR   // ||
-	NULLISH // ??
-	ARROW // <-
-	INC   // ++
-	DEC   // --
+	LAND     // &&
+	LOR      // ||
+	NULLISH  // ??
+	QUESTION // ? (gecko conditional expression)
+	ARROW    // <-
+	INC      // ++
+	DEC      // --
 
 	EQL    // ==
 	LSS    // <
@@ -181,12 +182,13 @@ var tokens = [...]string{
 	SHR_ASSIGN:     ">>=",
 	AND_NOT_ASSIGN: "&^=",
 
-	LAND:  "&&",
-	LOR:   "||",
-	NULLISH: "??",
-	ARROW: "<-",
-	INC:   "++",
-	DEC:   "--",
+	LAND:     "&&",
+	LOR:      "||",
+	NULLISH:  "??",
+	QUESTION: "?",
+	ARROW:    "<-",
+	INC:      "++",
+	DEC:      "--",
 
 	EQL:    "==",
 	LSS:    "<",

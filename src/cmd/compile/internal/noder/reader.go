@@ -25,6 +25,7 @@ import (
 	"cmd/compile/internal/staticinit"
 	"cmd/compile/internal/typecheck"
 	"cmd/compile/internal/types"
+	"cmd/compile/internal/types2"
 	"cmd/internal/hash"
 	"cmd/internal/obj"
 	"cmd/internal/objabi"
@@ -2592,6 +2593,26 @@ func (r *reader) expr() (res ir.Node) {
 		init.Append(typecheck.Stmt(ir.NewIfStmt(pos, cond, ir.Nodes{typecheck.Stmt(ir.NewAssignStmt(pos, tmp, rhs))}, nil)))
 		return ir.InitExpr(init, tmp)
 
+	case exprCond:
+		// Gecko cond ? x : y. The condition is tested for truthiness and
+		// only the selected branch is evaluated, so the result is written
+		// to a temp by a two-way if. The sequence is wrapped in InitExpr so
+		// that it only runs when the surrounding expression is evaluated.
+		pos := r.pos()
+		kind := types2.GeckoTruthyKind(r.Uint())
+		cond := r.expr()
+		then := r.expr()
+		els := r.expr()
+
+		typ := then.Type()
+		test := geckoTruthyExpr(pos, kind, cond)
+		tmp := typecheck.TempAt(pos, r.curfn, typ)
+		init := ir.Nodes{ir.NewDecl(pos, ir.ODCL, tmp)}
+		init.Append(typecheck.Stmt(ir.NewIfStmt(pos, test,
+			ir.Nodes{typecheck.Stmt(ir.NewAssignStmt(pos, tmp, then))},
+			ir.Nodes{typecheck.Stmt(ir.NewAssignStmt(pos, tmp, els))})))
+		return ir.InitExpr(init, tmp)
+
 	case exprRecv:
 		x := r.expr()
 		pos := r.pos()
@@ -4561,4 +4582,37 @@ func shapeSig(fn *ir.Func, dict *readerDict) *types.Type {
 	typ := types.NewSignature(recv, params, results)
 	typ.SetHasShape(true)
 	return typ
+}
+
+// geckoTruthyExpr returns a boolean expression that reports whether the
+// value of cond is truthy under gecko's JavaScript truthiness rules:
+// null, false, the numeric zero, the empty string and empty collections
+// are falsy, and every other value is truthy. The kind must be the
+// classification of cond's type reported by the writer.
+func geckoTruthyExpr(pos src.XPos, kind types2.GeckoTruthyKind, cond ir.Node) ir.Node {
+	switch kind {
+	case types2.GeckoTruthyBool:
+		// A bool is its own test.
+		return typecheck.Expr(cond)
+
+	case types2.GeckoTruthyNumber:
+		return typecheck.Expr(ir.NewBinaryExpr(pos, ir.ONE, cond, ir.NewZero(pos, cond.Type())))
+
+	case types2.GeckoTruthyLen:
+		n := typecheck.Expr(ir.NewUnaryExpr(pos, ir.OLEN, cond))
+		return typecheck.Expr(ir.NewBinaryExpr(pos, ir.ONE, n, ir.NewInt(pos, 0)))
+
+	case types2.GeckoTruthyNil:
+		return typecheck.Expr(ir.NewBinaryExpr(pos, ir.ONE, cond, ir.NewNilExpr(pos, cond.Type())))
+
+	case types2.GeckoTruthyAlways:
+		// A struct or a function value is never nil and never empty.
+		return ir.NewBool(pos, true)
+
+	case types2.GeckoTruthyNever:
+		// A bare null is always falsy.
+		return ir.NewBool(pos, false)
+	}
+	base.FatalfAt(pos, "unexpected conditional expression kind %d", kind)
+	panic("unreachable")
 }

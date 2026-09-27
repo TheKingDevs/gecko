@@ -1343,3 +1343,52 @@ func TestScannerEndReuse(t *testing.T) {
 		t.Errorf("s.End() = %v; want token.NoPos", end)
 	}
 }
+
+// TestGeckoQuestion verifies that '?' scans as QUESTION and "??" as
+// NULLISH in gecko source, and that both are illegal in plain Go.
+func TestGeckoQuestion(t *testing.T) {
+	const source = "a ? b : c ?? d ? e : f"
+
+	for _, gecko := range []bool{true, false} {
+		var errs []string
+		var s Scanner
+		s.Init(fset.AddFile("", fset.Base(), len(source)), []byte(source),
+			func(_ token.Position, msg string) { errs = append(errs, msg) },
+			dontInsertSemis)
+		s.Gecko = gecko
+
+		var toks []token.Token
+		for {
+			_, tok, _ := s.Scan()
+			if tok == token.EOF {
+				break
+			}
+			toks = append(toks, tok)
+		}
+
+		want := []token.Token{
+			token.IDENT, token.QUESTION, token.IDENT, token.COLON, token.IDENT,
+			token.NULLISH, token.IDENT, token.QUESTION, token.IDENT, token.COLON, token.IDENT,
+		}
+		if gecko {
+			if errs != nil {
+				t.Errorf("gecko scan reported %q", errs)
+			}
+			if !slices.Equal(toks, want) {
+				t.Errorf("gecko scan = %v, want %v", toks, want)
+			}
+			continue
+		}
+
+		// Plain Go: every '?' is an illegal character.
+		if len(errs) != 4 {
+			t.Errorf("go scan reported %d errors (%q), want 4", len(errs), errs)
+		}
+		for _, tok := range toks {
+			if tok != token.ILLEGAL && tok != token.IDENT && tok != token.COLON {
+				t.Errorf("go scan = %v, only IDENT, COLON and ILLEGAL expected", toks)
+				break
+			}
+		}
+	}
+}

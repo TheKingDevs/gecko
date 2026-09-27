@@ -5,6 +5,28 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: conditional expression `cond ? a : b`
+
+**Título / Title:** gecko gains JavaScript's conditional operator `cond ? a : b`: the result is `a` when `cond` is truthy and `b` when it is falsy, and only the selected branch is evaluated, so `n > 0 ? next() : ""` never calls `next()` on a non-positive `n`. The condition is not restricted to `bool` — truthiness follows JavaScript, so `null`, `false`, the numeric zero, the empty string and empty collections are falsy and everything else is truthy. The operator has the lowest precedence and is right associative, so `n > 10 ? "big" : n > 3 ? "medium" : "small"` needs no parentheses. A bare `null` branch takes the type of the other branch, and a constant condition is folded, so `var name = "mrx" ? "thekingdevs" : null` yields an untyped string constant.
+
+**Descrição / Description:**
+
+- Syntax (`cmd/compile/internal/syntax`): new `_Question` token entry; the scanner already knew `?` `?` and now splits a single `?` into its own token. `expr` wraps the binary/unary result in `condExpr` at the lowest precedence, and the middle expression stops at the `:`. The node is a new `CondExpr` (`Cond`, `Then`, `Else`) positioned at the condition, with `walk` and `printer` support. No new keyword, so nothing else changes parse rules.
+- Types (`cmd/compile/internal/types2`): `expr` dispatches `*syntax.CondExpr` to `condExpr`, and `updateExprType` knows the node. A typed branch determines the result type and an untyped branch is converted to it (in either position); a bare `null` branch takes the other branch's type and is never defaulted, so it still requires a nilable result type. Two `null` branches are rejected (`both branches are null`). When the condition is not a constant the result cannot be an untyped constant, so an untyped result type is defaulted there, exactly as an untyped operand of any other untyped-typed operator would be. A constant condition is folded to the selected branch's constant.
+- Truthiness (`cmd/compile/internal/types2`): `GeckoTruthyKind`/`GeckoTruthyKindOf` classify the condition's type so the noder knows which run-time test to build: the value itself (`bool`, and a bare `null` is always falsy), `x != 0` (numbers), `len(x) != 0` (strings, arrays, slices, maps), `x != nil` (pointers, chans, interfaces, funcs) and always-truthy (structs). Anything else (a type parameter, an unsafe pointer) is reported as unsupported.
+- Compiler (`cmd/compile/internal/noder`): the writer emits a dedicated `exprCond` code plus the truthiness kind, and writes both branches converted to the result type; a bare `null` condition is folded to the else branch at compile time. The reader rebuilds the expression as a truthiness test over a temp: `tmp = cond; if (truthy(tmp))` else `tmp = else`, returning `tmp` wrapped in `InitExpr`, so the untaken branch is never evaluated.
+- Formatter mirror (`go/token`, `go/scanner`, `go/parser`, `go/printer`): new `token.QUESTION` ("?"); the `.gk` scanner turns `?` into `QUESTION` and `??` into `NULLISH` (plain `.go` still rejects `?`); the parser builds an `ast.CondExpr` recording the `?` and `:` positions, and canonical printing round-trips `cond ? a : b`, nested and parenthesized forms included.
+- Tests/examples: new `testdata/local/gecko_cond.gk` (every truthiness class, a `null` branch, untyped/typed unification, constant folding, precedence, right associativity, ten error cases); new `go/parser.TestGeckoCondExpr` and `go/scanner.TestGeckoQuestion`; `go/printer/testdata/gecko.gk`/`.golden` gains a conditional snippet; `examples/dynamic/01_conditions.gk` and its typed counterpart gain a conditional section covering every truthiness class, nesting, a `null` branch and lazy evaluation; `examples/dynamic/06_null.gk` uses a pointer as the condition to dereference it safely (`p ? *p : "p is null"`), and `examples/dynamic/14_nullish.gk` contrasts `x ?? y` with `x ? a : b`, which is where a `null` pointer and an empty string agree on the branch with `?:` but not with `??`. All three print the same output in both editions.
+- Known limitation: as in Go, both branches must produce a value, so `c ? println(a) : println(b)` is rejected (`no value used as value`); `if (c) … else …` already covers the statement case.
+- Known limitation: an interface condition (`any`) is tested with `x != null`, the same test `??` uses, so a boxed `0`, `false`, `""` or empty collection is truthy. A dynamic type switch at run time would be needed for the JavaScript rule, and the IR has no primitive for one; a value inferred in dynamic mode is not affected, because it keeps its concrete type rather than being boxed in `any`.
+
+**Hash do commit / Commit hash:** `_pending_`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: support the conditional expression cond ? a : b
+```
+
 ### Entry: `examples/` split into dynamic and typed editions, and two typed-mode fixes
 
 **Título / Title:** the examples are now split into `examples/dynamic/` and `examples/typed/`, each its own `gecko.json` project, with every example replicated 100% typed next to its 100% dynamic original. Making `"type": "typed"` actually stick also required two fixes: `try`/`catch` was unusable in a typed project (even `catch { }` failed to compile), and the build cache ignored the project's `type`, so turning it on did not enforce anything for already-compiled packages.

@@ -6,6 +6,8 @@
  * (`x == null`); typed mode requires the comparison to be valid for the
  * declared type, so every null compared here is a nilable one (a pointer,
  * slice, map, channel, func or any).
+ * A null pointer is also falsy, so a pointer can be used directly as the
+ * condition of `?:`.
  *
  * Run from this directory:
  *   ../../bin/gecko run 06_null.gk
@@ -13,11 +15,11 @@
 
 package main
 
-func describePtr(p: *int): string {
+func describePtr(p: *string): string {
 	if (p == null) {
 		return "null pointer"
 	}
-	return "points at " + string(*p)
+	return "points at " + *p
 }
 
 func main() {
@@ -35,8 +37,8 @@ func main() {
 	println(sl, m, ch, fn, itf)
 
 	// Resetting an existing variable to null.
-	var x: int = 123
-	var ptr: *int = &x
+	var word: string = "gecko"
+	var ptr: *string = &word
 	println("before:", describePtr(ptr))
 	ptr = null
 	println("after:", describePtr(ptr))
@@ -44,6 +46,16 @@ func main() {
 	// null as a function argument and result.
 	println(describePtr(null))
 	println(empty() == null)
+
+	// A pointer is falsy when it is null, so it can be used directly as the
+	// condition of `?:` -- the JavaScript `user ? user.name : "anon"` idiom.
+	// Only the selected branch is evaluated, so *ptr is never dereferenced
+	// while ptr is null.
+	ptr = &word
+	println("ptr:", ptr ? *ptr : "ptr is null")
+	ptr = null
+	println("ptr:", ptr ? *ptr : "ptr is null")
+	println("empty:", empty() ? "has a box" : "no box")
 }
 
 class Box() {

@@ -1240,3 +1240,95 @@ const _ = ` + stringlit + ` ;
 		t.Errorf("found %d BasicLit, want 3", count)
 	}
 }
+
+// TestGeckoCondExpr verifies that .gk files accept the conditional operator
+// `cond ? a : b`: it has the lowest precedence, it is right associative, and
+// it records the positions of the `?` and `:` tokens. It must remain
+// invalid in regular .go files.
+func TestGeckoCondExpr(t *testing.T) {
+	const src = `package gecko
+
+func f(n: int, s: string) {
+	a = n > 0 ? "positivo" : n > 3 ? "grande" : "pequeno"
+	b = (n > 0 ? 1 : 2) + 3
+	c = n > 0 && s != "" ? s : "?"
+	d = n ?? 0 ? 1 : 2
+}
+`
+	fset := token.NewFileSet()
+	f, err := ParseFile(fset, "gecko.gk", src, 0)
+	if err != nil {
+		t.Fatalf("gecko parse: %v", err)
+	}
+
+	body := f.Decls[0].(*ast.FuncDecl).Body
+	if len(body.List) != 4 {
+		t.Fatalf("got %d statements, want 4", len(body.List))
+	}
+	rhs := func(i int) ast.Expr { return body.List[i].(*ast.AssignStmt).Rhs[0] }
+
+	// The node starts at the condition, and it records where the `?` and
+	// `:` are.
+	outer, ok := rhs(0).(*ast.CondExpr)
+	if !ok {
+		t.Fatalf("stmt 0 = %T, want *ast.CondExpr", rhs(0))
+	}
+	if got, want := outer.Pos(), outer.Cond.Pos(); got != want {
+		t.Errorf("CondExpr.Pos() = %v, want %v (Cond.Pos())", got, want)
+	}
+	if got, want := fset.Position(outer.Question).String(), "gecko.gk:4:12"; got != want {
+		t.Errorf("CondExpr.Question = %s, want %s", got, want)
+	}
+	if got, want := fset.Position(outer.Colon).String(), "gecko.gk:4:25"; got != want {
+		t.Errorf("CondExpr.Colon = %s, want %s", got, want)
+	}
+	if got, want := outer.End(), outer.Else.End(); got != want {
+		t.Errorf("CondExpr.End() = %d, want %d (Else.End())", got, want)
+	}
+
+	// A nested conditional needs no parentheses: it is the else branch.
+	nested, ok := outer.Else.(*ast.CondExpr)
+	if !ok {
+		t.Fatalf("CondExpr.Else = %T, want *ast.CondExpr (right associative)", outer.Else)
+	}
+	if _, ok := nested.Then.(*ast.CondExpr); ok {
+		t.Error("nested conditional must be the else branch, not the then branch")
+	}
+
+	// A conditional used as an operand keeps its parentheses.
+	sum, ok := rhs(1).(*ast.BinaryExpr)
+	if !ok {
+		t.Fatalf("stmt 1 = %T, want *ast.BinaryExpr", rhs(1))
+	}
+	paren, ok := sum.X.(*ast.ParenExpr)
+	if !ok {
+		t.Fatalf("stmt 1 X = %T, want *ast.ParenExpr", sum.X)
+	}
+	if _, ok := paren.X.(*ast.CondExpr); !ok {
+		t.Errorf("ParenExpr.X = %T, want *ast.CondExpr", paren.X)
+	}
+
+	// The condition is parsed at its own precedence, so the whole
+	// `n > 0 && s != ""` is the condition of the conditional.
+	and, ok := rhs(2).(*ast.CondExpr)
+	if !ok {
+		t.Fatalf("stmt 2 = %T, want *ast.CondExpr", rhs(2))
+	}
+	if bin, ok := and.Cond.(*ast.BinaryExpr); !ok || bin.Op != token.LAND {
+		t.Errorf("stmt 2 condition = %v, want n > 0 && s != \"\"", and.Cond)
+	}
+
+	// The nullish operator binds tighter than the conditional operator.
+	coalesce, ok := rhs(3).(*ast.CondExpr)
+	if !ok {
+		t.Fatalf("stmt 3 = %T, want *ast.CondExpr", rhs(3))
+	}
+	if bin, ok := coalesce.Cond.(*ast.BinaryExpr); !ok || bin.Op != token.NULLISH {
+		t.Errorf("stmt 3 condition = %v, want n ?? 0", coalesce.Cond)
+	}
+
+	// '?' is not valid Go.
+	if _, err := ParseFile(token.NewFileSet(), "a.go", "package p\nvar _ = a ? b : c\n", 0); err == nil {
+		t.Error("ParseFile(go) with '?' succeeded unexpectedly")
+	}
+}

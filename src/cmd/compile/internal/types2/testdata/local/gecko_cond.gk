@@ -1,0 +1,122 @@
+// Copyright 2026 The Gecko Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// gecko conditional expression `cond ? x : y`: the condition is tested
+// for truthiness, and the result is x when it is truthy and y when it is
+// falsy. Only the selected branch is evaluated, but both branches are
+// type-checked and must produce the same result type: a typed branch
+// determines the type, an untyped branch is converted to it, and a bare
+// `null` branch takes the type of the other branch.
+
+package geckocond
+
+var p: *int
+var s: []int
+var m: map[int]int
+var c: chan int
+var f: func()
+var i: interface{}
+var arr: [3]int
+var zero: [0]int
+
+// The condition may be of any type, not just bool.
+func conditions(n: int, str: string, x: float64) {
+	_ = n ? 1 : 2
+	_ = str ? "a" : "b"
+	_ = x ? 1.0 : 2.0
+	_ = s ? 1 : 2
+	_ = m ? 1 : 2
+	_ = c ? 1 : 2
+	_ = f ? 1 : 2
+	_ = i ? 1 : 2
+	_ = p ? 1 : 2
+	_ = arr ? 1 : 2
+	_ = zero ? 1 : 2
+	_ = true ? 1 : 2
+	_ = false ? 1 : 2
+}
+
+// A bare null branch takes the type of the other branch, which must be
+// nilable.
+func nullBranch(pn: *int) {
+	var a = "mrx" ? "thekingdevs" : null
+	_ = a
+	_ = pn ? pn : null
+	_ = pn ? null : p
+	var b: *int = pn ? null : p
+	_ = b
+	var d: interface{} = pn ? null : i
+	_ = d
+}
+
+// A typed branch determines the result type and an untyped branch is
+// converted to it, in either position.
+func untyped(n: int) {
+	_ = n ? 1 : 2
+	_ = n ? 1.0 : 2
+	_ = n ? p : null
+	_ = n ? null : p
+	_ = n ? s : make([]int, 0)
+	_ = n ? make([]int, 0) : s
+}
+
+// The selected branch is not known at compile time, so an untyped result
+// is a value of the default type.
+func notConstant(n: int, str: string, b: bool) {
+	var a = n ? 1 : 2
+	_ = a
+	var c = str ? "a" : "b"
+	_ = c
+	var d = b ? true : false
+	_ = d
+	var e = n ? 1 : 2.0
+	_ = e
+}
+
+// A constant condition is evaluated at compile time, so the result is a
+// constant of the selected branch's type.
+func constant() {
+	_ = true ? 1 : 2
+	_ = false ? 1 : 2
+	_ = "mrx" ? "thekingdevs" : "outro"
+	_ = "" ? "cheio" : "vazio"
+	_ = 0 ? 1 : 2
+	_ = 1 ? 1 : 2
+	const a = true ? 1 : 2
+	_ = a
+	const b = false ? "x" : "y"
+	_ = b
+}
+
+// The conditional operator has the lowest precedence and is right
+// associative.
+func precedence(n: int, m: int) {
+	_ = n > 0 ? 1 : 2
+	_ = n > 0 && m > 0 ? 1 : 2
+	_ = n > 0 || m > 0 ? 1 : 2
+	_ = 1 + 2 ? 3 : 4
+	_ = (n > 0 ? 1 : 2) + 3
+	_ = n > 0 ? 1 : m > 0 ? 2 : 3
+	_ = n > 0 ? (m > 0 ? 1 : 2) : 3
+	_ = g() ? g() : g()
+}
+
+func g(): int { return 1 }
+
+func branches(): string {
+	return g() > 0 ? "positivo" : "zero"
+}
+
+func errs(n: int, str: string, pn: *int) {
+	_ = n ? 1 : "s"                        /* ERROR "cannot use \"s\" (untyped string constant) as int value in conditional expression" */
+	_ = n ? str : 1                        /* ERROR "cannot use 1 (untyped int constant) as string value in conditional expression" */
+	_ = n ? 1 : null                       /* ERROR "cannot use nil as int value in conditional expression" */
+	_ = n ? 1 /* ERROR "cannot use 1 (untyped int constant) as *int value in conditional expression" */ : p
+	_ = n ? p : 1                          /* ERROR "cannot use 1 (untyped int constant) as *int value in conditional expression" */
+	_ = n ? 1 /* ERROR "cannot use 1 (untyped int constant) as []int value in conditional expression" */ : s
+	_ = true ? 1 : "s"                     /* ERROR "mismatched types untyped int and untyped string" */
+	_ = false ? "s" : 1                    /* ERROR "mismatched types untyped string and untyped int" */
+	_ = true ? null : null                 /* ERROR "both branches are null" */
+	_ = n ? s : "s"                        /* ERROR "cannot use \"s\" (untyped string constant) as []int value in conditional expression" */
+}

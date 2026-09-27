@@ -166,3 +166,17 @@ func coalesce(p: *string, name: string, s: string) {
 	out = next ?? "again"
 	println(out)
 }
+
+// gecko conditional expression `cond ? a : b`: the condition is tested for
+// truthiness and only the selected branch is evaluated. It has the lowest
+// precedence, so it needs no parentheses as an operand, and it is right
+// associative, so a nested conditional needs no parentheses either.
+func cond(n: int, s: string, p: *string) {
+	println(n > 0 ? "positivo" : "zero")
+	println(n > 0 ? "positivo" : n > 3 ? "grande" : "pequeno")
+	println((n > 0 ? "positivo" : "zero") + "!")
+	println(n > 0 && s != "" ? s : "?")
+	var out: string = "mrx" ? "thekingdevs" : null
+	println(out)
+	println(p ?? null ? "tem" : "nao tem")
+}

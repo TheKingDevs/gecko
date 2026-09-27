@@ -2027,7 +2027,38 @@ func (p *parser) parseExpr() ast.Expr {
 		defer un(trace(p, "Expression"))
 	}
 
-	return p.parseBinaryExpr(nil, token.LowestPrec+1)
+	x := p.parseBinaryExpr(nil, token.LowestPrec+1)
+
+	// gecko: a conditional expression has the lowest precedence, so it is
+	// parsed here rather than in parseBinaryExpr. It is right
+	// associative: the else branch is a full expression.
+	if p.gecko && p.tok == token.QUESTION {
+		return p.parseCondExpr(x)
+	}
+
+	return x
+}
+
+// parseCondExpr parses a gecko conditional expression whose condition
+// expression x has already been parsed.
+//
+// parseCondExpr = Expression "?" Expression ":" Expression .
+func (p *parser) parseCondExpr(x ast.Expr) ast.Expr {
+	if p.trace {
+		defer un(trace(p, "CondExpr"))
+	}
+
+	question := p.expect(token.QUESTION)
+	then := p.parseExpr()
+	colon := p.expect(token.COLON)
+	els := p.parseExpr()
+	return &ast.CondExpr{
+		Cond:     x,
+		Question: question,
+		Then:     then,
+		Colon:    colon,
+		Else:     els,
+	}
 }
 
 func (p *parser) parseRhs() ast.Expr {

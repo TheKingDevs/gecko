@@ -16,6 +16,10 @@
  *   - `a ?? b ?? c` chains left to right: the first non-null value wins.
  *     `null ?? x` is exactly x; writing a null literal on the left always
  *     picks the fallback.
+ *   - `?:` is the other half of the story: `x ?? y` only reacts to null,
+ *     while `x ? a : b` reacts to every falsy value (null, false, zero, the
+ *     empty string and empty collections), so a null pointer and an empty
+ *     string take the same branch with `?:` but not with `??`.
  *   - Note the left side is used as-is; `*p ?? y` means "dereference p;
  *     if p is null this is a nil dereference, exactly like *p alone".
  *     Put the dereference on the result instead: `*(p ?? q)`.
@@ -28,6 +32,7 @@ package main
 
 var defaultNick = "anonymous"
 var builtTimes = 0
+var portNumber = 8080
 
 func buildDefault(): *string {
 	builtTimes = builtTimes + 1
@@ -58,4 +63,15 @@ func main() {
 	// second -- a concrete fallback -- is picked).
 	got = nickname ?? nickname ?? &defaultNick
 	println("chained:", *got, "(builds:", builtTimes, ")")
+	// `??` only reacts to null, while `?:` reacts to every falsy value, so
+	// the two pick the same branch for a pointer but not for an empty
+	// string or a zero. Here both the pointer and the string are nilable,
+	// so the same value can be tested either way.
+	port = &portNumber
+	println("port ??:", *port, "/ ?:", port ? *port : 0)
+	port = null
+	println("port ??:", *(port ?? &portNumber), "/ ?:", port ? *port : 0)
+
+	greeting = ""
+	println("greeting ??:", greeting ?? "ola", "/ ?:", greeting ? greeting : "ola")
 }

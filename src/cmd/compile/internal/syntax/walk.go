@@ -167,6 +167,11 @@ func (w walker) node(n Node) {
 		w.node(n.X)
 		w.node(n.Type)
 
+	case *CondExpr:
+		w.node(n.Cond)
+		w.node(n.Then)
+		w.node(n.Else)
+
 	case *TypeSwitchGuard:
 		if n.Lhs != nil {
 			w.node(n.Lhs)

@@ -1800,7 +1800,38 @@ func (p *parser) expr() Expr {
 		defer p.trace("expr")()
 	}
 
-	return p.binaryExpr(nil, 0)
+	x := p.binaryExpr(nil, 0)
+
+	// gecko: cond ? then : else. The conditional operator has the lowest
+	// precedence, so it is handled here rather than in binaryExpr, and it
+	// is right-associative: the else branch is a full expression.
+	if p.tok == _Question {
+		return p.condExpr(x)
+	}
+	return x
+}
+
+// gecko: CondExpr = Expression "?" Expression ":" Expression .
+func (p *parser) condExpr(cond Expr) Expr {
+	pos := cond.Pos()
+	p.next() // consume "?"
+
+	then := p.expr()
+	// The middle expression stops at the ":" that separates the branches.
+	if !p.got(_Colon) {
+		p.error("missing ':' in conditional expression")
+		p.advance(_Semi, _Rparen, _Rbrack, _Rbrace, _Comma)
+		els := p.badExpr()
+		els.pos = pos
+		c := &CondExpr{Cond: cond, Then: then, Else: els}
+		c.pos = pos
+		return c
+	}
+
+	els := p.expr()
+	c := &CondExpr{Cond: cond, Then: then, Else: els}
+	c.pos = pos
+	return c
 }
 
 // Expression = UnaryExpr | Expression binary_op Expression .

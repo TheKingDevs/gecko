@@ -286,6 +286,15 @@ type (
 		expr
 	}
 
+	// gecko: Cond ? Then : Else
+	// Only the selected branch is evaluated.
+	CondExpr struct {
+		Cond Expr
+		Then Expr
+		Else Expr
+		expr
+	}
+
 	// X.(type)
 	// Lhs := X.(type)
 	TypeSwitchGuard struct {

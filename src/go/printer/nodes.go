@@ -914,6 +914,15 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 		p.setPos(x.Rparen)
 		p.print(token.RPAREN)
 
+	case *ast.CondExpr:
+		// gecko: cond ? then : else. The branches are printed at the
+		// lowest precedence, so a nested conditional needs no parentheses.
+		p.expr1(x.Cond, token.LowestPrec, depth)
+		p.print(blank, token.QUESTION, blank)
+		p.expr1(x.Then, token.LowestPrec, depth)
+		p.print(blank, token.COLON, blank)
+		p.expr1(x.Else, token.LowestPrec, depth)
+
 	case *ast.IndexExpr:
 		// TODO(gri): should treat[] like parentheses and undo one level of depth
 		p.expr1(x.X, token.HighestPrec, 1)

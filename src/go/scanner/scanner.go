@@ -990,7 +990,8 @@ scanAgain:
 		case '|':
 			tok = s.switch3(token.OR, token.OR_ASSIGN, '|', token.LOR)
 		case '?':
-			// Gecko nullish coalescing "??" is only meaningful in .gk
+			// Gecko nullish coalescing "??" and the conditional
+			// expression "cond ? a : b" are only meaningful in .gk
 			// source files; plain Go never contains a '?'.
 			if !s.Gecko {
 				s.errorf(s.file.Offset(pos), "illegal character %#U", ch)
@@ -1004,10 +1005,7 @@ scanAgain:
 				s.next()
 				tok = token.NULLISH
 			} else {
-				s.errorf(s.file.Offset(pos), "illegal character %#U (nullish coalescing is '??')", ch)
-				insertSemi = s.insertSemi // preserve insertSemi info
-				tok = token.ILLEGAL
-				lit = string(ch)
+				tok = token.QUESTION
 			}
 		case '~':
 			tok = token.TILDE

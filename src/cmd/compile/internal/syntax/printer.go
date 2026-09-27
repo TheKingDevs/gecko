@@ -433,6 +433,10 @@ func (p *printer) printRawNode(n Node) {
 	case *AssertExpr:
 		p.print(n.X, _Dot, _Lparen, n.Type, _Rparen)
 
+	case *CondExpr:
+		// gecko: cond ? then : else
+		p.print(n.Cond, blank, _Question, blank, n.Then, blank, _Colon, blank, n.Else)
+
 	case *TypeSwitchGuard:
 		if n.Lhs != nil {
 			p.print(n.Lhs, blank, _Define, blank)

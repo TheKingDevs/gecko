@@ -2216,6 +2216,32 @@ func (w *writer) expr(expr syntax.Expr) {
 			w.implicitConvExpr(commonType, expr.Y)
 		}
 
+	case *syntax.CondExpr:
+		// Gecko conditional expression. Both branches are converted to
+		// the result type, which the type checker has already assigned to
+		// a bare null branch. The reader rebuilds a temp plus a two-way
+		// if, so that only the selected branch is evaluated.
+		if isNil(w.p, expr.Cond) {
+			// A bare null condition is always falsy, so the else branch is
+			// the only one that is ever evaluated.
+			w.expr(expr.Else)
+			break
+		}
+		condType := w.p.typeOf(expr.Cond)
+		kind := types2.GeckoTruthyKindOf(condType)
+		if kind == types2.GeckoTruthyUnsupported {
+			w.p.errorf(expr.Cond, "cannot use %s of type %s as a conditional expression", expr.Cond, condType)
+			break
+		}
+
+		typ := w.p.typeOf(expr)
+		w.Code(exprCond)
+		w.pos(expr)
+		w.Uint(uint(kind))
+		w.expr(expr.Cond)
+		w.implicitConvExpr(typ, expr.Then)
+		w.implicitConvExpr(typ, expr.Else)
+
 	case *syntax.CallExpr:
 		tv := w.p.typeAndValue(expr.Fun)
 		if tv.IsType() {

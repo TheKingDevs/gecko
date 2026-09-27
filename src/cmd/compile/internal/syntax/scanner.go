@@ -352,9 +352,10 @@ redo:
 	case '?':
 		s.nextch()
 		if s.ch != '?' {
-			s.errorf("invalid character %#U", '?')
-			s.nextch()
-			goto redo
+			// gecko: a single '?' introduces a conditional expression
+			// (cond ? a : b).
+			s.tok = _Question
+			break
 		}
 		s.nextch()
 		s.op, s.prec = Nullish, precOrOr

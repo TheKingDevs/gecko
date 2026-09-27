@@ -355,6 +355,16 @@ func (check *Checker) updateExprType(x syntax.Expr, typ Type, final bool) {
 			check.updateExprType(x.Y, typ, final)
 		}
 
+	case *syntax.CondExpr:
+		// gecko cond ? then : else. Both branches produce the result
+		// type. As for a binary expression, a constant result is already
+		// the selected branch's value, so the branches need no update.
+		if old.val != nil {
+			break // see comment for unary expressions
+		}
+		check.updateExprType(x.Then, typ, final)
+		check.updateExprType(x.Else, typ, final)
+
 	default:
 		panic("unreachable")
 	}
@@ -1193,6 +1203,13 @@ func (check *Checker) exprInternal(T *target, x *operand, e syntax.Expr) exprKin
 		check.error(e, InvalidSyntaxTree, "use of .(type) outside type switch")
 		check.use(e.X)
 		goto Error
+
+	case *syntax.CondExpr:
+		// gecko: cond ? then : else
+		check.condExpr(x, e)
+		if !x.isValid() {
+			goto Error
+		}
 
 	case *syntax.CallExpr:
 		return check.callExpr(x, e)

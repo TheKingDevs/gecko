@@ -405,6 +405,16 @@ type (
 		Rparen token.Pos // position of ")"
 	}
 
+	// A CondExpr node represents a gecko conditional expression
+	// "Cond ? Then : Else". Only the selected branch is evaluated.
+	CondExpr struct {
+		Cond     Expr      // condition
+		Question token.Pos // position of "?"
+		Then     Expr      // expression evaluated when Cond is truthy
+		Colon    token.Pos // position of ":"
+		Else     Expr      // expression evaluated when Cond is falsy
+	}
+
 	// A CallExpr node represents an expression followed by an argument list.
 	CallExpr struct {
 		Fun      Expr      // function expression
@@ -528,6 +538,7 @@ func (x *IndexExpr) Pos() token.Pos      { return x.X.Pos() }
 func (x *IndexListExpr) Pos() token.Pos  { return x.X.Pos() }
 func (x *SliceExpr) Pos() token.Pos      { return x.X.Pos() }
 func (x *TypeAssertExpr) Pos() token.Pos { return x.X.Pos() }
+func (x *CondExpr) Pos() token.Pos       { return x.Cond.Pos() }
 func (x *CallExpr) Pos() token.Pos       { return x.Fun.Pos() }
 func (x *NewExpr) Pos() token.Pos        { return x.New }
 func (x *AwaitExpr) Pos() token.Pos      { return x.Await }
@@ -572,6 +583,7 @@ func (x *IndexExpr) End() token.Pos      { return x.Rbrack + 1 }
 func (x *IndexListExpr) End() token.Pos  { return x.Rbrack + 1 }
 func (x *SliceExpr) End() token.Pos      { return x.Rbrack + 1 }
 func (x *TypeAssertExpr) End() token.Pos { return x.Rparen + 1 }
+func (x *CondExpr) End() token.Pos       { return x.Else.End() }
 func (x *CallExpr) End() token.Pos       { return x.Rparen + 1 }
 func (x *NewExpr) End() token.Pos        { return x.Rparen + 1 }
 func (x *AwaitExpr) End() token.Pos      { return x.X.End() }
@@ -605,6 +617,7 @@ func (*IndexExpr) exprNode()      {}
 func (*IndexListExpr) exprNode()  {}
 func (*SliceExpr) exprNode()      {}
 func (*TypeAssertExpr) exprNode() {}
+func (*CondExpr) exprNode()       {}
 func (*CallExpr) exprNode()       {}
 func (*NewExpr) exprNode()        {}
 func (*AwaitExpr) exprNode()      {}

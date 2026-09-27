@@ -110,6 +110,11 @@ func Walk(v Visitor, node Node) {
 			Walk(v, n.Max)
 		}
 
+	case *CondExpr:
+		Walk(v, n.Cond)
+		Walk(v, n.Then)
+		Walk(v, n.Else)
+
 	case *TypeAssertExpr:
 		Walk(v, n.X)
 		if n.Type != nil {
