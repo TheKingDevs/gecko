@@ -6,13 +6,19 @@
  * declaration for the imported class, because this project declares
  * "type": "typed" and cannot rely on declare-or-assign.
  *
+ * The package is imported with the gecko "@" prefix below. The plain Go form
+ * ("exportlib") still means the same package, and a relative path may name a
+ * single file instead of a directory — `import { greet } from "./lib"`
+ * or `from "./lib.gk"` would load just examples/typed/exportlib/lib.gk
+ * as its own package, where a directory always wins over a same-named file.
+ *
  * Run from this directory:
  *   ../../bin/gecko run 05_exports.gk
  */
 
 package main
 
-import "exportlib"
+import "@exportlib"
 
 func main() {
 	// Exported lowercase func and var.

@@ -5,6 +5,30 @@ logs modifications that are specific to gecko and are not part of upstream Go.
 
 ## Unreleased
 
+### Entry: the `@` package prefix and relative file imports
+
+**Título / Title:** a gecko import path may now be written with the `@` prefix — `import { feat } from "@utils"` — and a relative path may name a single file instead of a directory, so `import { rec } from "./logger"` or `"./logger.gk"` loads just that file as its own package. The plain Go path (`import "utils"`) keeps working and means exactly the same package, and the leading `@` never collides with the trailing `@version` form. A relative file import needs no `go.mod`: it is resolved by the loader against the importing file's own directory, which makes a `.gk` file as easy to import as a directory package, and a directory always wins over a same-named file.
+
+**Descrição / Description:**
+
+- Syntax: no parser or scanner change. `import { name } from "path"` and the contextual `from` already existed, and the path is a plain string literal, so `"@utils"`, `"./logger"` and `"./logger.gk"` parse unchanged; plain `.go` files and every other path form keep their current meaning.
+- Path prefix (`cmd/gecko/internal/load`): `loadPackageData` strips one leading `@` before the `path@version` check, so a package path may be spelled either way. Because the version marker is a *trailing* `@version`, `gecko install utils@v1` and `gecko install @utils` are unaffected, and `gecko get utils` keeps matching packages named `utils`.
+- File imports (`cmd/gecko/internal/load`): a local path (`./` or `../`, resolved from the directory of the importing file) that does not name an existing directory is retried as a single file, with `.gk` appended when the path has no extension. A directory at the same path always takes priority, `"./logger"` and `"./logger.gk"` name the same file, and a missing target now reports both the file it looked for and the package directory it skipped.
+- One file is one package: the file's `package` clause supplies the name, and the other `.gk` files next to it are *not* compiled in — the opposite of a directory import, where a file cannot be singled out. The synthetic import path `dirToImportPath(dir) + "/" + file` is registered by overriding `build.Context.ReadDir`, the same machinery the tool already used for a single-file package, so the compiler only ever sees an ordinary import path.
+- Same-project relative imports: a relative import used to be rejected when it came from a package other than `main`. It is now allowed when the importing and the imported package belong to the same gecko project (the directory holding `gecko.json`, i.e. a project with no `go.mod`), so a library can import a sibling file; the old restriction still applies across projects.
+- Compiler: no change. `RawImports` already maps the raw source literal to the canonical `Package.Imports` entry that `work.Exec` writes into the `ImportMap`, so the compiler never observes the `@` prefix or a relative file path.
+- Tests/examples: new `testdata/script/import_gecko_paths.txt` covers `@` with and without braces, the plain form, the `strconv` stdlib package through `@`, both relative file spellings, the qualified (brace-less) form, directory priority, single-file package isolation from a sibling that declares another package, an import from a library, a chained file import, the missing-file diagnostic and an import cycle. `examples/dynamic/05_exports.gk` and its typed counterpart import `@exportlib` and document the file form.
+- Known limitation: an error about a file import names the synthetic path (`_/tmp/proj/logger.gk`), because that is the path the compiler sees.
+- Known limitation: a `// import "..."` comment is not honored for a file import, which already has an explicit path.
+- Known limitation: `gecko vet` still cannot type-check `.gk` files that use member imports (`import { x } from ...`) or `export`, because it type-checks with the upstream `go/types`; pre-existing and unrelated to this entry. `gecko build`, `gecko run` and `gecko fmt` are unaffected.
+
+**Hash do commit / Commit hash:** `_pending_`
+
+**Mensagem do commit / Commit message:**
+```
+gecko: support the @ package prefix and relative file imports
+```
+
 ### Entry: conditional expression `cond ? a : b`
 
 **Título / Title:** gecko gains JavaScript's conditional operator `cond ? a : b`: the result is `a` when `cond` is truthy and `b` when it is falsy, and only the selected branch is evaluated, so `n > 0 ? next() : ""` never calls `next()` on a non-positive `n`. The condition is not restricted to `bool` — truthiness follows JavaScript, so `null`, `false`, the numeric zero, the empty string and empty collections are falsy and everything else is truthy. The operator has the lowest precedence and is right associative, so `n > 10 ? "big" : n > 3 ? "medium" : "small"` needs no parentheses. A bare `null` branch takes the type of the other branch, and a constant condition is folded, so `var name = "mrx" ? "thekingdevs" : null` yields an untyped string constant.

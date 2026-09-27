@@ -12,6 +12,7 @@ package load
 
 import (
 	"encoding/json"
+	"fmt"
 	"go/build"
 	"io/fs"
 	"os"
@@ -129,18 +130,8 @@ func geckoLookupProjectPackage(ctxt build.Context, path, srcDir string, mode bui
 	// main.gk next to utils.gk) stay out of it.
 	file := filepath.Join(root, path+".gk")
 	dir := filepath.Dir(file)
-	if matched, err := ctxt.MatchFile(dir, filepath.Base(file)); matched && err == nil {
-		ct := ctxt
-		ct.ReadDir = func(string) ([]fs.FileInfo, error) {
-			fi, err := os.Stat(file)
-			if err != nil {
-				return nil, err
-			}
-			return []fs.FileInfo{fi}, nil
-		}
-		if p, err := ct.ImportDir(dir, mode); err == nil {
-			return p, true
-		}
+	if p, err := geckoSingleFilePackage(ctxt, dir, file, mode); err == nil {
+		return p, true
 	}
 
 	// Installed gpm modules: resolve the import path against the project's
@@ -149,6 +140,99 @@ func geckoLookupProjectPackage(ctxt build.Context, path, srcDir string, mode bui
 		return p, true
 	}
 	return nil, false
+}
+
+// geckoTrimAtPrefix strips the leading "@" from an import path written in the
+// gecko package form, as in import { feat } from "@utils". The prefix marks
+// the rest of the path as a package path, so it can never be mistaken for the
+// "path@version" query used on the command line, and it is removed before
+// resolution. Paths without the prefix keep their current meaning, so both
+// import "utils" and import "@utils" resolve to the same package.
+func geckoTrimAtPrefix(path string) string {
+	if strings.HasPrefix(path, "@") {
+		return path[1:]
+	}
+	return path
+}
+
+// geckoFileSpec returns the file name an import path refers to, adding the
+// ".gk" extension when the path leaves it out, so that both "./logger" and
+// "./logger.gk" name the same file.
+func geckoFileSpec(path string) string {
+	if strings.HasSuffix(path, ".gk") {
+		return path
+	}
+	return path + ".gk"
+}
+
+// geckoImportFile resolves a local import path that names a single file, as
+// in import { rec } from "./logger" or "./logger.gk". The ".gk" extension is
+// optional, so both spell the same package. It reports the file's directory
+// and base name, and whether path is such a file import.
+//
+// A directory of that name always wins: path is only treated as a file when
+// srcDir/path is not a directory, so "./logger" keeps meaning the logger/
+// package whenever that directory exists. The file is the only source of the
+// package, so a sibling file in the same directory is left out of it.
+func geckoImportFile(path, srcDir string) (dir, file string, ok bool) {
+	if !build.IsLocalImport(path) {
+		return "", "", false
+	}
+	if srcDir == "" {
+		return "", "", false
+	}
+	name := geckoFileSpec(path)
+	// A directory named like the import path takes priority over the file.
+	if fi, err := os.Stat(filepath.Join(srcDir, path)); err == nil && fi.IsDir() {
+		return "", "", false
+	}
+	full := filepath.Join(srcDir, name)
+	if matched, err := cfg.BuildContext.MatchFile(filepath.Dir(full), filepath.Base(full)); err != nil || !matched {
+		return "", "", false
+	}
+	return filepath.Dir(full), filepath.Base(full), true
+}
+
+// geckoFileImportPath returns the synthetic import path of the file import
+// (dir, file). It is the directory's pseudo-import path plus the file name,
+// which keeps it distinct from the directory package that sits next to it
+// (a directory can never be named "logger.gk") and stable across builds.
+func geckoFileImportPath(dir, file string) string {
+	return dirToImportPath(dir) + "/" + file
+}
+
+// geckoSingleFilePackage imports dir as a package built from the single file
+// (which must live in dir), leaving every other file in the directory out of
+// it. The package name comes from the file's own package clause. Like
+// build.ImportDir, it always returns a non-nil package, even on error.
+func geckoSingleFilePackage(ctxt build.Context, dir, file string, mode build.ImportMode) (*build.Package, error) {
+	matched, err := ctxt.MatchFile(dir, filepath.Base(file))
+	if err != nil {
+		return new(build.Package), err
+	}
+	if !matched {
+		return new(build.Package), fmt.Errorf("%s is not a gecko source file", file)
+	}
+	ct := ctxt
+	ct.ReadDir = func(string) ([]fs.FileInfo, error) {
+		fi, err := os.Stat(file)
+		if err != nil {
+			return nil, err
+		}
+		return []fs.FileInfo{fi}, nil
+	}
+	return ct.ImportDir(dir, mode)
+}
+
+// geckoSameProject reports whether dir1 and dir2 belong to the same gecko
+// project, i.e. share a project root with a gecko.json manifest. A gecko
+// project has no go.mod and its packages are all addressed by pseudo-import
+// paths, which Go's "local import in non-local package" rule would otherwise
+// reject; inside one project a "./name" import is resolved relative to the
+// importing file, as expected.
+func geckoSameProject(dir1, dir2 string) bool {
+	root := geckoProjectRoot(dir1)
+	return root != "" && root == geckoProjectRoot(dir2)
 }
 
 // geckoProjectRoot returns the directory of the gecko project containing

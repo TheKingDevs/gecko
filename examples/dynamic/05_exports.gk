@@ -12,6 +12,12 @@
  *   - classes whose fields and methods are reachable across packages
  *     (constructed with the qualified `new pkg.Class(args)` expression).
  *
+ * The package is imported with the gecko "@" prefix below. The plain Go form
+ * ("exportlib") still means the same package, and a relative path may name a
+ * single file instead of a directory — `import { greet } from "./lib"`
+ * or `from "./lib.gk"` would load just examples/dynamic/exportlib/lib.gk
+ * as its own package, where a directory always wins over a same-named file.
+ *
  * Uncommenting the private references at the bottom shows that names
  * without (or not covered by) an export stay private even with a
  * capital letter.
@@ -22,7 +28,7 @@
 
 package main
 
-import "exportlib"
+import "@exportlib"
 
 func main() {
 	// Exported lowercase func and var.

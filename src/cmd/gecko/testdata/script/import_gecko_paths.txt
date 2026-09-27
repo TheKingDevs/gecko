@@ -1,0 +1,276 @@
+# Test the gecko import path forms: the "@" package prefix, relative imports
+# that name a single file with an optional ".gk" extension, and the rules that
+# pick between a directory and a file.
+
+env GK111MODULE=off
+
+# A gecko project (gecko.json, no go.mod) with a single-file package at the
+# root and a main file next to it.
+mkdir $WORK/proj
+cp $WORK/gecko.json $WORK/proj/gecko.json
+cp $WORK/utils.gk $WORK/proj/utils.gk
+cp $WORK/logger.gk $WORK/proj/logger.gk
+cp $WORK/main_at.gk $WORK/proj/main.gk
+
+cd $WORK/proj
+
+# "@utils" names the same package as "utils".
+go run main.gk
+stdout 'feat ok'
+
+# The old spelling keeps working.
+cp $WORK/main_plain.gk main.gk
+go run main.gk
+stdout 'feat ok'
+
+# The "@" prefix also reaches the standard library.
+cp $WORK/main_std.gk main.gk
+go run main.gk
+stdout '42'
+
+# A relative import naming a file, with and without the extension: both
+# spell the same package, built from logger.gk alone.
+cp $WORK/main_file_noext.gk main.gk
+go run main.gk
+stdout '\[log\] hi'
+
+cp $WORK/main_file_ext.gk main.gk
+go run main.gk
+stdout '\[log\] hi'
+
+# Without braces the file's own package clause supplies the name.
+cp $WORK/main_file_qualified.gk main.gk
+go run main.gk
+stdout '\[log\] qualified'
+
+# The file is the whole package: a sibling file in the same directory is not
+# part of it, even when it declares a different package.
+cp $WORK/audit.gk audit.gk
+cp $WORK/main_siblings.gk main.gk
+go run main.gk
+! stdout 'audit'
+cp $WORK/main_sibling_leak.gk main.gk
+! go run main.gk
+stderr 'undefined: audit'
+rm audit.gk
+
+# A directory of that name wins over the file.
+mkdir $WORK/proj/logger
+cp $WORK/logger_dir.gk $WORK/proj/logger/lib.gk
+cp $WORK/main_file_noext.gk main.gk
+go run main.gk
+stdout 'DIR hi'
+
+# An explicit "./logger.gk" still names the file.
+cp $WORK/main_file_ext.gk main.gk
+go run main.gk
+stdout '\[log\] hi'
+rm -r $WORK/proj/logger
+
+# A file package may import another file package.
+cp $WORK/chain1.gk $WORK/proj/chain1.gk
+cp $WORK/main_chain.gk main.gk
+go run main.gk
+stdout '\[log\] chained'
+rm $WORK/proj/chain1.gk
+
+# A relative import also works from a library package of the project, not
+# only from package main.
+mkdir $WORK/proj/app
+cp $WORK/app.gk $WORK/proj/app/app.gk
+cp $WORK/main_lib.gk main.gk
+go run main.gk
+stdout '\[log\] de lib'
+
+# An import cycle through file imports is still a cycle.
+cp $WORK/cyc1.gk $WORK/proj/cyc1.gk
+cp $WORK/cyc2.gk $WORK/proj/cyc2.gk
+cp $WORK/main_cycle.gk main.gk
+! go run main.gk
+stderr 'import cycle not allowed'
+stderr 'imports \./cyc1 from'
+rm $WORK/proj/cyc1.gk $WORK/proj/cyc2.gk
+
+# A missing file is reported with the file that was looked for.
+cp $WORK/main_missing.gk main.gk
+! go run main.gk
+stderr 'cannot find file'
+
+-- $WORK/gecko.json --
+{
+  "name": "script-import",
+  "version": "1.0.0",
+  "type": "dynamic"
+}
+
+-- $WORK/utils.gk --
+package utils
+
+export func feat(): string {
+	return "feat ok"
+}
+
+-- $WORK/logger.gk --
+package logger
+
+export func rec(msg: string): string {
+	return "[log] " + msg
+}
+
+-- $WORK/logger_dir.gk --
+package logger
+
+export func rec(msg: string): string {
+	return "DIR " + msg
+}
+
+-- $WORK/audit.gk --
+package audit
+
+export func leaked(): string {
+	return "audit"
+}
+
+-- $WORK/main_at.gk --
+package main
+
+import { feat } from "@utils"
+
+func main() {
+	println(feat())
+}
+
+-- $WORK/main_plain.gk --
+package main
+
+import { feat } from "utils"
+
+func main() {
+	println(feat())
+}
+
+-- $WORK/main_std.gk --
+package main
+
+import "@strconv"
+
+func main() {
+	println(strconv.Itoa(42))
+}
+
+-- $WORK/main_file_noext.gk --
+package main
+
+import { rec } from "./logger"
+
+func main() {
+	println(rec("hi"))
+}
+
+-- $WORK/main_file_ext.gk --
+package main
+
+import { rec } from "./logger.gk"
+
+func main() {
+	println(rec("hi"))
+}
+
+-- $WORK/main_file_qualified.gk --
+package main
+
+import "./logger.gk"
+
+func main() {
+	println(logger.rec("qualified"))
+}
+
+-- $WORK/main_siblings.gk --
+package main
+
+import { rec } from "./logger"
+
+func main() {
+	println(rec("siblings"))
+}
+
+-- $WORK/main_sibling_leak.gk --
+package main
+
+import "./logger"
+
+func main() {
+	println(audit.leaked())
+}
+
+-- $WORK/chain1.gk --
+package chain1
+
+import { rec } from "./logger.gk"
+
+export func go2(): string {
+	return rec("chained")
+}
+
+-- $WORK/main_chain.gk --
+package main
+
+import { go2 } from "./chain1"
+
+func main() {
+	println(go2())
+}
+
+-- $WORK/app.gk --
+package app
+
+import { rec } from "../logger.gk"
+
+export func run(): string {
+	return rec("de lib")
+}
+
+-- $WORK/main_lib.gk --
+package main
+
+import "app"
+
+func main() {
+	println(app.run())
+}
+
+-- $WORK/cyc1.gk --
+package cyc1
+
+import { two } from "./cyc2"
+
+export func one(): string {
+	return "one -> " + two()
+}
+
+-- $WORK/cyc2.gk --
+package cyc2
+
+import { one } from "./cyc1"
+
+export func two(): string {
+	return "two -> " + one()
+}
+
+-- $WORK/main_cycle.gk --
+package main
+
+import { one } from "./cyc1"
+
+func main() {
+	println(one())
+}
+
+-- $WORK/main_missing.gk --
+package main
+
+import { rec } from "./nothing"
+
+func main() {
+	println(rec("x"))
+}

@@ -808,7 +808,12 @@ func loadImport(ld *modload.Loader, ctx context.Context, opts PackageOpts, pre *
 		return p, perr
 	}
 
-	if p.Internal.Local && parent != nil && !parent.Internal.Local {
+	// Go only allows a local import from a package that is itself local.
+	// A gecko project has no go.mod, so all of its packages are addressed by
+	// pseudo-import paths and none of them is "local"; a "./name" import
+	// between two packages of the same gecko project is a plain relative
+	// path and is allowed.
+	if p.Internal.Local && parent != nil && !parent.Internal.Local && !geckoSameProject(parent.Dir, p.Dir) {
 		var err error
 		if path == "." {
 			err = ImportErrorf(path, "%s: cannot import current directory", path)
@@ -850,6 +855,12 @@ func loadPackageData(ld *modload.Loader, ctx context.Context, path, parentPath, 
 		panic("loadPackageData called with empty package path")
 	}
 
+	// A gecko import path may be written with a leading "@" to mark it as a
+	// package path, as in import { feat } from "@utils". Strip it before any
+	// resolution so the "@" is never read as a "path@version" query; the
+	// spelling without the prefix resolves the same way.
+	path = geckoTrimAtPrefix(path)
+
 	if strings.HasPrefix(path, "mod/") {
 		// Paths beginning with "mod/" might accidentally
 		// look in the module cache directory tree in $GOPATH/pkg/mod/.
@@ -883,7 +894,15 @@ func loadPackageData(ld *modload.Loader, ctx context.Context, path, parentPath, 
 	}
 	r := resolvedImportCache.Do(importKey, func() resolvedImport {
 		var r resolvedImport
-		if newPath, dir, ok := fips140.ResolveImport(path); ok {
+		if dir, file, ok := geckoImportFile(path, parentDir); ok {
+			// A "./name" import that names a file, not a directory
+			// ("./logger" or "./logger.gk"): build a package from
+			// that one file only, addressed by a synthetic import
+			// path that keeps it distinct from the directory
+			// package next to it.
+			r.dir, r.file = dir, file
+			r.path = geckoFileImportPath(dir, file)
+		} else if newPath, dir, ok := fips140.ResolveImport(path); ok {
 			r.path = newPath
 			r.dir = dir
 		} else if cfg.ModulesEnabled {
@@ -891,6 +910,14 @@ func loadPackageData(ld *modload.Loader, ctx context.Context, path, parentPath, 
 		} else if build.IsLocalImport(path) {
 			r.dir = filepath.Join(parentDir, path)
 			r.path = dirToImportPath(r.dir)
+			if fi, err := os.Stat(r.dir); err != nil || !fi.IsDir() {
+				// Neither a package directory nor a file of that name.
+				// Since "./name" may be either, name both spellings
+				// rather than leaving go/build to report the bare
+				// directory it happened to look at.
+				r.dir = ""
+				r.err = fmt.Errorf("cannot find file %q or package directory %q", geckoFileSpec(path), path)
+			}
 		} else if mode&ResolveImport != 0 {
 			// We do our own path resolution, because we want to
 			// find out the key to use in packageCache without the
@@ -916,6 +943,20 @@ func loadPackageData(ld *modload.Loader, ctx context.Context, path, parentPath, 
 		var data struct {
 			p   *build.Package
 			err error
+		}
+		if r.file != "" {
+			// A file import: build the package from that single file,
+			// so its siblings in the same directory are not part of it.
+			buildContext := cfg.BuildContext
+			buildMode := build.ImportMode(0)
+			if !cfg.ModulesEnabled {
+				buildMode = build.ImportComment
+			} else {
+				buildContext.GOPATH = "" // pure module package
+			}
+			data.p, data.err = geckoSingleFilePackage(buildContext, r.dir, r.file, buildMode)
+			data.p.ImportPath = r.path
+			return data.p, data.err
 		}
 		if r.dir != "" {
 			var buildMode build.ImportMode
@@ -1020,7 +1061,10 @@ func loadPackageData(ld *modload.Loader, ctx context.Context, path, parentPath, 
 			}
 		}
 
-		if !cfg.ModulesEnabled && data.err == nil &&
+		// A file import is addressed by a synthetic path, so an import
+		// comment in the file cannot match the path written in the source
+		// and is not checked.
+		if !cfg.ModulesEnabled && data.err == nil && r.file == "" &&
 			data.p.ImportComment != "" && data.p.ImportComment != path &&
 			!strings.Contains(path, "/vendor/") && !strings.HasPrefix(path, "vendor/") {
 			data.err = fmt.Errorf("code in directory %s expects import %q", data.p.Dir, data.p.ImportComment)
@@ -1045,7 +1089,11 @@ type importSpec struct {
 // is the value type in resolvedImportCache.
 type resolvedImport struct {
 	path, dir string
-	err       error
+	// file is set when the import names a single source file rather than a
+	// directory ("./logger.gk"); the package is then built from that file
+	// alone, and path is the synthetic import path derived from dir and file.
+	file string
+	err  error
 }
 
 // resolvedImportCache maps import strings to canonical package names.
